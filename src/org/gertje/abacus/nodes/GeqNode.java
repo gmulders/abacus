@@ -1,0 +1,27 @@
+package org.gertje.abacus.nodes;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.ArrayList;
+
+import org.gertje.abacus.Token;
+
+public class GeqNode extends AbstractComparisonNode {
+
+	/**
+	 * Constructor
+	 */
+	public GeqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(lhs, rhs, token, 6, ">=");
+
+		allowedTypes = new ArrayList<Class<?>>();
+		allowedTypes.add(BigDecimal.class);
+		allowedTypes.add(String.class);
+		allowedTypes.add(Date.class);
+	}
+
+	@Override
+	protected <T extends Comparable<? super T>> boolean compare(Comparable<T> left, T right) {
+		return left.compareTo(right) >= 0;
+	}
+}
