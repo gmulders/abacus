@@ -1,14 +1,18 @@
 package org.gertje.abacus;
 
 import org.gertje.abacus.nodes.AbstractNode;
+import org.gertje.abacus.nodes.NodeFactoryInterface;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class Compiler {
 
 	private SymbolTableInterface symbolTable;
 
-	public Compiler(SymbolTableInterface symbolTable) {
+	private NodeFactoryInterface nodeFactory;
+
+	public Compiler(SymbolTableInterface symbolTable, NodeFactoryInterface nodeFactory) {
 		this.symbolTable = symbolTable;
+		this.nodeFactory = nodeFactory;
 	}
 
 	/**
@@ -23,7 +27,7 @@ public class Compiler {
 		Lexer lexer = new Lexer(expression);
 
 		// dan maken we een parser aan die we de lexer meegeven,
-		Parser parser = new Parser(lexer);
+		Parser parser = new Parser(lexer, nodeFactory);
 
 		// daarna laten we de parser een AST opbouwen,
 		AbstractNode tree = parser.buildAST();

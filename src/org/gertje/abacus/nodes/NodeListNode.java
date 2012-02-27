@@ -7,15 +7,19 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.Token;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
-public class NodeListNode<T extends AbstractNode> extends AbstractNode implements List<T> {
+/**
+ * Abstracte klasse die een lijst van Nodes voorstelt.
+ */
+public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode implements List<T> {
 
 	List<T> nodeList;
 
 	// Constructor.
-	public NodeListNode() {
-		super();
+	public NodeListNode(Token token, NodeFactoryInterface nodeFactory) {
+		super(-1, token, nodeFactory);
 		// Maak een lijst aan om de objecten op te slaan.
 		nodeList = new ArrayList<T>();
 	}

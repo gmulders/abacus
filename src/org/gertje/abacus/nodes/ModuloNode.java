@@ -9,8 +9,8 @@ public class ModuloNode extends AbstractTermNode {
 	/**
 	 * Constructor
 	 */
-	public ModuloNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		super(lhs, rhs, token, 4, "%");
+	public ModuloNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(lhs, rhs, token, 4, "%", nodeFactory);
 	}
 
 	@Override

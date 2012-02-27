@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.gertje.abacus.Compiler;
 import org.gertje.abacus.CompilerException;
 import org.gertje.abacus.nodes.AbstractNode;
+import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.symboltable.SymbolTable;
 
 
@@ -48,6 +49,10 @@ public class AbacusTest {
 	}
 
 	private void run() {
+		// Maak een nieuwe NodeFactory aan, zodat de compiler weet welke nodes te maken.
+		NodeFactory nodeFactory = new NodeFactory();
+
+		// Maak een nieuwe symboltable en vul deze met wat waarden.
 		sym = new SymbolTable();
 		sym.setVariableValue("a", BigDecimal.valueOf(2.0));
 		sym.setVariableValue("b", BigDecimal.valueOf(3.0));
@@ -59,7 +64,7 @@ public class AbacusTest {
 
 		System.out.println();
 		
-		compiler = new Compiler(sym);
+		compiler = new Compiler(sym, nodeFactory);
 		
 		for (TestSet testSet : testSets) {
 			if (!test(testSet)) {

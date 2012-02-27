@@ -11,10 +11,10 @@ public class NotNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public NotNode(AbstractNode argument, Token token) {
+	public NotNode(AbstractNode argument, Token token, NodeFactoryInterface nodeFactory) {
+		super(2, token, nodeFactory);
+
 		this.argument = argument;
-		this.token = token;
-		precedence = 2;
 	}
 
 	public Boolean evaluate(SymbolTableInterface sym) {
@@ -31,7 +31,7 @@ public class NotNode extends AbstractNode {
 
 		// Wanneer het argument constant is kunnen we hem vereenvoudigen.
 		if (argument.getIsConstant()) {
-			return new BooleanNode(evaluate(sym), token);
+			return nodeFactory.createBooleanNode(evaluate(sym), token);
 		}
 
 		// We kunnen de node niet vereenvoudigen, geef de huidige instantie terug.

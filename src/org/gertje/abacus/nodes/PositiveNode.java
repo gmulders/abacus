@@ -13,10 +13,10 @@ public class PositiveNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public PositiveNode(AbstractNode argument, Token token) {
+	public PositiveNode(AbstractNode argument, Token token, NodeFactoryInterface nodeFactory) {
+		super(2, token, nodeFactory);
+
 		this.argument = argument;
-		this.token = token;
-		precedence = 2;
 	}
 
 	public BigDecimal evaluate(SymbolTableInterface sym) {

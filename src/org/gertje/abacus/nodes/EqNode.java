@@ -11,8 +11,8 @@ public class EqNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public EqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		super(lhs, rhs, token, 7, "==");
+	public EqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(lhs, rhs, token, 7, "==", nodeFactory);
 
 		allowedTypes = new ArrayList<Class<?>>();
 		allowedTypes.add(Boolean.class);

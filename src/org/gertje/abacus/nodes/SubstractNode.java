@@ -14,12 +14,11 @@ public class SubstractNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public SubstractNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		precedence = 5;
+	public SubstractNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(5, token, nodeFactory);
 
 		this.lhs = lhs;
 		this.rhs = rhs;
-		this.token = token;
 	}
 
 	public BigDecimal evaluate(SymbolTableInterface sym) {
@@ -39,7 +38,7 @@ public class SubstractNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			return new NumberNode(evaluate(sym), token);
+			return nodeFactory.createNumberNode(evaluate(sym), token);
 		}
 
 		// Geef de huidige instantie terug.

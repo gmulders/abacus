@@ -11,8 +11,8 @@ public class GeqNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public GeqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		super(lhs, rhs, token, 6, ">=");
+	public GeqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(lhs, rhs, token, 6, ">=", nodeFactory);
 
 		allowedTypes = new ArrayList<Class<?>>();
 		allowedTypes.add(BigDecimal.class);

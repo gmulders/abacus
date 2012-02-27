@@ -11,15 +11,22 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 	protected AbstractNode lhs;
 	protected AbstractNode rhs;
 	
+	/**
+	 * Lijst met toegestane types voor deze operatie.
+	 */
 	protected List<Class<?>> allowedTypes;
 
+	/**
+	 * Bevat de operator zoals weegegeven in javascript.
+	 */
 	protected String operator;
 	
-	public AbstractComparisonNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence, String operator) {
+	public AbstractComparisonNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence, String operator, 
+			NodeFactoryInterface nodeFactory) {
+		super(precedence, token, nodeFactory);
 		this.lhs = lhs;
 		this.rhs = rhs;
-		this.token = token;
-		this.precedence = precedence;
+
 		this.operator = operator;
 	}
 
@@ -47,7 +54,7 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			return new BooleanNode(evaluate(sym), token);
+			return nodeFactory.createBooleanNode(evaluate(sym), token);
 		}
 
 		// Geef de huidige instantie terug.

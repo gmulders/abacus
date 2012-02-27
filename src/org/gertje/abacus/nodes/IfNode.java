@@ -13,13 +13,13 @@ public class IfNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public IfNode(AbstractNode condition, AbstractNode ifbody, AbstractNode elsebody, Token token) {
-		precedence = 10;
+	public IfNode(AbstractNode condition, AbstractNode ifbody, AbstractNode elsebody, Token token, 
+			NodeFactoryInterface nodeFactory) {
+		super(10, token, nodeFactory);
 
 		this.condition = condition;
 		this.ifbody = ifbody;
 		this.elsebody = elsebody;
-		this.token = token;
 	}
 
 	public Object evaluate(SymbolTableInterface sym) {

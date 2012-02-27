@@ -14,12 +14,11 @@ public class PowerNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public PowerNode(AbstractNode base, AbstractNode power, Token token) {
-		precedence = 4;
+	public PowerNode(AbstractNode base, AbstractNode power, Token token, NodeFactoryInterface nodeFactory) {
+		super(4, token, nodeFactory);
 
 		this.base = base;
 		this.power = power;
-		this.token = token;
 	}
 
 	public BigDecimal evaluate(SymbolTableInterface sym) {
@@ -40,7 +39,7 @@ public class PowerNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (base.getIsConstant() && power.getIsConstant()) {
-			return new NumberNode(evaluate(sym), token);
+			return nodeFactory.createNumberNode(evaluate(sym), token);
 		}
 
 		// Geef de huidige instantie terug.

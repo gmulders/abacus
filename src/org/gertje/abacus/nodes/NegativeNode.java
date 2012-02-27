@@ -13,10 +13,10 @@ public class NegativeNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public NegativeNode(AbstractNode argument, Token token) {
+	public NegativeNode(AbstractNode argument, Token token, NodeFactoryInterface nodeFactory) {
+		super(2, token, nodeFactory);
+
 		this.argument = argument;
-		this.token = token;
-		precedence = 2;
 	}
 
 	public BigDecimal evaluate(SymbolTableInterface sym) {
@@ -33,7 +33,7 @@ public class NegativeNode extends AbstractNode {
 
 		// Wanneer het argument constant is kunnen we hem vereenvoudigen.
 		if (argument.getIsConstant()) {
-			return new NumberNode(evaluate(sym), token);
+			return nodeFactory.createNumberNode(evaluate(sym), token);
 		}
 
 		// We kunnen de node niet vereenvoudigen, geef de huidige instantie terug.

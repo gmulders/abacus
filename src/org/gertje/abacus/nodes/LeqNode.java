@@ -11,8 +11,8 @@ public class LeqNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public LeqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		super(lhs, rhs, token, 6, "<=");
+	public LeqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(lhs, rhs, token, 6, "<=", nodeFactory);
 		
 		allowedTypes = new ArrayList<Class<?>>();
 		allowedTypes.add(BigDecimal.class);

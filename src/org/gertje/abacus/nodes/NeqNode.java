@@ -11,8 +11,8 @@ public class NeqNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public NeqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		super(lhs, rhs, token, 7, "!=");
+	public NeqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(lhs, rhs, token, 7, "!=", nodeFactory);
 
 		allowedTypes = new ArrayList<Class<?>>();
 		allowedTypes.add(Boolean.class);

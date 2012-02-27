@@ -10,11 +10,10 @@ public class BooleanNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public BooleanNode(Boolean value, Token token) {
-		precedence = 1;
+	public BooleanNode(Boolean value, Token token, NodeFactoryInterface nodeFactory) {
+		super(1, token, nodeFactory);
 
 		this.value = value;
-		this.token = token;
 	}
 
 	public Boolean evaluate(SymbolTableInterface sym) {

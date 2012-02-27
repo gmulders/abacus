@@ -1,0 +1,62 @@
+<h1>Abacus</h1>
+
+<h2>Intro</h2>
+
+<p>Abacus is a small library </p>
+
+<h2>Language definition</h2>
+
+<p>We will define the language in two parts. The first part is a list of tokens the lexer recognises. The second part is a
+Backus-Naur Form<em>ish</em> description using the tokens.</p>
+
+<h3>Tokens</h3>
+
+<p>The lexer recognises the following tokens:</p>
+
+<pre><code>END_OF_INPUT      = (Not really a character, just the end of the input. \0 if you like.)
+END_OF_EXPRESSION = ";"
+WHITE_SPACE       = " " | "\t" | "\n" | "\r"
+NEW_LINE          = "\n" | "\r\n"
+COMMA             = ","
+IDENTIFIER        = 
+LEFT_PARENTHESIS  = "("
+RIGHT_PARENTHESIS = ")"
+STRING            = 
+NUMBER            = 
+BOOLEAN_AND       = "&amp;&amp;"
+BOOLEAN_OR        = "||"
+PLUS              = "+"
+MINUS             = "-"
+MULTIPLY          = "*"
+DIVIDE            = "/"
+NEQ               = "!="
+NOT               = "!"
+LEQ               = "&lt;="
+LT                = "&lt;"
+GEQ               = "&gt;="
+GT                = "&gt;"
+EQ                = "=="
+IF                = "?"
+ELSE              = ":"
+PERCENT           = "%"
+POWER             = "^"
+ASSIGNMENT        = "="
+</code></pre>
+
+<h3>Definition</h3>
+
+<pre><code>&lt;statement-list&gt;   := &lt;statment&gt; | &lt;statement&gt; &lt;statement-list&gt;
+&lt;statement&gt;        := &lt;assignment&gt; &lt;eos&gt; | &lt;expression&gt; &lt;eos&gt;
+&lt;assignment&gt;       := &lt;variable&gt; ASSIGNMENT &lt;assignment&gt; | &lt;variable&gt; ASSIGNMENT &lt;expression&gt;
+&lt;expression&gt;       := &lt;conditional&gt;
+&lt;conditional&gt;      := &lt;booleanoperation&gt; | &lt;booleanoperation&gt; IF &lt;expression&gt; ELSE &lt;expression&gt;
+&lt;booleanoperation&gt; := &lt;comparison&gt; | &lt;comparison&gt; ( BOOLEAN_AND | BOOLEAN_OR ) &lt;booleanoperation&gt;
+&lt;comparison&gt;       := &lt;addition&gt; | &lt;addition&gt; ( EQ | NEQ | LT | LEQ | GEQ | GT ) &lt;comparison&gt;
+&lt;addition&gt;         := TODO
+&lt;term&gt;             := TODO
+&lt;power&gt;            := TODO
+&lt;unary&gt;            := TODO
+&lt;factor&gt;           := TODO
+
+&lt;eos&gt; := ; | end of input
+</code></pre>

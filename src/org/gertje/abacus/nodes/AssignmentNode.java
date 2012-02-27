@@ -9,12 +9,11 @@ public class AssignmentNode extends AbstractNode {
 	VariableNode lhs;
 	AbstractNode rhs;
 
-	public AssignmentNode(VariableNode lhs, AbstractNode rhs, Token token) {
-		precedence = 0;
+	public AssignmentNode(VariableNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(0, token, nodeFactory);
 
 		this.lhs = lhs;
 		this.rhs = rhs;
-		this.token = token;
 	}
 
 	@Override

@@ -12,11 +12,10 @@ public class NumberNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public NumberNode(BigDecimal value, Token token) {
-		precedence = 1;
+	public NumberNode(BigDecimal value, Token token, NodeFactoryInterface nodeFactory) {
+		super(1, token, nodeFactory);
 
 		this.value = value;
-		this.token = token;
 	}
 
 	public BigDecimal evaluate(SymbolTableInterface sym) {

@@ -12,11 +12,10 @@ public class DateNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public DateNode(Date value, Token token) {
-		precedence = 1;
+	public DateNode(Date value, Token token, NodeFactoryInterface nodeFactory) {
+		super(1, token, nodeFactory);
 
 		this.value = value;
-		this.token = token;
 	}
 
 	public Date evaluate(SymbolTableInterface sym) {

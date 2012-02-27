@@ -20,6 +20,25 @@ abstract public class AbstractNode {
 	protected Token token;
 
 	/**
+	 * Bevat de factory die de node moet gebruiken wanneer deze nieuwe nodes aanmaakt.
+	 */
+	protected NodeFactoryInterface nodeFactory;
+
+	/**
+	 * Contructor.
+	 * 
+	 * @param precedence Getal wat de volgorde van uitvoering van operatoren aangeeft. Voor het geval operatoren niet 
+	 * commuteren.
+	 * @param token Bevat het token waaruit deze node is ontstaan.
+	 * @param nodeFactory Bevat de factory die de node moet gebruiken wanneer deze nieuwe nodes aanmaakt.
+	 */
+	public AbstractNode(int precedence, Token token, NodeFactoryInterface nodeFactory) {
+		this.precedence = precedence;
+		this.token = token;
+		this.nodeFactory = nodeFactory;
+	}
+
+	/**
 	 * Evalueert de node, moet per node overschreven worden.
 	 */
 	abstract public Object evaluate(SymbolTableInterface sym);

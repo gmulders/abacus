@@ -11,13 +11,17 @@ abstract class AbstractTermNode extends AbstractNode {
 	protected AbstractNode lhs;
 	protected AbstractNode rhs;
 
+	/**
+	 * Bevat de operator zoals weegegeven in javascript.
+	 */
 	protected String operator;
 	
-	public AbstractTermNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence, String operator) {
+	public AbstractTermNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence, String operator,
+			NodeFactoryInterface nodeFactory) {
+		super(precedence, token, nodeFactory);
 		this.lhs = lhs;
 		this.rhs = rhs;
-		this.token = token;
-		this.precedence = precedence;
+
 		this.operator = operator;
 	}
 
@@ -41,7 +45,7 @@ abstract class AbstractTermNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			return new NumberNode(evaluate(sym), token);
+			return nodeFactory.createNumberNode(evaluate(sym), token);
 		}
 
 		// Geef de huidige instantie terug.

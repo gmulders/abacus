@@ -15,12 +15,11 @@ public class AddNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public AddNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		precedence = 5;
+	public AddNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super (5, token, nodeFactory);
 
 		this.lhs = lhs;
 		this.rhs = rhs;
-		this.token = token;
 	}
 
 	public Object evaluate(SymbolTableInterface sym) {
@@ -50,9 +49,9 @@ public class AddNode extends AbstractNode {
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
 			if (lhs.getType().equals(BigDecimal.class)) {
-				return new NumberNode((BigDecimal) evaluate(sym), token);
+				return nodeFactory.createNumberNode((BigDecimal) evaluate(sym), token);
 			} else {
-				return new StringNode((String) evaluate(sym), token);
+				return nodeFactory.createStringNode((String) evaluate(sym), token);
 			}
 		}
 

@@ -12,12 +12,11 @@ public class AndNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public AndNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		precedence = 8;
+	public AndNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(8, token, nodeFactory);
 
 		this.lhs = lhs;
 		this.rhs = rhs;
-		this.token = token;
 	}
 
 	@Override
@@ -40,14 +39,14 @@ public class AndNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			return new BooleanNode(evaluate(sym), token);
+			return nodeFactory.createBooleanNode(evaluate(sym), token);
 		}
 
 		// Wanneer slechts de linker zijde of de rechter zijde constant is en deze naar 'false' evalueert, evalueert de
 		// hele expressie naar false en kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && !((Boolean)lhs.evaluate(sym)).booleanValue()
 				|| rhs.getIsConstant() && !((Boolean)rhs.evaluate(sym)).booleanValue()) {
-			return new BooleanNode(Boolean.FALSE, token);
+			return nodeFactory.createBooleanNode(Boolean.FALSE, token);
 		}
 
 		// Wanneer slechts de linker zijde of de rechter zijde constant is en deze naar 'true' evalueert, evalueert de

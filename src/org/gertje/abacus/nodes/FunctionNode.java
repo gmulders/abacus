@@ -16,10 +16,11 @@ public class FunctionNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public FunctionNode(String identifier, List<AbstractNode> parameters, Token token) {
+	public FunctionNode(String identifier, List<AbstractNode> parameters, Token token, NodeFactoryInterface nodeFactory) {
+		super(0, token, nodeFactory);
+
 		this.identifier = identifier;
 		this.parameters = parameters;
-		this.token = token;
 	}
 
 	public Object evaluate(SymbolTableInterface sym) {

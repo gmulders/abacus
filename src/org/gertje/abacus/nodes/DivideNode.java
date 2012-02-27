@@ -9,8 +9,8 @@ public class DivideNode extends AbstractTermNode {
 	/**
 	 * Constructor
 	 */
-	public DivideNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		super(lhs, rhs, token, 4, "/");
+	public DivideNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+		super(lhs, rhs, token, 4, "/", nodeFactory);
 	}
 
 	@Override

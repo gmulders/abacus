@@ -11,11 +11,10 @@ public class FactorNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public FactorNode(AbstractNode argument, Token token) {
-		precedence = 0;
+	public FactorNode(AbstractNode argument, Token token, NodeFactoryInterface nodeFactory) {
+		super(0, token, nodeFactory);
 
 		this.argument = argument;
-		this.token = token;
 	}
 
 	public Object evaluate(SymbolTableInterface sym) {

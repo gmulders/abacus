@@ -12,9 +12,10 @@ public class VariableNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public VariableNode(String identifier, Token token) {
+	public VariableNode(String identifier, Token token, NodeFactoryInterface nodeFactory) {
+		super(0, token, nodeFactory);
+
 		this.identifier = identifier;
-		this.token = token;
 	}
 
 	public Object evaluate(SymbolTableInterface sym) {

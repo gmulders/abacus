@@ -6,32 +6,9 @@ import java.util.List;
 
 import org.gertje.abacus.Token.TokenType;
 import org.gertje.abacus.nodes.AbstractNode;
-import org.gertje.abacus.nodes.AddNode;
-import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
-import org.gertje.abacus.nodes.BooleanNode;
-import org.gertje.abacus.nodes.DivideNode;
-import org.gertje.abacus.nodes.EqNode;
-import org.gertje.abacus.nodes.ExpressionList;
-import org.gertje.abacus.nodes.FactorNode;
-import org.gertje.abacus.nodes.FunctionNode;
-import org.gertje.abacus.nodes.GeqNode;
-import org.gertje.abacus.nodes.GtNode;
-import org.gertje.abacus.nodes.IfNode;
-import org.gertje.abacus.nodes.LeqNode;
-import org.gertje.abacus.nodes.LtNode;
-import org.gertje.abacus.nodes.ModuloNode;
-import org.gertje.abacus.nodes.MultiplyNode;
-import org.gertje.abacus.nodes.NegativeNode;
-import org.gertje.abacus.nodes.NeqNode;
-import org.gertje.abacus.nodes.NotNode;
-import org.gertje.abacus.nodes.NumberNode;
-import org.gertje.abacus.nodes.OrNode;
-import org.gertje.abacus.nodes.PositiveNode;
-import org.gertje.abacus.nodes.PowerNode;
-import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
-import org.gertje.abacus.nodes.VariableNode;
+import org.gertje.abacus.nodes.NodeFactoryInterface;
+import org.gertje.abacus.nodes.StatementListNode;
 
 class Parser {
 
@@ -39,41 +16,50 @@ class Parser {
     private static final String BOOLEAN_TRUE = "true";
     private static final String BOOLEAN_FALSE = "false";
 
+    /**
+     * De lexer.
+     */
 	private Lexer lex;
+	
+	/**
+	 * De fabriek voor nodes.
+	 */
+	private NodeFactoryInterface nodeFactory;
 
-	public Parser(Lexer lex) {
+	public Parser(Lexer lex, NodeFactoryInterface nodeFactory) {
 		this.lex = lex;
+		this.nodeFactory = nodeFactory;
 	}
 
 	/**
 	 * Bouwt een AST op van de expressie.
 	 * @throws CompilerException
 	 */
-	public ExpressionList buildAST() throws CompilerException {
-		return expressionList(lex.getNextToken());
+	public StatementListNode buildAST() throws CompilerException {
+		return statementList(lex.getNextToken());
 	}
 
-	private ExpressionList expressionList(Token nextToken) throws CompilerException {
-		ExpressionList list = new ExpressionList();
+	private StatementListNode statementList(Token nextToken) throws CompilerException {
+		StatementListNode list = nodeFactory.createStatementListNode(nextToken);
 		// Zolang het token niet het einde van de input aangeeft maken we expressies aan.
 		while (nextToken.getType() != TokenType.END_OF_INPUT) {
-			list.add(expression(nextToken));
+			list.add(statement(nextToken));
 			nextToken = lex.getNextToken();
 		}
 
 		return list;
 	}
 	
-	private AbstractNode expression(Token nextToken) throws CompilerException {
-		AbstractNode expression = null;
+	private AbstractNode statement(Token nextToken) throws CompilerException {
+		AbstractNode statement = null;
 
 		// Wanneer het volgende token een ASSIGNMENT is, maken we een AssignmentNode aan.
 		if (lex.peekToken().getType() == TokenType.ASSIGNMENT) {
-			expression = assignment(nextToken);
+			statement = assignment(nextToken);
 	
 		// Anders verwachten we een ifElse.
 		} else {
-			expression = ifElse(nextToken);
+			statement = expression(nextToken);
 		}
 		
 		// We verwachten het 'end of expression' of het 'end of input' token.
@@ -88,7 +74,7 @@ class Parser {
 			lex.getNextToken();
 		}
 
-		return expression;
+		return statement;
 	}
 	
 	private AssignmentNode assignment(Token nextToken) throws CompilerException {
@@ -104,10 +90,17 @@ class Parser {
 		}
 		
 		
-		return new AssignmentNode(new VariableNode(nextToken.getValue(), nextToken), ifElse(lex.getNextToken()), nextToken);
+		return nodeFactory.createAssignmentNode(
+				nodeFactory.createVariableNode(nextToken.getValue(), nextToken),
+				conditional(lex.getNextToken()),
+				nextToken);
+	}
+
+	private AbstractNode expression(Token nextToken) throws CompilerException {
+		return conditional(nextToken);
 	}
 	
-	private AbstractNode ifElse(Token nextToken) throws CompilerException {
+	private AbstractNode conditional(Token nextToken) throws CompilerException {
 		// Geef de 
 		AbstractNode condition = booleanOp(nextToken);
 
@@ -119,7 +112,7 @@ class Parser {
 			// Haal het gespiekte token van de stack.
 			Token ifToken = lex.getNextToken();
 			// Het volgende token kan ook een if-else zijn.
-			AbstractNode ifbody = ifElse(lex.getNextToken());
+			AbstractNode ifbody = expression(lex.getNextToken());
 
 			// Haal het volgende token op.
 			nextToken = lex.getNextToken();
@@ -128,10 +121,10 @@ class Parser {
 				throw new ParserException("Expected ELSE token (:).", nextToken);
 			}
 			// De else-body kan ook een if-else zijn.
-			AbstractNode elsebody = ifElse(lex.getNextToken());
+			AbstractNode elsebody = expression(lex.getNextToken());
 	
 			// Maak een nieuwe ASTNode aan met het juiste type en de juiste operanden.
-			AbstractNode result = new IfNode(condition, ifbody, elsebody, ifToken);
+			AbstractNode result = nodeFactory.createIfNode(condition, ifbody, elsebody, ifToken);
 			condition = result;
 		}
 		// Geef het uiteindelijke resultaat terug.
@@ -157,9 +150,9 @@ class Parser {
 
 			// Maak voor elke mogelijke boolean operatie een andere ASTNode aan.
 			if(nextToken.getType() == TokenType.BOOLEAN_AND) {
-				lhs = new AndNode(lhs, rhs, orOrAndToken);
+				lhs = nodeFactory.createAndNode(lhs, rhs, orOrAndToken);
 			} else {
-				lhs = new OrNode(lhs, rhs, orOrAndToken);
+				lhs = nodeFactory.createOrNode(lhs, rhs, orOrAndToken);
 			}
 
 			// Spiek naar het volgende token.
@@ -192,17 +185,17 @@ class Parser {
 
 			// Maak afhankelijk van de vergelijking de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.LT) {
-				lhs = new LtNode(lhs, rhs, comparisonToken);
+				lhs = nodeFactory.createLtNode(lhs, rhs, comparisonToken);
 			} else if (nextToken.getType() == TokenType.LEQ) {
-				lhs = new LeqNode(lhs, rhs, comparisonToken);
+				lhs = nodeFactory.createLeqNode(lhs, rhs, comparisonToken);
 			} else if (nextToken.getType() == TokenType.EQ) {
-				lhs = new EqNode(lhs, rhs, comparisonToken);
+				lhs = nodeFactory.createEqNode(lhs, rhs, comparisonToken);
 			} else if (nextToken.getType() == TokenType.GEQ) {
-				lhs = new GeqNode(lhs, rhs, comparisonToken);
+				lhs = nodeFactory.createGeqNode(lhs, rhs, comparisonToken);
 			} else if (nextToken.getType() == TokenType.GT) {
-				lhs = new GtNode(lhs, rhs, comparisonToken);
+				lhs = nodeFactory.createGtNode(lhs, rhs, comparisonToken);
 			} else {
-				lhs = new NeqNode(lhs, rhs, comparisonToken);
+				lhs = nodeFactory.createNeqNode(lhs, rhs, comparisonToken);
 			}
 
 			// Spiek naar het volgende token.
@@ -232,9 +225,9 @@ class Parser {
 
 			// Maak afhankelijk van de operatie de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.PLUS) {
-				lhs = new AddNode(lhs, rhs, additionToken);
+				lhs = nodeFactory.createAddNode(lhs, rhs, additionToken);
 			} else {
-				lhs = new SubstractNode(lhs, rhs, additionToken);
+				lhs = nodeFactory.createSubstractNode(lhs, rhs, additionToken);
 			}
 
 			// Spiek naar het volgende token.
@@ -264,11 +257,11 @@ class Parser {
 
 			// Maak afhankelijk van de operatie de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.MULTIPLY) {
-				lhs = new MultiplyNode(lhs, rhs, termToken);
+				lhs = nodeFactory.createMultiplyNode(lhs, rhs, termToken);
 			} else if (nextToken.getType() == TokenType.DIVIDE) {
-				lhs = new DivideNode(lhs, rhs, termToken);
+				lhs = nodeFactory.createDivideNode(lhs, rhs, termToken);
 			} else {
-				lhs = new ModuloNode(lhs, rhs, termToken);
+				lhs = nodeFactory.createModuloNode(lhs, rhs, termToken);
 			}
 			
 			// Spiek naar het volgende token.
@@ -294,7 +287,7 @@ class Parser {
 			Token powerToken = lex.getNextToken();
 			// Bepaal de rechter AST van de operatie.
 			AbstractNode rhs = power(lex.getNextToken());
-			lhs = new PowerNode(lhs, rhs, powerToken);
+			lhs = nodeFactory.createPowerNode(lhs, rhs, powerToken);
 		}
 		// Geef de lhs terug.
 		return lhs;
@@ -307,11 +300,11 @@ class Parser {
 	private AbstractNode unary(Token nextToken) throws CompilerException {
 		// Maak afhankelijk van het type van de token de juiste ASTNode aan.
 		if (nextToken.getType() == TokenType.PLUS) {
-			return new PositiveNode(factor(lex.getNextToken()), nextToken);
+			return nodeFactory.createPositiveNode(factor(lex.getNextToken()), nextToken);
 		} else if (nextToken.getType() == TokenType.MINUS) {
-			return new NegativeNode(factor(lex.getNextToken()), nextToken);
+			return nodeFactory.createNegativeNode(factor(lex.getNextToken()), nextToken);
 		} else if (nextToken.getType() == TokenType.NOT) {
-			return new NotNode(factor(lex.getNextToken()), nextToken);
+			return nodeFactory.createNotNode(factor(lex.getNextToken()), nextToken);
 		}
 		// Wanneer we hier komen geven we een factor node terug.
 		return factor(nextToken);
@@ -331,15 +324,15 @@ class Parser {
 			} catch (NumberFormatException nfe) {
 				throw new ParserException("Illegal number format; " + nfe.getMessage(), nextToken);
 			}
-			return new NumberNode(number, nextToken);
+			return nodeFactory.createNumberNode(number, nextToken);
 
 		// Wanneer het token een string is geven we een StringNode terug.
 		} else if (nextToken.getType() == TokenType.STRING) {
-			return new StringNode(nextToken.getValue(), nextToken);
+			return nodeFactory.createStringNode(nextToken.getValue(), nextToken);
 
 		// Wanneer het token een linker haakje is geven we een FactorNode terug.
 		} else if (nextToken.getType() == TokenType.LEFT_PARENTHESIS) {
-			AbstractNode factorNode = new FactorNode(ifElse(lex.getNextToken()), nextToken);
+			AbstractNode factorNode = nodeFactory.createFactorNode(expression(lex.getNextToken()), nextToken);
 			// We verwachten een rechter haakje.
 			Token token = lex.getNextToken();
 			if (token.getType() != TokenType.RIGHT_PARENTHESIS) {
@@ -355,12 +348,13 @@ class Parser {
 		} else if (nextToken.getType() == TokenType.IDENTIFIER) {
 			// Als het token een boolean is geven we een BooleanNode terug.
 			if (determineIsBoolean(nextToken)) {
-				return new BooleanNode(Boolean.valueOf(BOOLEAN_TRUE.equals(nextToken.getValue())), nextToken);
+				return nodeFactory.createBooleanNode(Boolean.valueOf(BOOLEAN_TRUE.equals(nextToken.getValue())),
+						nextToken);
 			}
 			
 			// Als het token een variabele is geven we een VariableNode terug.
 			if (determineIsVariable(nextToken)) {
-				return new VariableNode(nextToken.getValue(), nextToken);
+				return nodeFactory.createVariableNode(nextToken.getValue(), nextToken);
 			}
 
 			// Als het token een function is geven we een FunctionNode terug.
@@ -368,7 +362,7 @@ class Parser {
 				// We moeten nu een lijst opbouwen met parameters.
 				List<AbstractNode> params = buildParameters();
 
-				return new FunctionNode(nextToken.getValue(), params, nextToken);
+				return nodeFactory.createFunctionNode(nextToken.getValue(), params, nextToken);
 			}
 			
 		}
@@ -392,7 +386,7 @@ class Parser {
 		// Loop net zolang door een loop totdat we er zelf uitbreken.
 		while (true) {
 			// We verwachten een expressie.
-			params.add(ifElse(lex.getNextToken()));
+			params.add(expression(lex.getNextToken()));
 
 			// Het volgende token moet een , zijn of een rechterhaakje.
 			Token nextToken = lex.getNextToken();

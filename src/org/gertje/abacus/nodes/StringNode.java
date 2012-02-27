@@ -10,11 +10,10 @@ public class StringNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public StringNode(String value, Token token) {
-		precedence = 1;
+	public StringNode(String value, Token token, NodeFactoryInterface nodeFactory) {
+		super(1, token, nodeFactory);
 
 		this.value = value;
-		this.token = token;
 	}
 
 	public String evaluate(SymbolTableInterface sym) {
