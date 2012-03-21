@@ -5,14 +5,14 @@ import java.math.BigDecimal;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
-public class NumberNode extends AbstractNode {
+public class FloatNode extends AbstractNode {
 
 	private BigDecimal value;
 
 	/**
 	 * Constructor
 	 */
-	public NumberNode(BigDecimal value, Token token, NodeFactoryInterface nodeFactory) {
+	public FloatNode(BigDecimal value, Token token, NodeFactoryInterface nodeFactory) {
 		super(1, token, nodeFactory);
 
 		this.value = value;

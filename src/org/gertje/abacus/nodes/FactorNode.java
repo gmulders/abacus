@@ -18,7 +18,7 @@ public class FactorNode extends AbstractNode {
 	}
 
 	public Object evaluate(SymbolTableInterface sym) {
-		// Deze methode op deze node zou nooit aangeroepen mogen worden, want dat betekend dat de boom niet geanalyseerd
+		// Deze methode op deze node zou nooit aangeroepen mogen worden, want dat betekent dat de boom niet geanalyseerd
 		// is.
 		return argument.evaluate(sym);
 	}

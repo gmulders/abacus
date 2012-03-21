@@ -18,7 +18,15 @@ public class NotNode extends AbstractNode {
 	}
 
 	public Boolean evaluate(SymbolTableInterface sym) {
-		return Boolean.valueOf(!((Boolean) argument.evaluate(sym)).booleanValue());
+		// Bepaal de waarde van de boolean.
+		Boolean bool = (Boolean) argument.evaluate(sym);
+		
+		// Wanneer de boolean leeg is, is het resultaat van deze expressie ook leeg.
+		if (bool == null) {
+			return null;
+		}
+
+		return Boolean.valueOf(!bool.booleanValue());
 	}
 
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {

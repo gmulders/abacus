@@ -1,0 +1,67 @@
+# Some random tests...
+3*3+a|Integer=11|false|Integer=a=2|Integer=a=2
+3*(3+a)|Integer=15|false|Integer=a=2|Integer=a=2
+s3*3+a|Integer=15|true|Integer=a=2|Integer=a=2
+3s*3+a|Integer=15|true|Integer=a=2|Integer=a=2
+3==3|Boolean=true|false||
+2 == 3 ? 'aap' : 'geen aap'|String=geen aap|false||
+a = 3|Integer=3|false|Integer=a=2|Integer=a=3
+a = 3;3-3;|Integer=0|false|Integer=a=2|Integer=a=3
+2^3;|Float=8|false||
+8/3|Integer=2|false||
+
+# Test the operator precedence.
+3*3+2|Integer=11|false||
+3+3*2|Integer=9|false||
+(3+3)*2|Integer=12|false||
+
+3*3-2|Integer=7|false||
+3-3*2|Integer=-3|false||
+(3-3)*2|Integer=0|false||
+
+3/3+2|Integer=3|false||
+3+3/2|Integer=4|false||
+(3+3)/2|Integer=3|false||
+
+3/3-2|Integer=-1|false||
+3-3/2|Integer=2|false||
+(3-3)/2|Integer=0|false||
+
+3^3/2|Float=13.5|false||
+3^(4/2)|Float=9|false||
+(9/2)^2|Float=16|false||
+9/2^2|Float=2.25|false||
+
+3/3%2|Integer=1|false||
+3/(3%2)|Integer=3|false||
+5%3/2|Integer=1|false||
+5%(3/2)|Integer=0|false||
+
+3+2 == 6|Boolean=false|false||
+3+3 == 6|Boolean=true|false||
+3+4 == 6|Boolean=false|false||
+
+3+2 < 6|Boolean=true|false||
+3+3 < 6|Boolean=false|false||
+3+4 < 6|Boolean=false|false||
+
+3+2 > 6|Boolean=false|false||
+3+3 > 6|Boolean=false|false||
+3+4 > 6|Boolean=true|false||
+
+3+2 >= 6|Boolean=false|false||
+3+3 >= 6|Boolean=true|false||
+3+4 >= 6|Boolean=true|false||
+
+3+2 <= 6|Boolean=true|false||
+3+3 <= 6|Boolean=true|false||
+3+4 <= 6|Boolean=false|false||
+
+# Test the null-node.
+3*null|null|true||
+true ? null : null|null|true||
+true ? true : null|Boolean=true|false||
+null ? true : false|null|true||
+
+4 > 3 : 5 ? 6|null|true||
+4 > 3 ? 5 : 6.4|null|true||

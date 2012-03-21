@@ -32,7 +32,7 @@ public class SymbolTable implements SymbolTableInterface {
 	 * Voegt de variabelen toe aan de symboltable, wanneer de variabele al bestaat wordt de waarde hiervan overschreven.
 	 */
 	public void setVariables(Map<String, Object> variables) {
-		variables.putAll(variables);
+		this.variables.putAll(variables);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
@@ -30,7 +31,8 @@ public interface NodeFactoryInterface {
 	public NegativeNode createNegativeNode(AbstractNode argument, Token token);
 	public NeqNode createNeqNode(AbstractNode lhs, AbstractNode rhs, Token token);
 	public NotNode createNotNode(AbstractNode argument, Token token);
-	public NumberNode createNumberNode(BigDecimal value, Token token);
+	public FloatNode createFloatNode(BigDecimal value, Token token);
+	public IntegerNode createIntegerNode(BigInteger value, Token token);
 	public OrNode createOrNode(AbstractNode lhs, AbstractNode rhs, Token token);
 	public PositiveNode createPositiveNode(AbstractNode argument, Token token);
 	public PowerNode createPowerNode(AbstractNode base, AbstractNode power, Token token);
@@ -38,4 +40,5 @@ public interface NodeFactoryInterface {
 	public StringNode createStringNode(String value, Token token);
 	public SubstractNode createSubstractNode(AbstractNode lhs, AbstractNode rhs, Token token);
 	public VariableNode createVariableNode(String identifier, Token token);
+	public NullNode createNullNode(Token token);
 }

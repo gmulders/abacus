@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
@@ -104,8 +105,13 @@ public class NodeFactory implements NodeFactoryInterface {
 	}
 
 	@Override
-	public NumberNode createNumberNode(BigDecimal value, Token token) {
-		return new NumberNode(value, token, this);
+	public FloatNode createFloatNode(BigDecimal value, Token token) {
+		return new FloatNode(value, token, this);
+	}
+
+	@Override
+	public IntegerNode createIntegerNode(BigInteger value, Token token) {
+		return new IntegerNode(value, token, this);
 	}
 
 	@Override
@@ -141,6 +147,11 @@ public class NodeFactory implements NodeFactoryInterface {
 	@Override
 	public VariableNode createVariableNode(String identifier, Token token) {
 		return new VariableNode(identifier, token, this);
+	}
+
+	@Override
+	public NullNode createNullNode(Token token) {
+		return new NullNode(token, this);
 	}
 
 }

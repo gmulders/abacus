@@ -1,6 +1,7 @@
 package org.gertje.abacus;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +14,13 @@ import org.gertje.abacus.nodes.StatementListNode;
 class Parser {
 
 	// Constanten voor mogelijke waarden van booleans.
-    private static final String BOOLEAN_TRUE = "true";
-    private static final String BOOLEAN_FALSE = "false";
+	private static final String BOOLEAN_TRUE = "true";
+	private static final String BOOLEAN_FALSE = "false";
+	private static final String NULL = "null";
 
-    /**
-     * De lexer.
-     */
+	/**
+	 * De lexer.
+	 */
 	private Lexer lex;
 	
 	/**
@@ -49,7 +51,7 @@ class Parser {
 
 		return list;
 	}
-	
+
 	private AbstractNode statement(Token nextToken) throws CompilerException {
 		AbstractNode statement = null;
 
@@ -61,14 +63,14 @@ class Parser {
 		} else {
 			statement = expression(nextToken);
 		}
-		
+
 		// We verwachten het 'end of expression' of het 'end of input' token.
 		nextToken = lex.peekToken();
 		if (nextToken.getType() != TokenType.END_OF_EXPRESSION 
 				&& nextToken.getType() != TokenType.END_OF_INPUT) {
 			throw new ParserException("Unexpected token '" + nextToken.getType().toString() + "'.", nextToken);
 		}
-		
+
 		// Wanneer het token niet het 'end of input' token was, halen we het token van de stack.
 		if (nextToken.getType() != TokenType.END_OF_INPUT) {
 			lex.getNextToken();
@@ -76,7 +78,7 @@ class Parser {
 
 		return statement;
 	}
-	
+
 	private AssignmentNode assignment(Token nextToken) throws CompilerException {
 		// Aan de linker kant verwachten we een variabele.
 		if (!determineIsVariable(nextToken)) {
@@ -88,8 +90,7 @@ class Parser {
 		if (lex.getNextToken().getType() != TokenType.ASSIGNMENT) {
 			throw new ParserException("Expected '='.", nextToken);
 		}
-		
-		
+
 		return nodeFactory.createAssignmentNode(
 				nodeFactory.createVariableNode(nextToken.getValue(), nextToken),
 				conditional(lex.getNextToken()),
@@ -99,7 +100,7 @@ class Parser {
 	private AbstractNode expression(Token nextToken) throws CompilerException {
 		return conditional(nextToken);
 	}
-	
+
 	private AbstractNode conditional(Token nextToken) throws CompilerException {
 		// Geef de 
 		AbstractNode condition = booleanOp(nextToken);
@@ -122,7 +123,7 @@ class Parser {
 			}
 			// De else-body kan ook een if-else zijn.
 			AbstractNode elsebody = expression(lex.getNextToken());
-	
+
 			// Maak een nieuwe ASTNode aan met het juiste type en de juiste operanden.
 			AbstractNode result = nodeFactory.createIfNode(condition, ifbody, elsebody, ifToken);
 			condition = result;
@@ -315,8 +316,8 @@ class Parser {
 	 * @throws CompilerException 
 	 */
 	private AbstractNode factor(Token nextToken) throws CompilerException {
-		// Wanneer het token een getal is geven we een NumberNode terug.
-		if (nextToken.getType() == TokenType.NUMBER) {
+		// Wanneer het token een decimaal getal is geven we een FloatNode terug.
+		if (nextToken.getType() == TokenType.FLOAT) {
 			BigDecimal number;
 			// Probeer de string naar een BigDecimal te casten.
 			try {
@@ -324,7 +325,19 @@ class Parser {
 			} catch (NumberFormatException nfe) {
 				throw new ParserException("Illegal number format; " + nfe.getMessage(), nextToken);
 			}
-			return nodeFactory.createNumberNode(number, nextToken);
+			return nodeFactory.createFloatNode(number, nextToken);
+
+		// Wanneer het token een geheel getal is geven we een IntegerNode terug.
+		} else if (nextToken.getType() == TokenType.INTEGER) {
+				BigInteger number;
+				// Probeer de string naar een BigInteger te casten.
+				try {
+					number = new BigInteger(nextToken.getValue());
+				} catch (NumberFormatException nfe) {
+					throw new ParserException("Illegal number format; " + nfe.getMessage(), nextToken);
+				}
+				return nodeFactory.createIntegerNode(number, nextToken);
+
 
 		// Wanneer het token een string is geven we een StringNode terug.
 		} else if (nextToken.getType() == TokenType.STRING) {
@@ -352,6 +365,11 @@ class Parser {
 						nextToken);
 			}
 			
+			// Als het token de waarde 'null' bevat geven we een NullNode terug.
+			if (NULL.equals(nextToken.getValue())) {
+				return nodeFactory.createNullNode(nextToken);
+			}
+
 			// Als het token een variabele is geven we een VariableNode terug.
 			if (determineIsVariable(nextToken)) {
 				return nodeFactory.createVariableNode(nextToken.getValue(), nextToken);
@@ -364,7 +382,6 @@ class Parser {
 
 				return nodeFactory.createFunctionNode(nextToken.getValue(), params, nextToken);
 			}
-			
 		}
 		// Wanneer we hier komen is er iets fout, geef een fout.
 		throw new ParserException("Expected expression, found token: type: '" + nextToken.getType().toString()

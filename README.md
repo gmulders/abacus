@@ -23,7 +23,8 @@ The lexer recognises the following tokens:
 	LEFT_PARENTHESIS  = "("
 	RIGHT_PARENTHESIS = ")"
 	STRING            = 
-	NUMBER            = 
+	FLOAT             =
+	INTEGER           =
 	BOOLEAN_AND       = "&&"
 	BOOLEAN_OR        = "||"
 	PLUS              = "+"
@@ -42,6 +43,7 @@ The lexer recognises the following tokens:
 	PERCENT           = "%"
 	POWER             = "^"
 	ASSIGNMENT        = "="
+	NULL              = "null"
 
 ### Definition
 	<statement-list>   := <statment> | <statement> <statement-list>
@@ -51,10 +53,12 @@ The lexer recognises the following tokens:
 	<conditional>      := <booleanoperation> | <booleanoperation> IF <expression> ELSE <expression>
 	<booleanoperation> := <comparison> | <comparison> ( BOOLEAN_AND | BOOLEAN_OR ) <booleanoperation>
 	<comparison>       := <addition> | <addition> ( EQ | NEQ | LT | LEQ | GEQ | GT ) <comparison>
-	<addition>         := TODO
-	<term>             := TODO
-	<power>            := TODO
-	<unary>            := TODO
-	<factor>           := TODO
+	<addition>         := <term> | <term> ( PLUS | MINUS ) <comparison>
+	<term>             := <power> | <power> ( MULTIPLY | DIVIDE | PERCENT ) <term>
+	<power>            := <unary> | <unary> ( POWER ) <power>
+	<unary>            := ( epsilon | PLUS | MINUS | NOT ) <factor>
+	<factor>           := FLOAT | INTEGER | STRING | ( LEFT_PARENTHESIS <expression> RIGHT_PARENTHESIS ) 
+	                         | IDENTIFIER (epsilon | LEFT_PARENTHESIS <expression-list> RIGHT_PARENTHESIS)
+	<expression-list>  := <expression> | <expression> <expression-list>
 	
 	<eos> := ; | end of input

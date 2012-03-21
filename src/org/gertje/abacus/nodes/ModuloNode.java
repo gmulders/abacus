@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.gertje.abacus.Token;
 
@@ -14,9 +15,27 @@ public class ModuloNode extends AbstractTermNode {
 	}
 
 	@Override
-	protected BigDecimal term(BigDecimal left, BigDecimal right) {
-		// We maken een mooie one-liner: converteer de bigdecimals naar integers om de modulo te kunnen nemen en 
-		// converteer daarna de modulo terug naar een bigdecimal.
-		return BigDecimal.valueOf(left.toBigInteger().mod(right.toBigInteger()).longValue());
+	protected BigInteger term(BigDecimal left, BigDecimal right) {
+		return left.toBigInteger().mod(right.toBigInteger());
+	}
+
+	@Override
+	protected BigInteger term(BigDecimal left, BigInteger right) {
+		return left.toBigInteger().mod(right);
+	}
+
+	@Override
+	protected BigInteger term(BigInteger left, BigDecimal right) {
+		return left.mod(right.toBigInteger());
+	}
+
+	@Override
+	protected BigInteger term(BigInteger left, BigInteger right) {
+		return left.mod(right);
+	}
+
+	@Override
+	public Class<?> getType() {
+		return BigInteger.class;
 	}
 }

@@ -22,24 +22,41 @@ public class PowerNode extends AbstractNode {
 	}
 
 	public BigDecimal evaluate(SymbolTableInterface sym) {
+		// Evalueer de expressies voor de basis en de macht.
+		Number baseValue = (Number) base.evaluate(sym);
+		Number powerValue = (Number) power.evaluate(sym);
+		
+		// Wanneer de basis of de macht leeg is, is het resultaat van deze expressie ook leeg.
+		if (baseValue == null || powerValue == null) {
+			return null;
+		}
+		
 		return BigDecimal.valueOf(Math.pow(
-				((BigDecimal) base.evaluate(sym)).doubleValue(), 
-				((BigDecimal) power.evaluate(sym)).doubleValue()));
+				baseValue.doubleValue(), 
+				powerValue.doubleValue()));
 	}
 
+	/**
+	 * Controleert of de node correct is van syntax.
+	 */
+	private boolean checkTypes() {
+		// Zowel de basis als de macht moet een getal zijn.
+		return isNumber(base.getType()) && isNumber(power.getType());
+	}
+	
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
         // Vereenvoudig de nodes indien mogelijk.
 		base = base.analyse(sym);
 		power = power.analyse(sym);
 
 		// Beide zijden moeten van het type 'number' zijn.
-		if (base.getType().equals(BigDecimal.class) || power.getType().equals(BigDecimal.class)) {
+		if (!checkTypes()) {
 			throw new AnalyserException("Expected two parameters of type 'number' to POWER-expression.", token);
 		}
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (base.getIsConstant() && power.getIsConstant()) {
-			return nodeFactory.createNumberNode(evaluate(sym), token);
+			return nodeFactory.createFloatNode(evaluate(sym), token);
 		}
 
 		// Geef de huidige instantie terug.

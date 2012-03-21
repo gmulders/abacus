@@ -1,5 +1,8 @@
 package org.gertje.abacus.nodes;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
@@ -91,5 +94,14 @@ abstract public class AbstractNode {
 			part = "(" + part + ")";
 		}
 		return part;
+	}
+
+	/**
+	 * Bepaalt of het meegegeven type een nummer is.
+	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
+	 * @return <code>true</code> wanneer het meegegeven type een nummer is, anders <code>false</code>.
+	 */
+	protected boolean isNumber(Class<?> type) {
+		return BigDecimal.class.equals(type) || BigInteger.class.equals(type);
 	}
 }

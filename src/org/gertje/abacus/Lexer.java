@@ -1,46 +1,57 @@
 package org.gertje.abacus;
 
+import java.io.IOException;
+import java.io.StringReader;
+
 import org.gertje.abacus.Token.TokenType;
+import org.gertje.abacus.io.LexerReader;
 
 class Lexer {
 
-	private String expression;
+	private LexerReader reader;
 
-	private int expressionLength;
-	private int index;
-
-	private int columnNumber;
-	private int lineNumber;
-
+	public Lexer(LexerReader reader) {
+		this.reader = reader;
+	}
+	
 	public Lexer(String expression) {
-		this.expression = expression;
-		index = 0;
-		expressionLength = expression.length();
-
-		columnNumber = 1;
-		lineNumber = 1;
+		this(new LexerReader(new StringReader(expression)));
 	}
 
 	/**
 	 * Geeft het volgende karakter van de expressie terug en hoogt de pointer met 1 op.
+	 * @throws LexerException 
 	 */
-	private char nextChar() {
-		columnNumber++;
-		return expression.charAt(index++);
+	private char nextChar() throws LexerException {
+		try {
+			return (char) reader.read();
+		} catch (IOException e) {
+			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
+		}
 	}
 
 	/**
 	 * Geeft het volgende karakter van de expressie terug, maar hoogt de pointer niet op.
+	 * @throws LexerException 
 	 */
-	private char peekChar() {
-		return expression.charAt(index);
+	private char peekChar() throws LexerException {
+		try {
+			return (char) reader.peek();
+		} catch (IOException e) {
+			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
+		}
 	}
 
 	/**
 	 * Bepaalt of we het einde van de invoer bereikt hebben.
+	 * @throws LexerException 
 	 */
-	private boolean isEndOfInput() {
-		return index == expressionLength;
+	private boolean isEndOfInput() throws LexerException {
+		try {
+			return reader.peek() == -1;
+		} catch (IOException e) {
+			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
+		}
 	}
 
 	/**
@@ -69,25 +80,20 @@ class Lexer {
 	 * @throws LexerException
 	 */
 	public Token peekToken() throws LexerException {
-		// Sla de index op in een tijdelijke variabele.
-		int tempIndex = index;
-		int tempColumnNumber = columnNumber;
-		int tempLineNumber = lineNumber;
-
-		// Bepaal het volgende token.
-		Token token = getNextToken();
-
-		// Reset de index naar zijn oude waarde.
-		index = tempIndex;
-		columnNumber = tempColumnNumber;
-		lineNumber = tempLineNumber;
-
-		// Geef het token terug.
-		return token;
+		try {
+			reader.mark(0);
+			// Bepaal het volgende token.
+			Token token = getNextToken();
+			reader.reset();
+			// Geef het token terug.
+			return token;
+		} catch (IOException e) {
+			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
+		}
 	}
 	
 	/**
-	 * Geeft het volgende token terug en haalt deze ook van de stack (de index wordt opgehoogt).
+	 * Geeft het volgende token terug en haalt deze ook van de stack (de index wordt opgehoogd).
 	 * @throws LexerException
 	 */
 	public Token getNextToken() throws LexerException {
@@ -95,13 +101,7 @@ class Lexer {
 		Token nextToken = determineNextToken();
 
 		// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
-		while (nextToken.getType() == TokenType.WHITE_SPACE
-				|| nextToken.getType() == TokenType.NEW_LINE) {
-			// Wanneer het token een nieuwe regel was hogen we het regelnummer met 1 op en zetten we het kolomnr op 1.
-            if (nextToken.getType() == TokenType.NEW_LINE) {
-				lineNumber++;
-				columnNumber = 1;
-			}
+		while (nextToken.getType() == TokenType.WHITE_SPACE || nextToken.getType() == TokenType.NEW_LINE) {
 			nextToken = determineNextToken();
 		}
 		return nextToken;
@@ -113,7 +113,7 @@ class Lexer {
 	 */
 	private Token determineNextToken() throws LexerException {
 		// Maak een nieuw token object aan.
-		Token token = new Token(lineNumber, columnNumber);
+		Token token = new Token(reader.getLineNumber(), reader.getColumnNumber());
 
 		// Wanneer de index gelijk is aan de lengte van de string met de expressie geven we een Token die het einde van
 		// de expressie weergeeft terug.
@@ -135,9 +135,9 @@ class Lexer {
 
 		// New line
 		} else if (c == '\n' || c == '\r') {
-			// Wanneer het huidige teken een \n is moeten we controleren of het volgende teken een \r is en deze ook
+			// Wanneer het huidige teken een \r is moeten we controleren of het volgende teken een \n is en deze ook
 			// van de stack halen. (index ophogen)
-			if (c == '\n' && !isEndOfInput() && peekChar() == '\r') {
+			if (c == '\r' && !isEndOfInput() && peekChar() == '\n') {
 				nextChar();
 			}
 			token.setType(TokenType.NEW_LINE);
@@ -162,8 +162,13 @@ class Lexer {
 
 		// Nummer
 		} else if (isNumeric(c)) {
-			token.setType(TokenType.NUMBER);
-			token.setValue(buildNumber(c));
+			String number = buildNumber(c);
+			if (number.indexOf('.') >= 0) {
+				token.setType(TokenType.FLOAT);
+			} else {
+				token.setType(TokenType.INTEGER);
+			}
+			token.setValue(number);
 
 		// Boolean AND
 		} else if (c == '&') {
@@ -255,7 +260,8 @@ class Lexer {
 		// Controleer of er een bekend karakter gevonden wordt.
 		if (token.getType() == null) {
 			// Het karakter wordt niet herkent, gooi een exceptie.
-			throw new LexerException("Non expected character found: '" + c + "'", lineNumber, columnNumber);
+			throw new LexerException("Non expected character found: '" + c + "'", 
+					reader.getLineNumber(), reader.getColumnNumber());
 		}
 
 		// Geef het token terug.
@@ -264,8 +270,9 @@ class Lexer {
 
 	/**
 	 * Bouwt een identifier op.
+	 * @throws LexerException 
 	 */
-	private String buildIdentifier(char c) {
+	private String buildIdentifier(char c) throws LexerException {
 		StringBuilder s = new StringBuilder();
 		s.append(c);
 
@@ -289,7 +296,8 @@ class Lexer {
 		// Zolang we het einde van de expressie niet bereikt hebben proberen we het volgende karakter op te halen.
 		while (true) {
 			if (isEndOfInput()) {
-				throw new LexerException("Unexpected end of expression.", lineNumber, columnNumber - 1);
+				throw new LexerException("Unexpected end of expression.", 
+						reader.getLineNumber(), reader.getColumnNumber());
 			}
 
 			// Haal het volgende teken op.
@@ -297,8 +305,8 @@ class Lexer {
 			// Als het volgende teken een \ is moeten we iets escapen.
 			if (n == '\\') {
 				if (isEndOfInput()) {
-					throw new LexerException("Unexpected end of expression.", lineNumber, 
-							columnNumber);
+					throw new LexerException("Unexpected end of expression.",
+							reader.getLineNumber(), reader.getColumnNumber());
 				}
 				s.append(nextChar());
 			// Als het teken een ' is, is de string afgelopen en moeten we de lus afbreken.
@@ -335,7 +343,8 @@ class Lexer {
 			// Wanneer het volgende teken een . is en er nog geen punt gevonden is voegen we deze op het einde toe.
 			if (n == '.') {
 				if (hasDot == true) {
-					throw new LexerException("Illegal number format; unexpected '.'.", lineNumber, columnNumber);
+					throw new LexerException("Illegal number format; unexpected '.'.", 
+							reader.getLineNumber(), reader.getColumnNumber());
 				}
 				hasDot = true;
 				s.append(n);
@@ -365,8 +374,8 @@ class Lexer {
 		StringBuilder s = new StringBuilder();
 
 		// Sla de huidige regel en kolomnummer op.
-		int tempColumnNumber = columnNumber;
-		int tempLineNumber = lineNumber;
+		int tempColumnNumber = reader.getColumnNumber();
+		int tempLineNumber = reader.getLineNumber();
 
 		if (isEndOfInput()) {
 			throw new LexerException("Unexpected end of expression.", tempLineNumber, tempColumnNumber);

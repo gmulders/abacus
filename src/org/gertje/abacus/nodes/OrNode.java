@@ -24,6 +24,16 @@ public class OrNode extends AbstractNode {
 		Boolean left = (Boolean) lhs.evaluate(sym);
 		Boolean right = (Boolean) rhs.evaluate(sym);
 
+		// Wanneer de linkerkant leeg is, is het resultaat van deze expressie ook leeg.
+		if (left == null) {
+			return null;
+		}
+		
+		// Wanneer de linkerkant false is en de rechterkant is leeg, is het resultaat van deze expressie ook leeg.
+		if (!left.booleanValue() && right == null) {
+			return null;
+		}
+		
 		return Boolean.valueOf(left.booleanValue() || right.booleanValue());
 	}
 

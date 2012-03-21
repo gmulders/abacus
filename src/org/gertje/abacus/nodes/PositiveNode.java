@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
@@ -19,15 +20,15 @@ public class PositiveNode extends AbstractNode {
 		this.argument = argument;
 	}
 
-	public BigDecimal evaluate(SymbolTableInterface sym) {
-		return (BigDecimal) argument.evaluate(sym);
+	public Number evaluate(SymbolTableInterface sym) {
+		return (Number) argument.evaluate(sym);
 	}
 
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
 		argument = argument.analyse(sym);
 
-		// Het argument moet een boolean zijn.
-		if (argument.getType().equals(BigDecimal.class)) {
+		// Het argument moet een float of een integer zijn.
+		if (!argument.getType().equals(BigDecimal.class) && !argument.getType().equals(BigInteger.class)) {
 			throw new AnalyserException("Expected a boolean expression in PositiveNode.", token);
 		}
 
@@ -47,6 +48,6 @@ public class PositiveNode extends AbstractNode {
 
 	@Override
 	public Class<?> getType() {
-		return BigDecimal.class;
+		return argument.getType();
 	}
 }

@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
@@ -21,9 +22,33 @@ public class SubstractNode extends AbstractNode {
 		this.rhs = rhs;
 	}
 
-	public BigDecimal evaluate(SymbolTableInterface sym) {
-		// Trek het tweede getal van het eerste getal af.
-		return ((BigDecimal) lhs.evaluate(sym)).subtract((BigDecimal) rhs.evaluate(sym));
+	public Number evaluate(SymbolTableInterface sym) {
+		Number lhsValue = (Number) lhs.evaluate(sym);
+		Number rhsValue = (Number) rhs.evaluate(sym);
+		
+		// Wanneer de linkerkant of de rechterkant leeg zijn, is het resultaat van deze expressie ook leeg.
+		if (lhsValue == null || rhsValue == null) {
+			return null;
+		}
+		
+		// Wanneer een van beide zijden een BigDecimal is, is het resultaat een BigDecimal, anders een BigInteger.
+		if (lhsValue instanceof BigDecimal && rhsValue instanceof BigDecimal) {
+			return ((BigDecimal)lhsValue).subtract((BigDecimal)rhsValue);
+		} else if (lhsValue instanceof BigDecimal && rhsValue instanceof BigInteger) {
+			return ((BigDecimal)lhsValue).subtract(new BigDecimal((BigInteger)rhsValue));
+		} else if (lhsValue instanceof BigInteger && rhsValue instanceof BigDecimal) {
+			return (new BigDecimal((BigInteger)lhsValue)).subtract((BigDecimal)rhsValue);
+		} else {
+			return ((BigInteger)lhsValue).subtract((BigInteger)rhsValue);
+		}
+	}
+
+	/**
+	 * Controleert of de node correct is van syntax.
+	 */
+	private boolean checkTypes() {
+		// Zowel de basis als de macht moet een getal zijn.
+		return isNumber(lhs.getType()) && isNumber(rhs.getType());
 	}
 
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
@@ -32,13 +57,17 @@ public class SubstractNode extends AbstractNode {
 		rhs = rhs.analyse(sym);
 
 		// Beide zijden moeten van het type 'number' zijn.
-		if (!lhs.getType().equals(BigDecimal.class) || !rhs.getType().equals(BigDecimal.class)) {
-			throw new AnalyserException("Expected two parameters of the same type to SUBSTRACT-expression.", token);
+		if (!checkTypes()) {
+			throw new AnalyserException("Expected two parameters of number type to SUBSTRACT-expression.", token);
 		}
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			return nodeFactory.createNumberNode(evaluate(sym), token);
+			Number value = evaluate(sym);
+			if (value instanceof BigDecimal) {
+				return nodeFactory.createFloatNode((BigDecimal)value, token);
+			}
+			return nodeFactory.createIntegerNode((BigInteger)value, token);
 		}
 
 		// Geef de huidige instantie terug.
@@ -50,7 +79,10 @@ public class SubstractNode extends AbstractNode {
 	}
 
 	public Class<?> getType() {
-		return BigDecimal.class;
+		if (lhs.getType().equals(BigDecimal.class) || rhs.getType().equals(BigDecimal.class)) {
+			return BigDecimal.class;
+		}
+		return BigInteger.class;
 	}
 
 	public boolean getIsConstant() {

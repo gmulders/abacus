@@ -24,16 +24,27 @@ public class AndNode extends AbstractNode {
 		Boolean left = (Boolean) lhs.evaluate(sym);
 		Boolean right = (Boolean) rhs.evaluate(sym);
 
+		if (left == null || right == null) {
+			return null;
+		}
+		
 		return Boolean.valueOf(left.booleanValue() && right.booleanValue());
 	}
 
+	/**
+	 * Controleert of de node correct is van syntax.
+	 */
+	private boolean checkTypes() {
+		return lhs.getType().equals(Boolean.class) && rhs.getType().equals(Boolean.class);
+	}
+	
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.analyse(sym);
 		rhs = rhs.analyse(sym);
 
 		// Beide zijden moeten van het type 'boolean' zijn.
-		if (!lhs.getType().equals(Boolean.class) || !rhs.getType().equals(Boolean.class)) {
+		if (!checkTypes()) {
 			throw new AnalyserException("Expected two boolean parameters to OR-expression.", token);
 		}
 

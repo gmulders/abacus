@@ -1,6 +1,6 @@
 package org.gertje.testabacus;
 
-import java.math.BigDecimal;
+import java.util.Map;
 
 import org.gertje.abacus.Compiler;
 import org.gertje.abacus.CompilerException;
@@ -8,95 +8,53 @@ import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.symboltable.SymbolTable;
 
-
 public class AbacusTest {
 
-	private class TestSet {
-		String expression;
-		Class<?> expectedType;
-		Object expectedValue;
-		boolean expectException;
-		
-		String exception;
+	private String expression;
+	private Object expectedValue;
+	private boolean expectException;
+	private Map<String, Object> symbolsBefore;
+	private Map<String, Object> symbolsAfter;
+	private String exception;
+	private boolean result;
 
-		TestSet(String expression, Class<?> expectedType, Object expectedValue, boolean expectException) {
-			this.expression = expression;
-			this.expectedType = expectedType;
-			this.expectedValue = expectedValue;
-			this.expectException = expectException;
-		}
+	public AbacusTest(String expression, Object expectedValue, boolean expectException, Map<String, Object> symbolsBefore, Map<String, Object> symbolsAfter) {
+		this.expression = expression;
+		this.expectedValue = expectedValue;
+		this.expectException = expectException;
+		this.symbolsBefore = symbolsBefore;
+		this.symbolsAfter = symbolsAfter;
 	}
-
-	private SymbolTable sym;
-	private Compiler compiler;
-
-	private TestSet[] testSets = new TestSet[] {
-			new TestSet("3*3+a", BigDecimal.class, BigDecimal.valueOf(11), false),
-			new TestSet("3*(3+a)", BigDecimal.class, BigDecimal.valueOf(15), false),
-			new TestSet("s3*3+a", null, null, true),
-			new TestSet("3==3", Boolean.class, Boolean.TRUE, false),			
-			new TestSet("2 == 3 ? 'aap' : 'geen aap'", String.class, "geen aap", false),
-			new TestSet("a = 3", BigDecimal.class, BigDecimal.valueOf(3), false),
-			new TestSet("a = 3;\n3-3;", BigDecimal.class, BigDecimal.valueOf(0), false),
-	};
-	/**
-	 * @param args
-	 * @throws CompilerException
-	 */
-	public static void main(String[] args) {
-		AbacusTest abacusTest = new AbacusTest();
-		abacusTest.run();
+	
+	public boolean run() {
+		result = runTest();
+		return result;
 	}
-
-	private void run() {
-		// Maak een nieuwe NodeFactory aan, zodat de compiler weet welke nodes te maken.
-		NodeFactory nodeFactory = new NodeFactory();
-
+	
+	private boolean runTest() {
 		// Maak een nieuwe symboltable en vul deze met wat waarden.
-		sym = new SymbolTable();
-		sym.setVariableValue("a", BigDecimal.valueOf(2.0));
-		sym.setVariableValue("b", BigDecimal.valueOf(3.0));
-		sym.setVariableValue("c", BigDecimal.valueOf(4.2));
-
-		for (String key : sym.getVariables().keySet()) {
-			System.out.println("Variable: " + key + ", Value: " + sym.getVariables().get(key));
-		}
-
-		System.out.println();
+		SymbolTable sym = createSymbolTable();
 		
-		compiler = new Compiler(sym, nodeFactory);
-		
-		for (TestSet testSet : testSets) {
-			if (!test(testSet)) {
-				printError(testSet);
-			} else {
-				printOk(testSet);
-			}
-		}
-
-		System.out.println();
-		
-		for (String key : sym.getVariables().keySet()) {
-			System.out.println("Variable: " + key + ", Value: " + sym.getVariables().get(key));
-		}
-	}
-
-	private boolean test(TestSet testSet) {
+		Compiler compiler = new Compiler(sym, new NodeFactory());
 
 		Object value;
 		try {
-			AbstractNode node = compiler.compile(testSet.expression, null);
+			AbstractNode node = compiler.compile(expression, null);
 			value = node.evaluate(sym);
 		} catch (CompilerException ce) {
-			testSet.exception = ce.getMessage();
-			return testSet.expectException;
+			exception = ce.getMessage();
+			return expectException;
 		}
 
-		if (testSet.expectException) {
+		if (expectException) {
 			return false;
 		}
 		
-		if (!testSet.expectedType.equals(value.getClass())) {
+		if (value == null && expectedValue == null) {
+			return true;
+		}
+
+		if (!expectedValue.getClass().equals(value.getClass())) {
 			return false;
 		}
 
@@ -104,14 +62,53 @@ public class AbacusTest {
 			return false;
 		}
 
-		return ((Comparable) value).compareTo(testSet.expectedValue) == 0;
+		if (((Comparable) value).compareTo(expectedValue) != 0) {
+			return false;
+		}
+		
+		if (!checkSymbolTable(sym)) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	
+	private boolean checkSymbolTable(SymbolTable sym) {
+		for (Map.Entry<String, Object> entry : symbolsAfter.entrySet()) {
+			if (((Comparable) entry.getValue()).compareTo(sym.getVariableValue(entry.getKey())) != 0) {
+				return false;
+			}			
+        }
+
+		return true;
 	}
 	
-	private static void printOk(TestSet testSet) {
-		System.out.println("OK: " + testSet.expression);
+	private SymbolTable createSymbolTable() {
+		SymbolTable sym = new SymbolTable();
+
+		sym.setVariables(symbolsBefore);
+		
+		return sym;
 	}
-	
-	private static void printError(TestSet testSet) {
-		System.out.println("Error: " + testSet.expression + " " + testSet.exception);
+
+	public void printResult() {
+		if (result) {
+			System.out.println("OK: " + expression + " " + (exception != null ? exception : ""));
+		} else {
+			System.out.println("Error: " + expression + " " + (exception != null ? exception : ""));
+		}
+	}
+
+	public String getException() {
+		return exception;
+	}
+
+	public String getExpression() {
+		return expression;
+	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
 	}
 }

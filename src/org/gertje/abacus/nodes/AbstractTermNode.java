@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
@@ -26,11 +27,30 @@ abstract class AbstractTermNode extends AbstractNode {
 	}
 
 	@Override
-	public BigDecimal evaluate(SymbolTableInterface sym) {
-		return term((BigDecimal) lhs.evaluate(sym), (BigDecimal) rhs.evaluate(sym));
+	public Number evaluate(SymbolTableInterface sym) {
+		Number leftValue = (Number) lhs.evaluate(sym);
+		Number rightValue = (Number) rhs.evaluate(sym);
+		
+		if (leftValue == null || rightValue == null) {
+			return null;
+		}
+		
+		// Bepaal aan de hand van het type van links en rechts welke term we aan moeten roepen.
+		if (leftValue instanceof BigDecimal && rightValue instanceof BigDecimal) {
+			return term((BigDecimal)leftValue, (BigDecimal)rightValue);
+		} else if (leftValue instanceof BigDecimal && rightValue instanceof BigInteger) {
+			return term((BigDecimal)leftValue, (BigInteger)rightValue);
+		} else if (leftValue instanceof BigInteger && rightValue instanceof BigDecimal) {
+			return term((BigInteger)leftValue, (BigDecimal)rightValue);
+		} else {
+			return term((BigInteger)leftValue, (BigInteger)rightValue);
+		}
 	}
 
-	abstract protected BigDecimal term(BigDecimal left, BigDecimal right);
+	abstract protected Number term(BigDecimal left, BigDecimal right);
+	abstract protected Number term(BigDecimal left, BigInteger right);
+	abstract protected Number term(BigInteger left, BigDecimal right);
+	abstract protected Number term(BigInteger left, BigInteger right);
 	
 	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
@@ -39,13 +59,18 @@ abstract class AbstractTermNode extends AbstractNode {
 		rhs = rhs.analyse(sym);
 
 		// Beide zijden moeten van het type 'number' zijn.
-		if (!lhs.getType().equals(BigDecimal.class) || !rhs.getType().equals(BigDecimal.class)) {
+		if ((!lhs.getType().equals(BigDecimal.class) && !lhs.getType().equals(BigInteger.class))
+				|| (!rhs.getType().equals(BigDecimal.class) && !rhs.getType().equals(BigInteger.class))) {
 			throw new AnalyserException("Expected two parameters of type 'number' to term-expression.", token);
 		}
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			return nodeFactory.createNumberNode(evaluate(sym), token);
+			Number value = evaluate(sym);
+			if (value instanceof BigDecimal) {
+				return nodeFactory.createFloatNode((BigDecimal)value, token);
+			}
+			return nodeFactory.createIntegerNode((BigInteger)value, token);
 		}
 
 		// Geef de huidige instantie terug.
@@ -59,12 +84,6 @@ abstract class AbstractTermNode extends AbstractNode {
 
 	@Override
 	public boolean getIsConstant() {
-		// Geen enkele AbstractTermNode is constant. 
 		return false;
-	}
-
-	@Override
-	public Class<?> getType() {
-		return BigDecimal.class;
 	}
 }

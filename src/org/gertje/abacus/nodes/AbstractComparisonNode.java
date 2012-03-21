@@ -1,5 +1,7 @@
 package org.gertje.abacus.nodes;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 import org.gertje.abacus.AnalyserException;
@@ -32,7 +34,22 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 
 	@Override
 	public Boolean evaluate(SymbolTableInterface sym) {
-		return Boolean.valueOf(compare(lhs.evaluate(sym), rhs.evaluate(sym)));
+		Object left = lhs.evaluate(sym);
+		Object right = rhs.evaluate(sym);
+
+		if (left == null || right == null) {
+			return null;
+		}
+		
+		// Wanneer de waarde een BigInteger is casten we het naar een BigDecimal.
+		if (left instanceof BigInteger) {
+			left = new BigDecimal((BigInteger)left);
+		}
+		// Wanneer de waarde een BigInteger is casten we het naar een BigDecimal.
+		if (right instanceof BigInteger) {
+			right = new BigDecimal((BigInteger)right);
+		}
+		return Boolean.valueOf(compare(left, right));
 	}
 
 	private <T extends Comparable<? super T>> boolean compare(Object left, Object right) {
@@ -68,7 +85,19 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 	 */
 	private boolean checkTypes() {
 		for(Class<?> type : allowedTypes) {
-			if (lhs.getType().equals(type) && rhs.getType().equals(type)) {
+			Class<?> lhsType = lhs.getType();
+			Class<?> rhsType = rhs.getType();
+			
+			// We casten de BigInteger's naar BigDecimal's, omdat dit makkelijk te vergelijken is.
+			if (lhsType.equals(BigInteger.class)) {
+				lhsType = BigDecimal.class;
+			}
+			// We casten de BigInteger's naar BigDecimal's, omdat dit makkelijk te vergelijken is.
+			if (rhsType.equals(BigInteger.class)) {
+				rhsType = BigDecimal.class;
+			}
+			
+			if (lhsType.equals(type) && rhsType.equals(type)) {
 				return true;
 			}
 		}
