@@ -22,7 +22,8 @@ IDENTIFIER        =
 LEFT_PARENTHESIS  = "("
 RIGHT_PARENTHESIS = ")"
 STRING            = 
-NUMBER            = 
+FLOAT             =
+INTEGER           =
 BOOLEAN_AND       = "&amp;&amp;"
 BOOLEAN_OR        = "||"
 PLUS              = "+"
@@ -41,6 +42,7 @@ ELSE              = ":"
 PERCENT           = "%"
 POWER             = "^"
 ASSIGNMENT        = "="
+NULL              = "null"
 </code></pre>
 
 <h3>Definition</h3>
@@ -52,11 +54,13 @@ ASSIGNMENT        = "="
 &lt;conditional&gt;      := &lt;booleanoperation&gt; | &lt;booleanoperation&gt; IF &lt;expression&gt; ELSE &lt;expression&gt;
 &lt;booleanoperation&gt; := &lt;comparison&gt; | &lt;comparison&gt; ( BOOLEAN_AND | BOOLEAN_OR ) &lt;booleanoperation&gt;
 &lt;comparison&gt;       := &lt;addition&gt; | &lt;addition&gt; ( EQ | NEQ | LT | LEQ | GEQ | GT ) &lt;comparison&gt;
-&lt;addition&gt;         := TODO
-&lt;term&gt;             := TODO
-&lt;power&gt;            := TODO
-&lt;unary&gt;            := TODO
-&lt;factor&gt;           := TODO
+&lt;addition&gt;         := &lt;term&gt; | &lt;term&gt; ( PLUS | MINUS ) &lt;comparison&gt;
+&lt;term&gt;             := &lt;power&gt; | &lt;power&gt; ( MULTIPLY | DIVIDE | PERCENT ) &lt;term&gt;
+&lt;power&gt;            := &lt;unary&gt; | &lt;unary&gt; ( POWER ) &lt;power&gt;
+&lt;unary&gt;            := ( epsilon | PLUS | MINUS | NOT ) &lt;factor&gt;
+&lt;factor&gt;           := FLOAT | INTEGER | STRING | ( LEFT_PARENTHESIS &lt;expression&gt; RIGHT_PARENTHESIS ) 
+                         | IDENTIFIER (epsilon | LEFT_PARENTHESIS &lt;expression-list&gt; RIGHT_PARENTHESIS)
+&lt;expression-list&gt;  := &lt;expression&gt; | &lt;expression&gt; &lt;expression-list&gt;
 
 &lt;eos&gt; := ; | end of input
 </code></pre>
