@@ -1,4 +1,4 @@
-package org.gertje.testabacus;
+package org.gertje.abacus;
 
 import java.io.BufferedReader;
 import java.io.File;

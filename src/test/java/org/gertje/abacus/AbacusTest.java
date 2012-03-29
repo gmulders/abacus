@@ -1,9 +1,7 @@
-package org.gertje.testabacus;
+package org.gertje.abacus;
 
 import java.util.Map;
 
-import org.gertje.abacus.Compiler;
-import org.gertje.abacus.CompilerException;
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -50,10 +48,17 @@ public class AbacusTest {
 			return false;
 		}
 		
+		// Wanneer het resultaat null is en we hadden dit ook verwacht geven we true terug.
 		if (value == null && expectedValue == null) {
 			return true;
 		}
 
+		// Wanneer het resultaat of de verwachting null is geven we false terug, dit kan omdat als ze allebei null 
+		// hadden moeten zijn hadden we al true terug gegeven bij vorige vergelijking.
+		if (value == null || expectedValue == null) {
+			return false;
+		}
+		
 		if (!expectedValue.getClass().equals(value.getClass())) {
 			return false;
 		}
@@ -92,12 +97,14 @@ public class AbacusTest {
 		return sym;
 	}
 
-	public void printResult() {
+	public boolean printResult() {
 		if (result) {
 			System.out.println("OK: " + expression + " " + (exception != null ? exception : ""));
 		} else {
 			System.out.println("Error: " + expression + " " + (exception != null ? exception : ""));
 		}
+		
+		return result;
 	}
 
 	public String getException() {
