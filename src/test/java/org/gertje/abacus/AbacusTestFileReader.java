@@ -22,7 +22,7 @@ public class AbacusTestFileReader {
 		this.reader = reader;
 	}
 	
-	public AbacusTest nextAbacusTest() throws IOException {
+	public AbacusTestCase nextAbacusTestCase() throws IOException {
 		String line = reader.readLine();
 		while (line != null && (line.startsWith("#") || line.trim().isEmpty())) {
 			line = reader.readLine();
@@ -33,7 +33,7 @@ public class AbacusTestFileReader {
 		}
 		String[] tokens = line.split("\\|");
 		
-		return new AbacusTest(
+		return new AbacusTestCase(
 				tokens[0], 
 				getValue(tokens[1]), 
 				getExpectedException(tokens[2]), 

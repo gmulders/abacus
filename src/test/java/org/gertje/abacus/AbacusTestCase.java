@@ -6,7 +6,7 @@ import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.symboltable.SymbolTable;
 
-public class AbacusTest {
+public class AbacusTestCase {
 
 	private String expression;
 	private Object expectedValue;
@@ -16,7 +16,7 @@ public class AbacusTest {
 	private String exception;
 	private boolean result;
 
-	public AbacusTest(String expression, Object expectedValue, boolean expectException, Map<String, Object> symbolsBefore, Map<String, Object> symbolsAfter) {
+	public AbacusTestCase(String expression, Object expectedValue, boolean expectException, Map<String, Object> symbolsBefore, Map<String, Object> symbolsAfter) {
 		this.expression = expression;
 		this.expectedValue = expectedValue;
 		this.expectException = expectException;

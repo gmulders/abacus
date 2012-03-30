@@ -49,14 +49,14 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 		if (right instanceof BigInteger) {
 			right = new BigDecimal((BigInteger)right);
 		}
-		return Boolean.valueOf(compare(left, right));
+		return Boolean.valueOf(compare((Comparable<Object>)left, (Comparable<Object>)right));
 	}
 
-	private <T extends Comparable<? super T>> boolean compare(Object left, Object right) {
-		return compare((Comparable<T>) left, (T) right);
-	}
+//	private <T extends Comparable<? super T>> boolean co(Object left, Object right) {
+//		return compare((Comparable<T>) left, (T) right);
+//	}
 
-	abstract protected <T extends Comparable<? super T>> boolean compare(Comparable<T> left, T right);
+	abstract protected <T extends Comparable<? super T>> boolean compare(T left, T right);
 	
 	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {

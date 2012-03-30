@@ -8,16 +8,16 @@ import java.io.InputStreamReader;
 
 import org.junit.Test;
 
-public class AbacusTester {
+public class AbacusTest {
 
 	@Test
 	public void testAbacus() throws IOException {
 		AbacusTestFileReader atfr = new AbacusTestFileReader(new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("test1.txt"))));
 		
-		AbacusTest test;
-		while ((test = atfr.nextAbacusTest()) != null) {
-			test.run();
-			assertTrue(test.getExpression(), test.printResult());
+		AbacusTestCase testCase;
+		while ((testCase = atfr.nextAbacusTestCase()) != null) {
+			testCase.run();
+			assertTrue(testCase.getExpression(), testCase.printResult());
 		}
 	}
 }

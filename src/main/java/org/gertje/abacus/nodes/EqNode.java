@@ -22,7 +22,7 @@ public class EqNode extends AbstractComparisonNode {
 	}
 
 	@Override
-	protected <T extends Comparable<? super T>> boolean compare(Comparable<T> left, T right) {
+	protected <T extends Comparable<? super T>> boolean compare(T left, T right) {
 		return left.compareTo(right) == 0;
 	}
 }
