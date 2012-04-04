@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 
-class RandFunction extends AbstractFunction {
+public class RandFunction extends AbstractFunction {
 
 	/**
 	 * Constructor

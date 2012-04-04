@@ -52,10 +52,6 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 		return Boolean.valueOf(compare((Comparable<Object>)left, (Comparable<Object>)right));
 	}
 
-//	private <T extends Comparable<? super T>> boolean co(Object left, Object right) {
-//		return compare((Comparable<T>) left, (T) right);
-//	}
-
 	abstract protected <T extends Comparable<? super T>> boolean compare(T left, T right);
 	
 	@Override
@@ -101,7 +97,7 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 

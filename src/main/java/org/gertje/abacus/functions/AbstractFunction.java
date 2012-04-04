@@ -36,6 +36,16 @@ abstract class AbstractFunction implements FunctionInterface {
 	 * Bepaalt of de meegegeven types matchen met de toegestane types.
 	 */
 	private boolean determineTypesMatch(List<Class<?>> types) {
+		// Wanneer beide null zijn of lengte 0 hebben komen de types overeen.
+		if ((types == null || types.size() == 0) && (allowedTypes == null || allowedTypes.size() == 0)) {
+			return true;
+		}
+		
+		// Wanneer slechts een van beide null is, komen de types niet overeen.
+		if (types == null || allowedTypes == null) {
+			return false;
+		}
+
 		// Wanneer de lengte van de inkomende array korter is dan de lengte van de toegestane parameters matchen ze 
 		// sowieso niet.
 		if (types.size() < allowedTypes.size()) {

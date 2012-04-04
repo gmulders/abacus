@@ -1,0 +1,33 @@
+package org.gertje.abacus;
+
+public enum TokenType implements TokenTypeInterface {
+	END_OF_INPUT,
+	END_OF_EXPRESSION,
+	WHITE_SPACE,
+	NEW_LINE,
+	COMMA,
+	IDENTIFIER,
+	LEFT_PARENTHESIS,
+	RIGHT_PARENTHESIS,
+	STRING,
+	FLOAT,
+	INTEGER,
+	BOOLEAN_AND,
+	BOOLEAN_OR,
+	PLUS,
+	MINUS,
+	MULTIPLY,
+	DIVIDE,
+	NEQ,
+	NOT,
+	LEQ,
+	LT,
+	GEQ,
+	GT,
+	EQ,
+	IF,
+	ELSE,
+	PERCENT,
+	POWER,
+	ASSIGNMENT
+}

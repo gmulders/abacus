@@ -2,39 +2,7 @@ package org.gertje.abacus;
 
 public class Token {
 
-	public enum TokenType {
-		END_OF_INPUT,
-		END_OF_EXPRESSION,
-		WHITE_SPACE,
-		NEW_LINE,
-		COMMA,
-		IDENTIFIER,
-		LEFT_PARENTHESIS,
-		RIGHT_PARENTHESIS,
-		STRING,
-		FLOAT,
-		INTEGER,
-		BOOLEAN_AND,
-		BOOLEAN_OR,
-		PLUS,
-		MINUS,
-		MULTIPLY,
-		DIVIDE,
-		NEQ,
-		NOT,
-		LEQ,
-		LT,
-		GEQ,
-		GT,
-		EQ,
-		IF,
-		ELSE,
-		PERCENT,
-		POWER,
-		ASSIGNMENT
-	}
-
-	private TokenType type;
+	private TokenTypeInterface type;
 	private String value;
 	private int lineNumber;
 	private int columnNumber;
@@ -44,11 +12,11 @@ public class Token {
 		this.columnNumber = columnNumber;
 	}
 
-	public void setType(TokenType type) {
+	public void setType(TokenTypeInterface type) {
 		this.type = type;
 	}
 
-	public TokenType getType() {
+	public TokenTypeInterface getType() {
 		return type;
 	}
 

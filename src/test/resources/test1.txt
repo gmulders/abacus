@@ -66,3 +66,5 @@ null ? true : false|null|true||
 4 > 3 : 5 ? 6|null|true||
 4 > 3 ? 5 : 6.4|null|true||
 4 > 3 ? true : null|Boolean=true|false||
+
+3 * rand() < 4|Boolean=true|false||

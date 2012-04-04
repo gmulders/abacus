@@ -2,6 +2,7 @@ package org.gertje.abacus;
 
 import java.util.Map;
 
+import org.gertje.abacus.functions.RandFunction;
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -94,6 +95,7 @@ public class AbacusTestCase {
 
 		sym.setVariables(symbolsBefore);
 		
+		sym.registerFunction(new RandFunction());
 		return sym;
 	}
 

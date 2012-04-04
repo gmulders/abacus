@@ -1,57 +1,15 @@
 package org.gertje.abacus;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import org.gertje.abacus.Token.TokenType;
 import org.gertje.abacus.io.LexerReader;
 
-class Lexer {
-
-	private LexerReader reader;
+class Lexer extends AbstractLexer {
 
 	public Lexer(LexerReader reader) {
-		this.reader = reader;
+		super(reader);
 	}
-	
+
 	public Lexer(String expression) {
-		this(new LexerReader(new StringReader(expression)));
-	}
-
-	/**
-	 * Geeft het volgende karakter van de expressie terug en hoogt de pointer met 1 op.
-	 * @throws LexerException 
-	 */
-	private char nextChar() throws LexerException {
-		try {
-			return (char) reader.read();
-		} catch (IOException e) {
-			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
-		}
-	}
-
-	/**
-	 * Geeft het volgende karakter van de expressie terug, maar hoogt de pointer niet op.
-	 * @throws LexerException 
-	 */
-	private char peekChar() throws LexerException {
-		try {
-			return (char) reader.peek();
-		} catch (IOException e) {
-			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
-		}
-	}
-
-	/**
-	 * Bepaalt of we het einde van de invoer bereikt hebben.
-	 * @throws LexerException 
-	 */
-	private boolean isEndOfInput() throws LexerException {
-		try {
-			return reader.peek() == -1;
-		} catch (IOException e) {
-			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
-		}
+		super(expression);
 	}
 
 	/**
@@ -76,26 +34,10 @@ class Lexer {
 	}
 
 	/**
-	 * Geeft de volgende token terug zonder de index te veranderen.
-	 * @throws LexerException
-	 */
-	public Token peekToken() throws LexerException {
-		try {
-			reader.mark(0);
-			// Bepaal het volgende token.
-			Token token = getNextToken();
-			reader.reset();
-			// Geef het token terug.
-			return token;
-		} catch (IOException e) {
-			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
-		}
-	}
-	
-	/**
 	 * Geeft het volgende token terug en haalt deze ook van de stack (de index wordt opgehoogd).
 	 * @throws LexerException
 	 */
+	@Override
 	public Token getNextToken() throws LexerException {
 		// We bepalen het volgende token, maar geven deze alleen terug als het niet whitespace of een nieuwe regel is.
 		Token nextToken = determineNextToken();

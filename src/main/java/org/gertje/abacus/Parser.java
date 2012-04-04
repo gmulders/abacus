@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gertje.abacus.Token.TokenType;
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.NodeFactoryInterface;
