@@ -12,18 +12,11 @@ abstract class AbstractTermNode extends AbstractNode {
 	protected AbstractNode lhs;
 	protected AbstractNode rhs;
 
-	/**
-	 * Bevat de operator zoals weegegeven in javascript.
-	 */
-	protected String operator;
-	
-	public AbstractTermNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence, String operator,
+	public AbstractTermNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence,
 			NodeFactoryInterface nodeFactory) {
 		super(precedence, token, nodeFactory);
 		this.lhs = lhs;
 		this.rhs = rhs;
-
-		this.operator = operator;
 	}
 
 	@Override
@@ -78,12 +71,25 @@ abstract class AbstractTermNode extends AbstractNode {
 	}
 
 	@Override
-	public String generateJavascript(SymbolTableInterface sym) {
-		return generateJavascriptNodePart(sym, lhs) + " " + operator + " " + generateJavascriptNodePart(sym, rhs);
-	}
-
-	@Override
 	public boolean getIsConstant() {
 		return false;
 	}
+
+	public AbstractNode getLhs() {
+		return lhs;
+	}
+
+	public void setLhs(AbstractNode lhs) {
+		this.lhs = lhs;
+	}
+
+	public AbstractNode getRhs() {
+		return rhs;
+	}
+
+	public void setRhs(AbstractNode rhs) {
+		this.rhs = rhs;
+	}
+	
+	
 }

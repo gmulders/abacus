@@ -2,6 +2,8 @@ package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class AndNode extends AbstractNode {
@@ -37,7 +39,8 @@ public class AndNode extends AbstractNode {
 	private boolean checkTypes() {
 		return lhs.getType().equals(Boolean.class) && rhs.getType().equals(Boolean.class);
 	}
-	
+
+	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.analyse(sym);
@@ -72,15 +75,34 @@ public class AndNode extends AbstractNode {
 		return this;
 	}
 
-	public String generateJavascript(SymbolTableInterface sym) {
-		return generateJavascriptNodePart(sym, lhs) + " && " + generateJavascriptNodePart(sym, rhs);
-	}
-
+	@Override
 	public Class<?> getType() {
 		return Boolean.class;
 	}
 
+	@Override
 	public boolean getIsConstant() {
 		return false;
+	}
+
+	@Override
+	public void accept(NodeVisitorInterface visitor) throws VisitingException {
+		visitor.visit(this);		
+	}
+
+	public AbstractNode getLhs() {
+		return lhs;
+	}
+
+	public void setLhs(AbstractNode lhs) {
+		this.lhs = lhs;
+	}
+
+	public AbstractNode getRhs() {
+		return rhs;
+	}
+
+	public void setRhs(AbstractNode rhs) {
+		this.rhs = rhs;
 	}
 }

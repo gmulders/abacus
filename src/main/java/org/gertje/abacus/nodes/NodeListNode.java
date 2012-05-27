@@ -19,7 +19,7 @@ public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode 
 
 	// Constructor.
 	public NodeListNode(Token token, NodeFactoryInterface nodeFactory) {
-		super(-1, token, nodeFactory);
+		super(0, token, nodeFactory);
 		// Maak een lijst aan om de objecten op te slaan.
 		nodeList = new ArrayList<T>();
 	}
@@ -47,18 +47,6 @@ public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode 
 		}
 
 		return result;
-	}
-
-	@Override
-	public String generateJavascript(SymbolTableInterface sym) {
-		StringBuilder javascript = new StringBuilder();
-		
-		// Loop over alle AbstractNodes heen, maak JavaScript voor ze aan en plak ze achter elkaar.
-		for (T node : nodeList) {
-			javascript.append(node.generateJavascript(sym));
-		}
-		
-		return javascript.toString();
 	}
 
 	@Override

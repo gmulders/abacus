@@ -5,6 +5,8 @@ import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 /**
@@ -80,21 +82,14 @@ abstract public class AbstractNode {
 	}
 
 	/**
-	 * Genereert een stuk javascript dat deze node voorstelt.
+	 * Registreert een visitor bij de node. 
+	 * 
+	 * De bedoeling is dat een node deze methode ook aanroept bij zijn child-nodes.
+	 * 
+	 * @param visitor De visitor.
+	 * @throws VisitingException 
 	 */
-	abstract public String generateJavascript(SymbolTableInterface sym);
-
-	/**
-	 * Maakt een stuk javascript voor een gegeven node.
-	 */
-	public String generateJavascriptNodePart(SymbolTableInterface sym, AbstractNode node) {
-		String part = node.generateJavascript(sym);
-		// Wanneer deze node een lagere prio heeft dan de node onder hem moeten we haakjes toevoegen.
-		if (precedence < node.getPrecedence()) {
-			part = "(" + part + ")";
-		}
-		return part;
-	}
+    abstract public void accept(NodeVisitorInterface visitor) throws VisitingException;
 
 	/**
 	 * Bepaalt of het meegegeven type een nummer is.
@@ -103,5 +98,13 @@ abstract public class AbstractNode {
 	 */
 	protected boolean isNumber(Class<?> type) {
 		return BigDecimal.class.equals(type) || BigInteger.class.equals(type);
+	}
+
+	/**
+	 * Geeft het token terug.
+	 * @return het token.
+	 */
+	public Token getToken() {
+		return token;
 	}
 }

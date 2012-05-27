@@ -18,18 +18,11 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 	 */
 	protected List<Class<?>> allowedTypes;
 
-	/**
-	 * Bevat de operator zoals weegegeven in javascript.
-	 */
-	protected String operator;
-	
-	public AbstractComparisonNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence, String operator, 
+	public AbstractComparisonNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence,
 			NodeFactoryInterface nodeFactory) {
 		super(precedence, token, nodeFactory);
 		this.lhs = lhs;
 		this.rhs = rhs;
-
-		this.operator = operator;
 	}
 
 	@Override
@@ -102,11 +95,6 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 	}
 
 	@Override
-	public String generateJavascript(SymbolTableInterface sym) {
-		return generateJavascriptNodePart(sym, lhs) + " " + operator + " " + generateJavascriptNodePart(sym, rhs);
-	}
-
-	@Override
 	public boolean getIsConstant() {
 		// Geen enkele AbstractCompareNode is constant. 
 		return false;
@@ -115,5 +103,21 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 	@Override
 	public Class<?> getType() {
 		return Boolean.class;
+	}
+
+	public AbstractNode getLhs() {
+		return lhs;
+	}
+
+	public void setLhs(AbstractNode lhs) {
+		this.lhs = lhs;
+	}
+
+	public AbstractNode getRhs() {
+		return rhs;
+	}
+
+	public void setRhs(AbstractNode rhs) {
+		this.rhs = rhs;
 	}
 }

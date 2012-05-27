@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class PowerNode extends AbstractNode {
@@ -21,6 +23,7 @@ public class PowerNode extends AbstractNode {
 		this.power = power;
 	}
 
+	@Override
 	public BigDecimal evaluate(SymbolTableInterface sym) {
 		// Evalueer de expressies voor de basis en de macht.
 		Number baseValue = (Number) base.evaluate(sym);
@@ -44,6 +47,7 @@ public class PowerNode extends AbstractNode {
 		return isNumber(base.getType()) && isNumber(power.getType());
 	}
 	
+	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
         // Vereenvoudig de nodes indien mogelijk.
 		base = base.analyse(sym);
@@ -63,15 +67,34 @@ public class PowerNode extends AbstractNode {
 		return this;
 	}
 
-	public String generateJavascript(SymbolTableInterface sym) {
-		return "Math.pow("+ generateJavascriptNodePart(sym, base) + ", " + generateJavascriptNodePart(sym, power) + ")";
-	}
-
+	@Override
 	public Class<?> getType() {
 		return BigDecimal.class;
 	}
 
+	@Override
 	public boolean getIsConstant() {
 		return false;
+	}
+
+	@Override
+	public void accept(NodeVisitorInterface visitor) throws VisitingException {
+		visitor.visit(this);		
+	}
+
+	public AbstractNode getBase() {
+		return base;
+	}
+
+	public void setBase(AbstractNode base) {
+		this.base = base;
+	}
+
+	public AbstractNode getPower() {
+		return power;
+	}
+
+	public void setPower(AbstractNode power) {
+		this.power = power;
 	}
 }

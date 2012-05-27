@@ -68,3 +68,10 @@ null ? true : false|null|true||
 4 > 3 ? true : null|Boolean=true|false||
 
 3 * rand() < 4|Boolean=true|false||
+
+-3 + 4|Integer=1|false||
+
+-3.14 + 4|Float=0.86|false||
+
+(a < 2 ? 3 : 2) * a|Integer=4|false|Integer=a=2|Integer=a=2
+(3 * a < b ? true : false) ? c : d|Integer=2|false|Integer=a=2:Integer=b=2:Integer=c=1:Integer=d=2|Integer=a=2:Integer=b=2:Integer=c=1:Integer=d=2

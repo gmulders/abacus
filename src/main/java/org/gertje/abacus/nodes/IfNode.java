@@ -2,6 +2,8 @@ package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class IfNode extends AbstractNode {
@@ -22,6 +24,7 @@ public class IfNode extends AbstractNode {
 		this.elsebody = elsebody;
 	}
 
+	@Override
 	public Object evaluate(SymbolTableInterface sym) {
 		// Evauleer de conditie.
 		Boolean cond = (Boolean)condition.evaluate(sym);
@@ -40,6 +43,7 @@ public class IfNode extends AbstractNode {
 		return elsebody.evaluate(sym);
 	}
 
+	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
 		// Probeer de nodes zoveel mogelijk te vereenvoudigen.
 		condition = condition.analyse(sym);
@@ -76,17 +80,42 @@ public class IfNode extends AbstractNode {
 		return this;
 	}
 
-	public String generateJavascript(SymbolTableInterface sym) {
-		return generateJavascriptNodePart(sym, condition) + " ? " 
-				+ generateJavascriptNodePart(sym, ifbody) + " : "
-				+ generateJavascriptNodePart(sym, elsebody);
-	}
-
+	@Override
 	public Class<?> getType() {
 		return ifbody.getType();
 	}
 
+	@Override
 	public boolean getIsConstant() {
 		return false;
+	}
+
+	@Override
+	public void accept(NodeVisitorInterface visitor) throws VisitingException {
+		visitor.visit(this);		
+	}
+
+	public AbstractNode getCondition() {
+		return condition;
+	}
+
+	public void setCondition(AbstractNode condition) {
+		this.condition = condition;
+	}
+
+	public AbstractNode getIfbody() {
+		return ifbody;
+	}
+
+	public void setIfbody(AbstractNode ifbody) {
+		this.ifbody = ifbody;
+	}
+
+	public AbstractNode getElsebody() {
+		return elsebody;
+	}
+
+	public void setElsebody(AbstractNode elsebody) {
+		this.elsebody = elsebody;
 	}
 }

@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 
 public class EqNode extends AbstractComparisonNode {
 
@@ -12,7 +14,7 @@ public class EqNode extends AbstractComparisonNode {
 	 * Constructor
 	 */
 	public EqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
-		super(lhs, rhs, token, 7, "==", nodeFactory);
+		super(lhs, rhs, token, 7, nodeFactory);
 
 		allowedTypes = new ArrayList<Class<?>>();
 		allowedTypes.add(Boolean.class);
@@ -24,5 +26,10 @@ public class EqNode extends AbstractComparisonNode {
 	@Override
 	protected <T extends Comparable<? super T>> boolean compare(T left, T right) {
 		return left.compareTo(right) == 0;
+	}
+
+	@Override
+	public void accept(NodeVisitorInterface visitor) throws VisitingException {
+		visitor.visit(this);		
 	}
 }

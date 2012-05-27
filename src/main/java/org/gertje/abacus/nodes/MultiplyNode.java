@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 
 public class MultiplyNode extends AbstractTermNode {
 
@@ -11,7 +13,7 @@ public class MultiplyNode extends AbstractTermNode {
 	 * Constructor
 	 */
 	public MultiplyNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
-		super(lhs, rhs, token, 4, "*", nodeFactory);
+		super(lhs, rhs, token, 4, nodeFactory);
 	}
 
 	@Override
@@ -39,5 +41,10 @@ public class MultiplyNode extends AbstractTermNode {
 		return lhs.getType().equals(BigDecimal.class) || rhs.getType().equals(BigDecimal.class) 
 				? BigDecimal.class
 				: BigInteger.class;
+	}
+
+	@Override
+	public void accept(NodeVisitorInterface visitor) throws VisitingException {
+		visitor.visit(this);		
 	}
 }

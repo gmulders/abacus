@@ -5,6 +5,8 @@ import java.util.Map;
 import org.gertje.abacus.functions.RandFunction;
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodevisitors.JavaScriptTranslator;
+import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTable;
 
 public class AbacusTestCase {
@@ -16,6 +18,7 @@ public class AbacusTestCase {
 	private Map<String, Object> symbolsAfter;
 	private String exception;
 	private boolean result;
+	private String javaScript;
 
 	public AbacusTestCase(String expression, Object expectedValue, boolean expectException, Map<String, Object> symbolsBefore, Map<String, Object> symbolsAfter) {
 		this.expression = expression;
@@ -35,10 +38,11 @@ public class AbacusTestCase {
 		SymbolTable sym = createSymbolTable();
 		
 		Compiler compiler = new Compiler(sym, new NodeFactory());
+		AbstractNode node = null;
 
 		Object value;
 		try {
-			AbstractNode node = compiler.compile(expression, null);
+			node = compiler.compile(expression, null);
 			value = node.evaluate(sym);
 		} catch (CompilerException ce) {
 			exception = ce.getMessage();
@@ -46,6 +50,14 @@ public class AbacusTestCase {
 		}
 
 		if (expectException) {
+			return false;
+		}
+		
+		try {
+			JavaScriptTranslator javaScriptTranslator = new JavaScriptTranslator();
+			javaScript = javaScriptTranslator.translate(node);
+		} catch (VisitingException ve) {
+			exception = ve.getMessage();
 			return false;
 		}
 		
@@ -101,9 +113,9 @@ public class AbacusTestCase {
 
 	public boolean printResult() {
 		if (result) {
-			System.out.println("OK: " + expression + " " + (exception != null ? exception : ""));
+			System.out.println("OK: " + expression + " " + (exception != null ? exception : "") + " " + (javaScript != null ? javaScript : ""));
 		} else {
-			System.out.println("Error: " + expression + " " + (exception != null ? exception : ""));
+			System.out.println("Error: " + expression + " " + (exception != null ? exception : "") + " " + (javaScript != null ? javaScript : ""));
 		}
 		
 		return result;

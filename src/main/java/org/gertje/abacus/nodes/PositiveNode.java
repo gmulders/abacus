@@ -5,6 +5,8 @@ import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class PositiveNode extends AbstractNode {
@@ -20,10 +22,12 @@ public class PositiveNode extends AbstractNode {
 		this.argument = argument;
 	}
 
+	@Override
 	public Number evaluate(SymbolTableInterface sym) {
 		return (Number) argument.evaluate(sym);
 	}
 
+	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
 		argument = argument.analyse(sym);
 
@@ -37,11 +41,6 @@ public class PositiveNode extends AbstractNode {
 	}
 
 	@Override
-	public String generateJavascript(SymbolTableInterface sym) {
-		return generateJavascriptNodePart(sym, argument);
-	}
-
-	@Override
 	public boolean getIsConstant() {
 		return false;
 	}
@@ -49,5 +48,18 @@ public class PositiveNode extends AbstractNode {
 	@Override
 	public Class<?> getType() {
 		return argument.getType();
+	}
+
+	@Override
+	public void accept(NodeVisitorInterface visitor) throws VisitingException {
+		visitor.visit(this);		
+	}
+
+	public AbstractNode getArgument() {
+		return argument;
+	}
+
+	public void setArgument(AbstractNode argument) {
+		this.argument = argument;
 	}
 }

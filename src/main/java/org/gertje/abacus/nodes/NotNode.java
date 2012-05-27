@@ -2,6 +2,8 @@ package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class NotNode extends AbstractNode {
@@ -17,6 +19,7 @@ public class NotNode extends AbstractNode {
 		this.argument = argument;
 	}
 
+	@Override
 	public Boolean evaluate(SymbolTableInterface sym) {
 		// Bepaal de waarde van de boolean.
 		Boolean bool = (Boolean) argument.evaluate(sym);
@@ -29,6 +32,7 @@ public class NotNode extends AbstractNode {
 		return Boolean.valueOf(!bool.booleanValue());
 	}
 
+	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
 		argument = argument.analyse(sym);
 
@@ -47,11 +51,6 @@ public class NotNode extends AbstractNode {
 	}
 
 	@Override
-	public String generateJavascript(SymbolTableInterface sym) {
-		return "!" + generateJavascriptNodePart(sym, argument);
-	}
-
-	@Override
 	public boolean getIsConstant() {
 		return false;
 	}
@@ -59,5 +58,18 @@ public class NotNode extends AbstractNode {
 	@Override
 	public Class<?> getType() {
 		return Boolean.class;
+	}
+
+	@Override
+	public void accept(NodeVisitorInterface visitor) throws VisitingException {
+		visitor.visit(this);		
+	}
+
+	public AbstractNode getArgument() {
+		return argument;
+	}
+
+	public void setArgument(AbstractNode argument) {
+		this.argument = argument;
 	}
 }

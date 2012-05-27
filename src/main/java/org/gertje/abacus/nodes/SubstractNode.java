@@ -5,6 +5,8 @@ import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.Token;
+import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class SubstractNode extends AbstractNode {
@@ -22,6 +24,7 @@ public class SubstractNode extends AbstractNode {
 		this.rhs = rhs;
 	}
 
+	@Override
 	public Number evaluate(SymbolTableInterface sym) {
 		Number lhsValue = (Number) lhs.evaluate(sym);
 		Number rhsValue = (Number) rhs.evaluate(sym);
@@ -51,6 +54,7 @@ public class SubstractNode extends AbstractNode {
 		return isNumber(lhs.getType()) && isNumber(rhs.getType());
 	}
 
+	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
         // Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.analyse(sym);
@@ -74,10 +78,7 @@ public class SubstractNode extends AbstractNode {
 		return this;
 	}
 
-	public String generateJavascript(SymbolTableInterface sym) {
-		return generateJavascriptNodePart(sym, lhs) + " - " + generateJavascriptNodePart(sym, rhs);
-	}
-
+	@Override
 	public Class<?> getType() {
 		if (lhs.getType().equals(BigDecimal.class) || rhs.getType().equals(BigDecimal.class)) {
 			return BigDecimal.class;
@@ -85,7 +86,29 @@ public class SubstractNode extends AbstractNode {
 		return BigInteger.class;
 	}
 
+	@Override
 	public boolean getIsConstant() {
 		return false;
+	}
+
+	@Override
+	public void accept(NodeVisitorInterface visitor) throws VisitingException {
+		visitor.visit(this);		
+	}
+
+	public AbstractNode getLhs() {
+		return lhs;
+	}
+
+	public void setLhs(AbstractNode lhs) {
+		this.lhs = lhs;
+	}
+
+	public AbstractNode getRhs() {
+		return rhs;
+	}
+
+	public void setRhs(AbstractNode rhs) {
+		this.rhs = rhs;
 	}
 }
