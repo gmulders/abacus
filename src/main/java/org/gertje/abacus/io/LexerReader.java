@@ -14,6 +14,39 @@ import java.io.Reader;
 public class LexerReader extends Reader {
 
 	/**
+	 * <pre>
+	 * m = gemarkeerde index
+	 * i = (lees) index
+	 * l = aantal tekens in de buffer
+	 * b = lengte van de buffer
+	 * o = offset; het aantal tekens wat we minimaal verder willen lezen.
+	 * 
+	 * De buffer begint links, bij 0.
+	 * 
+	 * Buffer -->  #############################################################
+	 *             ↑    ↑       ↑                      ↑                        ↑
+	 *             0    m       i                      l                        b 
+	 *                          |______________|
+	 *                                 (A)
+	 *                          |______________________________|
+	 *                                        (B)
+	 *                          |_______________________________________________________|
+	 *                                                    (C)
+	 * 
+	 * We onderscheiden drie situaties:
+	 * (A) i + o < l    In deze situatie kunnen we direct het teken teruggeven.
+	 * (B) i + o < b    In deze situatie moeten we eerst een aantal tekens bijlezen; probeer tot het einde van de buffer
+	 *                  te lezen.
+	 * (C) i + o >= b   In deze situatie moeten we i proberen te verlagen. Als een markering actief is schuiven we de 
+	 *                  data in de buffer m tekens naar links. (Verlaag dus m, i en l met m.) Anders schuiven we de data
+	 *                  in de buffer i tekens naar links. (Verlaag dus i en l met i.) Wanneer daarna nog steeds geldt 
+	 *                  dat i + o >= b maken we de buffer groter (met een veelvoud van blocksize).
+	 * 
+	 * In situatie (A) kan direct gelezen worden, voor situaties (B) en (C) roepen we eerst refreshBuffer() aan.
+	 * </pre>
+	 */
+
+	/**
 	 * De reader die we 'decoraten' met deze reader. (Zie het decorating pattern.)
 	 */
     private Reader in;
@@ -67,6 +100,11 @@ public class LexerReader extends Reader {
 	 * De standaard buffer grootte.
 	 */
 	private static int DEFAULT_BUFFER_SIZE = 2048;
+
+	/**
+	 * De blokgrootte, de buffer is altijd een veelvoud hiervan.
+	 */
+	private static int BLOCK_SIZE = 1024;
 
 	/**
 	 * Constructor.
@@ -129,64 +167,71 @@ public class LexerReader extends Reader {
 	 * @return Het aantal bijgelezen tekens.
 	 * @throws IOException Een exceptie wanneer de buffer vol zit.
 	 */
-	private int refreshBuffer() throws IOException {
-		// We onderscheiden 4 situaties:
-		// - er is nog ruimte na het laatste teken vrij,
-		// - er is geen markering actief,
-		// - er is een markering actief en de index hiervan is 0 en 
-		// - er is een markering actief en de index is niet 0.
-		if (buffer.length > numberOfCharactersInBuffer) {
-			// Er is nog ruimte na het laatste teken vrij, lees in.
-			int n = in.read(buffer, bufferIndex, buffer.length - bufferIndex);
-			numberOfCharactersInBuffer += n;
-			return n;
-		} else if (markedIndex < 0) {
-			// Er is geen markering actief.
-			numberOfCharactersInBuffer = in.read(buffer, 0, buffer.length);
-			// Zet de index terug naar 0.
-			bufferIndex = 0;
-			return numberOfCharactersInBuffer;
-		} else if (markedIndex == 0) {
-			// Er is een markering actief en de index is 0.
-			// Voorlopig kunnen we af met het gooien van een error.
-			throw new IOException("Buffer full, marked index out of range.");
+	private int refreshBuffer(int offset) throws IOException {
+		// Wanneer we in deze methode komen hebben we te maken met situatie (B) of (C).
 
-			// Een andere optie is de buffer vergroten en bij lezen. We verhogen de index met de oorspronkelijke 
-			// bufferSize. Voor nu zet ik dit in commentaar:
-			/*
-			// Vergroot de buffer, maak hiervoor een nieuwe buffer aan.
-			char newBuffer[] = new char[buffer.length + bufferSize];
-			// Verplaats de inhoud van de buffer naar de nieuwe buffer.
-			System.arraycopy(buffer, 0, newBuffer, 0, buffer.length);
-			// Lees extra karakters bij.
-			int n = in.read(newBuffer, buffer.length, bufferSize);
-			// Laat de pointer van de buffer naar de nieuwe buffer wijzen.
-			buffer = newBuffer;
-			// Verhoog het aantal karakters in de buffer met het gelezen aantal.
-			numberOfCharactersInBuffer += n;
-			// De bufferIndex en de markedIndex blijven hetzelfde.
-
-			// Geef het aantal gelezen karakters terug.
-			return n;
-			*/
-		} else {
-			// Er is een markering actief en de index is groter dan 0.
-			// Kopieer eerst het einde van de array, vanaf de gemarkeerde index, naar het begin van de array.
-			System.arraycopy(buffer, markedIndex, buffer, 0, numberOfCharactersInBuffer - markedIndex);
-
-			// Lees karakters bij. Begin te lezen bij het einde van de vorige read en lees de resterende array vol.
-			int n = in.read(buffer, numberOfCharactersInBuffer - markedIndex, buffer.length - (numberOfCharactersInBuffer - markedIndex));
-
-			// Het aantal karakters in de buffer is het vorige aantal - het aantal karakters dat naar links in geschoven
-			// plus het aantal gelezen karakters.
-			numberOfCharactersInBuffer += -markedIndex + n;
-			// De bufferIndex wordt verlaagd met de gemarkeerde index.
-			bufferIndex -= markedIndex;
-			// De gemarkeerde index wordt 0.
-			markedIndex = 0;
-
-			return n;
+		// Controleer of er genoeg ruimte vrij is na het laatste teken.
+		if (bufferIndex + offset >= buffer.length) {
+			// Er is NIET genoeg ruimte vrij na het laatste teken (we hebben te maken met situatie (C)).
+			// Probeer ruimte te maken door de index te verlagen. Dit kunnen we alleen doen wanneer de index niet al 0 
+			// is EN er geen markering is of de gemarkeerde index groter is dan 0. (Let op! We controleren we hier of 
+			// markedIndex ONgelijk is aan 0, omdat -1 betekent dat er geen markering is.)
+			if (bufferIndex != 0 && markedIndex != 0) {
+				// Bepaal de plek vanaf waar we moeten schuiven, dit is de gemarkeerde index wanneer er een markering
+				// actief is en anders is dit de index.
+				int shiftFrom = markedIndex != -1 ? markedIndex : bufferIndex;
+				// Schuif de gegevens in de array in de 0 richting.
+				System.arraycopy(buffer, shiftFrom , buffer, 0, numberOfCharactersInBuffer - shiftFrom);
+				// Update de markering wanneer deze actief is.
+				if (markedIndex != -1) {
+					markedIndex = 0;
+				}
+				// Update het aantal tekens in de buffer.
+				numberOfCharactersInBuffer -= shiftFrom;
+				// Update de index
+				bufferIndex -= shiftFrom;
+			}
+		
+			// Controleer opnieuw of we genoeg ruimte in de buffer hebben.
+			if (bufferIndex + offset >= buffer.length) {
+				// We hebben nog niet genoeg ruimte in de buffer. We moeten de buffer daarom vergroten.
+				// Bepaal de nieuwe grootte van de buffer.
+				int newBufferSize = bufferIndex + offset;
+				// Wanneer newBufferSize niet een veelvoud van de blokgrootte is moeten we dit er van maken.
+				if (newBufferSize % BLOCK_SIZE != 0) {
+					newBufferSize = (newBufferSize / BLOCK_SIZE + 1) * BLOCK_SIZE;
+				}
+				char newBuffer[] = new char[newBufferSize];
+				// Kopieer de gegevens van de oude buffer naar de nieuwe.
+				System.arraycopy(buffer, 0 , newBuffer, 0, numberOfCharactersInBuffer);
+				// Zet de verwijzing van de buffer.
+				buffer = newBuffer;
+			}
+			
 		}
+		
+		// Er is nu genoeg ruimte vrij na het laatste teken.
+		// Bepaal de te lezen lengte.
+		int readLength = buffer.length - numberOfCharactersInBuffer;
+		int charactersRead = 0;
+
+		// We lezen net zo lang tekens in totdat we tenminste offset tekens vooruit kunnen lezen.
+		while (bufferIndex + offset >= numberOfCharactersInBuffer) {
+			int n = in.read(buffer, numberOfCharactersInBuffer, readLength);
+			if (n != -1) {
+				numberOfCharactersInBuffer += n;
+				readLength -= n;
+				charactersRead += n;
+			} else {
+				// Wanneer we hier komen hebben we nog niet genoeg tekens ingelezen (anders waren we al uit de loop) en
+				// is het einde van de in-stream bereikt. Dus we kunnen niet genoeg tekens inlezen, daarom moeten we -1
+				// teruggeven.
+				return n;
+			}
+		}
+
+		// Geef het aantal gelezen tekens terug.
+		return charactersRead;
 	}
 
 	@Override
@@ -196,7 +241,7 @@ public class LexerReader extends Reader {
 			// Wanneer de index groter of gelijk is aan het aantal karakters in de buffer verversen we de buffer.
 			if (bufferIndex >= numberOfCharactersInBuffer) {
 				// Probeer de buffer te verversen, wanneer dit niet lukt geven we -1 terug.
-				if (refreshBuffer() == -1) {
+				if (refreshBuffer(0) == -1) {
 					return -1;
 				}
 			}
@@ -204,7 +249,7 @@ public class LexerReader extends Reader {
 			int c = buffer[bufferIndex++];
 			columnNumber++;
 
-			// Wanneer hetdetermineNextToken teken een \r is of een \n, die niet vooraf is gegaan door een \r, hogen we het regelnummer 
+			// Wanneer het teken een \r is of een \n, die niet vooraf is gegaan door een \r, hogen we het regelnummer 
 			// op.
 			if (c == '\r' || (c == '\n' && previousChar != '\r')) {
 				lineNumber++;
@@ -226,18 +271,28 @@ public class LexerReader extends Reader {
 	 * @throws IOException
 	 */
 	public int peek() throws IOException {
+		return peek(0);
+	}
+	
+	/**
+	 * Spiekt offset tekens vooruit.
+	 * 
+	 * @return Het teken offset tekens vooruit.
+	 * @throws IOException
+	 */
+	public int peek(int offset) throws IOException {
 		synchronized (lock) {
 			checkInputStream();
 			// Wanneer de index groter of gelijk is aan het aantal karakters in de buffer verversen we de buffer.
-			if (bufferIndex >= numberOfCharactersInBuffer) {
+			if (bufferIndex + offset >= numberOfCharactersInBuffer) {
 				// Probeer de buffer te verversen, wanneer dit niet lukt geven we -1 terug.
-				if (refreshBuffer() == -1) {
+				if (refreshBuffer(offset) == -1) {
 					return -1;
 				}
 			}
 
 			// Geef het karakter op de huidige index terug en hoog de index NIET op.
-			return buffer[bufferIndex];
+			return buffer[bufferIndex + offset];
 		}
 	}
 	

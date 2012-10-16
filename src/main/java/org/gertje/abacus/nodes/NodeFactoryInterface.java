@@ -14,7 +14,7 @@ public interface NodeFactoryInterface {
 
 	public AddNode createAddNode(AbstractNode lhs, AbstractNode rhs, Token token);
 	public AndNode createAndNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public AssignmentNode createAssignmentNode(VariableNode lhs, AbstractNode rhs, Token token);
+	public AssignmentNode createAssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token);
 	public BooleanNode createBooleanNode(Boolean value, Token token);
 	public DateNode createDateNode(Date value, Token token);
 	public DivideNode createDivideNode(AbstractNode lhs, AbstractNode rhs, Token token);

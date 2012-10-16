@@ -66,6 +66,8 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 
 		StringBuilder translation = new StringBuilder();
 		
+		// Wrap de expressie in een closure. Wanneer er geen declaraties zijn en er zijn geen controles op null en de
+		// node is een NodeList, dan is deze closure onnodig. Voorlopig laat ik dit wel zo.
 		translation.append("(function(){")
 			.append(expressionTranslator.getDeclarations())
 			.append(expressionTranslator.getNullableCheck())
@@ -77,17 +79,31 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 	
 	@Override
 	public void visit(AddNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " + ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "+");
 	}
 
 	@Override
 	public void visit(AndNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " && ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "&&");
 	}
 
 	@Override
 	public void visit(AssignmentNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " = ");
+		node.getLhs().accept(this);
+		// Pop tussendoor even de assignee van de variabelestack om te voorkomen dat we controleren of de assignee niet
+		// null is. Anders zou je zoiets krijgen: a = 3 --> (function(){if(a==null)return null;return a = 3;})()
+		variableStack.pop();
+		
+		node.getRhs().accept(this);
+		
+		String rhsScript = partStack.pop();
+		String lhsScript = partStack.pop();
+		
+		String script = parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), lhsScript) 
+				+ "="
+				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), rhsScript);
+		
+		partStack.push(script);
 	}
 
 	@Override
@@ -103,12 +119,12 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 
 	@Override
 	public void visit(DivideNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " / ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "/");
 	}
 
 	@Override
 	public void visit(EqNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " == ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "==");
 	}
 
 	@Override
@@ -132,7 +148,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		String arguments = "";
 		// Haal evenveel elementen van de stack als er zojuist bijgekomen zijn.
 		for (int i = 0; i < node.getParameters().size(); i++) {
-			arguments = partStack.pop() + (i != 0 ? ", " : "") + arguments;
+			arguments = partStack.pop() + (i != 0 ? "," : "") + arguments;
 		}
 		
 		partStack.push(node.getIdentifier() + "(" + arguments + ")");
@@ -140,12 +156,12 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 
 	@Override
 	public void visit(GeqNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " >= ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), ">=");
 	}
 
 	@Override
 	public void visit(GtNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " > ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), ">");
 	}
 
 	@Override
@@ -158,7 +174,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		// Bouw javascript op die
 		StringBuilder ifExpression = new StringBuilder();
 		ifExpression
-			.append("var _").append(variableStack.size()).append(" = (function() {")
+			.append("var _").append(variableStack.size()).append(" = (function(){")
 				.append(conditionTranslator.getDeclarations())
 				.append(conditionTranslator.getNullableCheck())
 				.append("if(").append(conditionTranslator.getExpression()).append("){")
@@ -185,22 +201,22 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 
 	@Override
 	public void visit(LeqNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " <= ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "<=");
 	}
 
 	@Override
 	public void visit(LtNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " < ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "<");
 	}
 
 	@Override
 	public void visit(ModuloNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " % ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "%");
 	}
 
 	@Override
 	public void visit(MultiplyNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " * ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "*");
 	}
 
 	@Override
@@ -212,7 +228,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 
 	@Override
 	public void visit(NeqNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " != ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "!=");
 	}
 
 	@Override
@@ -229,7 +245,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 
 	@Override
 	public void visit(OrNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " || ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "||");
 	}
 
 	@Override
@@ -261,14 +277,23 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		}
 
 		// Er zitten meerdere statements in de lijst, bundel ze in een closure.
-		String closure = "(function() {\n";
+		String closure = "(function(){";
 
 		// Haal evenveel elementen van de stack als er zojuist bijgekomen zijn.
 		for (int i = 0; i < node.size(); i++) {
+			// Bewaar het aantal variabelen dat nu op de variabelen stack zit.
+			int variableStackSize = variableStack.size();
 			// Zorg dat de JavaScript voor dit ene element op de stack komt.
 			node.get(i).accept(this);
+			// Wanneer dit niet het laatste statement is moeten we alle variabelen die nog op de stack zitten poppen om
+			// te voorkomen dat we allerlei checks op null gaan doen.
+			if (i < node.size() - 1) {
+				for (int j = 0; j < variableStack.size() - variableStackSize; j++) {
+					variableStack.pop();
+				}
+			}
 			// Zet voor het laatste statement 'return '.
-			closure += (i == node.size() - 1 ? "return ": "") + partStack.pop() + ";\n";
+			closure += (i == node.size() - 1 ? "return ": "") + partStack.pop() + ";";
 		}
 
 		closure += "})()";
@@ -283,7 +308,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 
 	@Override
 	public void visit(SubstractNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), " - ");
+		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "-");
 	}
 
 	@Override
@@ -326,11 +351,11 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		String rhsScript = partStack.pop();
 		String lhsScript = partStack.pop();
 		
-		String add = parenthesize(node.getPrecedence(), lhs.getPrecedence(), lhsScript) 
+		String script = parenthesize(node.getPrecedence(), lhs.getPrecedence(), lhsScript) 
 				+ operator 
 				+ parenthesize(node.getPrecedence(), rhs.getPrecedence(), rhsScript);
 		
-		partStack.push(add);
+		partStack.push(script);
 	}
 	
 	/**
@@ -346,7 +371,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		String expression;
 
 		/**
-		 * Maak een nieuwe instantie aan. Vertaal de expressie en bouw nodige gedeelten op.
+		 * Maakt een nieuwe instantie aan. Vertaal de expressie en bouw nodige gedeelten op.
 		 * @param expression
 		 * @throws VisitingException 
 		 */

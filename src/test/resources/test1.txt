@@ -1,4 +1,6 @@
 # Some random tests...
+3-3-3|Integer=-3|false||
+a = 3;|Integer=3|false|Integer=a=0|Integer=a=3
 3*3+a|Integer=11|false|Integer=a=2|Integer=a=2
 3*(3+a)|Integer=15|false|Integer=a=2|Integer=a=2
 s3*3+a|Integer=15|true|Integer=a=2|Integer=a=2
@@ -6,7 +8,9 @@ s3*3+a|Integer=15|true|Integer=a=2|Integer=a=2
 3==3|Boolean=true|false||
 2 == 3 ? 'aap' : 'geen aap'|String=geen aap|false||
 a = 3|Integer=3|false|Integer=a=2|Integer=a=3
-a = 3;3-3;|Integer=0|false|Integer=a=2|Integer=a=3
+a = b = a + 3|Integer=5|false|Integer=a=2:Integer=b=2|Integer=a=5:Integer=b=5
+5 + 3; 3 - 3;|Integer=0|false||
+a + 3; 3 - 3;(a < 2 ? 3 : 2)|Integer=2|false|Integer=a=2|Integer=a=2
 2^3;|Float=8|false||
 8/3|Integer=2|false||
 
@@ -74,4 +78,6 @@ null ? true : false|null|true||
 -3.14 + 4|Float=0.86|false||
 
 (a < 2 ? 3 : 2) * a|Integer=4|false|Integer=a=2|Integer=a=2
-(3 * a < b ? true : false) ? c : d|Integer=2|false|Integer=a=2:Integer=b=2:Integer=c=1:Integer=d=2|Integer=a=2:Integer=b=2:Integer=c=1:Integer=d=2
+gaap;(3 * a < b ? true : false) ? c : d|Integer=2|false|Integer=a=2:Integer=b=2:Integer=c=1:Integer=d=2:Integer=gaap=1|Integer=a=2:Integer=b=2:Integer=c=1:Integer=d=2:Integer=gaap=1
+
+a * b|Integer=4|false|Integer=a=2:Integer=b=2|Integer=a=2:Integer=b=2
