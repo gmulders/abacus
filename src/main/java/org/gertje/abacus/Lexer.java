@@ -2,7 +2,7 @@ package org.gertje.abacus;
 
 import org.gertje.abacus.io.LexerReader;
 
-class Lexer extends AbstractLexer {
+public class Lexer extends AbstractLexer {
 
 	public Lexer(LexerReader reader) {
 		super(reader);
@@ -33,27 +33,8 @@ class Lexer extends AbstractLexer {
 		return (isNumeric(c) || isAlphaOrUnderscore(c));
 	}
 
-	/**
-	 * Geeft het volgende token terug en haalt deze ook van de stack (de index wordt opgehoogd).
-	 * @throws LexerException
-	 */
 	@Override
 	public Token getNextToken() throws LexerException {
-		// We bepalen het volgende token, maar geven deze alleen terug als het niet whitespace of een nieuwe regel is.
-		Token nextToken = determineNextToken();
-
-		// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
-		while (nextToken.getType() == TokenType.WHITE_SPACE || nextToken.getType() == TokenType.NEW_LINE) {
-			nextToken = determineNextToken();
-		}
-		return nextToken;
-	}
-	
-	/**
-	 * Bepaalt het volgende token.
-	 * @throws LexerException 
-	 */
-	private Token determineNextToken() throws LexerException {
 		// Maak een nieuw token object aan.
 		Token token = new Token(reader.getLineNumber(), reader.getColumnNumber());
 
@@ -65,8 +46,22 @@ class Lexer extends AbstractLexer {
 		}
 		// Haal het volgende karakter op uit de expressie.
 		char c = nextChar();
+		
+		// Bepaal het volgende token.
+		fillNextToken(c, token);
+		
+		return token;
+	}
 
-		// Controleer wat het karakter voorstelt en doe de bijbehorende bewerking.
+	/**
+	 * Bepaalt het volgende token op basis van een al gelezen teken.
+	 * @param c het reeds gelezen teken.
+	 * @param token het token waarop het type en eventueel een waarde moet komen.
+	 * @return Het volgende token.
+	 * @throws LexerException
+	 */
+	protected void fillNextToken(char c, Token token) throws LexerException {
+		// Zoek uit wat het karakter voorstelt en doe de bijbehorende bewerking.
 		// Whitespace
 		if (c == ' ' || c == '\t') {
 			token.setType(TokenType.WHITE_SPACE);
@@ -205,9 +200,6 @@ class Lexer extends AbstractLexer {
 			throw new LexerException("Non expected character found: '" + c + "'", 
 					reader.getLineNumber(), reader.getColumnNumber());
 		}
-
-		// Geef het token terug.
-		return token;
 	}
 
 	/**

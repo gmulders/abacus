@@ -18,7 +18,8 @@ public abstract class AbstractLexer {
 	}
 
 	/**
-	 * Geeft het volgende karakter van de expressie terug en hoogt de pointer met 1 op.
+	 * Geeft het volgende karakter uit de input terug en hoogt de pointer met 1 op.
+	 * @return Het volgende karakter uit de input.
 	 * @throws LexerException 
 	 */
 	protected char nextChar() throws LexerException {
@@ -30,7 +31,8 @@ public abstract class AbstractLexer {
 	}
 
 	/**
-	 * Geeft het volgende karakter van de expressie terug, maar hoogt de pointer niet op.
+	 * Geeft het volgende karakter uit de input terug, maar hoogt de pointer niet op.
+	 * @return Het volgende karakter uit de input.
 	 * @throws LexerException 
 	 */
 	protected char peekChar() throws LexerException {
@@ -42,12 +44,23 @@ public abstract class AbstractLexer {
 	}
 
 	/**
-	 * Bepaalt of we het einde van de invoer bereikt hebben.
+	 * Bepaalt of het einde van de invoer bereikt is.
+	 * @return <code>true</code> wanneer het einde van de invoer bereikt is, anders <code>false</code>.
 	 * @throws LexerException 
 	 */
 	protected boolean isEndOfInput() throws LexerException {
+		return isEndOfInput(0);
+	}
+
+	/**
+	 * Bepaalt of offset tekens vooruit het einde van de invoer bereikt is.
+	 * @param offset Het aantal tekens dat vooruit gekeken moet worden.
+	 * @return <code>true</code> wanneer offset tekens vooruit het einde van de invoer bereikt is, anders <code>false</code>.
+	 * @throws LexerException
+	 */
+	protected boolean isEndOfInput(int offset) throws LexerException {
 		try {
-			return reader.peek() == -1;
+			return reader.peek(offset) == -1;
 		} catch (IOException e) {
 			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
 		}
@@ -55,6 +68,7 @@ public abstract class AbstractLexer {
 
 	/**
 	 * Geeft de volgende token terug zonder de index te veranderen.
+	 * @return Het volgende token.
 	 * @throws LexerException
 	 */
 	public Token peekToken() throws LexerException {
@@ -72,6 +86,7 @@ public abstract class AbstractLexer {
 	
 	/**
 	 * Geeft het volgende token terug en haalt deze ook van de stack (de index wordt opgehoogd).
+	 * @return Het volgende token.
 	 * @throws LexerException
 	 */
 	abstract public Token getNextToken() throws LexerException;

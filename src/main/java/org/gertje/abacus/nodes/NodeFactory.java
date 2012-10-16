@@ -20,7 +20,7 @@ public class NodeFactory implements NodeFactoryInterface {
 	}
 
 	@Override
-	public AssignmentNode createAssignmentNode(VariableNode lhs, AbstractNode rhs, Token token) {
+	public AssignmentNode createAssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token) {
 		return new AssignmentNode(lhs, rhs, token, this);
 	}
 

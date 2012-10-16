@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gertje.abacus.nodes.AbstractNode;
-import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.NodeFactoryInterface;
 import org.gertje.abacus.nodes.StatementListNode;
 
@@ -32,12 +31,35 @@ class Parser {
 		this.nodeFactory = nodeFactory;
 	}
 
+	private Token determineNextToken() throws LexerException {
+		Token nextToken = lex.getNextToken();
+
+		// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
+		while (nextToken.getType() == TokenType.WHITE_SPACE || nextToken.getType() == TokenType.NEW_LINE) {
+			nextToken = lex.getNextToken();
+		}
+		
+		return nextToken;
+	}
+	
+	private Token peekNextToken() throws LexerException {
+		Token nextToken = lex.peekToken();
+
+		// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
+		while (nextToken.getType() == TokenType.WHITE_SPACE || nextToken.getType() == TokenType.NEW_LINE) {
+			lex.getNextToken();
+			nextToken = lex.peekToken();
+		}
+
+		return nextToken;
+	}
+	
 	/**
 	 * Bouwt een AST op van de expressie.
 	 * @throws CompilerException
 	 */
 	public StatementListNode buildAST() throws CompilerException {
-		return statementList(lex.getNextToken());
+		return statementList(determineNextToken());
 	}
 
 	private StatementListNode statementList(Token nextToken) throws CompilerException {
@@ -45,26 +67,18 @@ class Parser {
 		// Zolang het token niet het einde van de input aangeeft maken we expressies aan.
 		while (nextToken.getType() != TokenType.END_OF_INPUT) {
 			list.add(statement(nextToken));
-			nextToken = lex.getNextToken();
+			nextToken = determineNextToken();
 		}
 
 		return list;
 	}
 
 	private AbstractNode statement(Token nextToken) throws CompilerException {
-		AbstractNode statement = null;
-
-		// Wanneer het volgende token een ASSIGNMENT is, maken we een AssignmentNode aan.
-		if (lex.peekToken().getType() == TokenType.ASSIGNMENT) {
-			statement = assignment(nextToken);
-	
-		// Anders verwachten we een ifElse.
-		} else {
-			statement = expression(nextToken);
-		}
+		// Een statement is een assignment gevolgd door een 'end of expression' of het 'end of input' token.
+		AbstractNode statement = assignment(nextToken);
 
 		// We verwachten het 'end of expression' of het 'end of input' token.
-		nextToken = lex.peekToken();
+		nextToken = peekNextToken();
 		if (nextToken.getType() != TokenType.END_OF_EXPRESSION 
 				&& nextToken.getType() != TokenType.END_OF_INPUT) {
 			throw new ParserException("Unexpected token '" + nextToken.getType().toString() + "'.", nextToken);
@@ -72,28 +86,30 @@ class Parser {
 
 		// Wanneer het token niet het 'end of input' token was, halen we het token van de stack.
 		if (nextToken.getType() != TokenType.END_OF_INPUT) {
-			lex.getNextToken();
+			determineNextToken();
 		}
 
 		return statement;
 	}
 
-	private AssignmentNode assignment(Token nextToken) throws CompilerException {
-		// Aan de linker kant verwachten we een variabele.
-		if (!determineIsVariable(nextToken)) {
-			throw new ParserException("Expected variable on left hand side of assignment.", nextToken);
-		}
-		
-		// Verwacht een '=' teken. Het kan niet anders dan dat we deze vinden, want anders zaten we niet in deze 
-		// methode. Controleer toch even...
-		if (lex.getNextToken().getType() != TokenType.ASSIGNMENT) {
-			throw new ParserException("Expected '='.", nextToken);
+	private AbstractNode assignment(Token nextToken) throws CompilerException {
+		AbstractNode lhs = expression(nextToken);
+
+		// Spiek wat het volgende token is.
+		nextToken = peekNextToken();
+
+		// Zolang het volgende token een sommatie is voeren we die operatie uit.
+		if (nextToken.getType() == TokenType.ASSIGNMENT) {
+			// Haal het gespiekte token van de stack.
+			Token assignmentToken = determineNextToken();
+			// Bepaal de rechter AST van de operatie.
+			AbstractNode rhs = assignment(determineNextToken());
+
+			// Maak afhankelijk van de operatie de juiste soort ASTNode aan.
+			lhs = nodeFactory.createAssignmentNode(lhs, rhs, assignmentToken);
 		}
 
-		return nodeFactory.createAssignmentNode(
-				nodeFactory.createVariableNode(nextToken.getValue(), nextToken),
-				conditional(lex.getNextToken()),
-				nextToken);
+		return lhs;
 	}
 
 	private AbstractNode expression(Token nextToken) throws CompilerException {
@@ -105,23 +121,23 @@ class Parser {
 		AbstractNode condition = booleanOp(nextToken);
 
 		// Spiek wat het volgende token is.
-		nextToken = lex.peekToken();
+		nextToken = peekNextToken();
 
 		// Wanneer het volgende token een IF token is bepalen we ook de if tak.
 		if (nextToken.getType() == TokenType.IF) {
 			// Haal het gespiekte token van de stack.
-			Token ifToken = lex.getNextToken();
+			Token ifToken = determineNextToken();
 			// Het volgende token kan ook een if-else zijn.
-			AbstractNode ifbody = expression(lex.getNextToken());
+			AbstractNode ifbody = expression(determineNextToken());
 
 			// Haal het volgende token op.
-			nextToken = lex.getNextToken();
+			nextToken = determineNextToken();
 			// Het token moet een else token zijn.
 			if (nextToken.getType() != TokenType.ELSE) {
 				throw new ParserException("Expected ELSE token (:).", nextToken);
 			}
 			// De else-body kan ook een if-else zijn.
-			AbstractNode elsebody = expression(lex.getNextToken());
+			AbstractNode elsebody = expression(determineNextToken());
 
 			// Maak een nieuwe ASTNode aan met het juiste type en de juiste operanden.
 			AbstractNode result = nodeFactory.createIfNode(condition, ifbody, elsebody, ifToken);
@@ -139,14 +155,14 @@ class Parser {
 		AbstractNode lhs = comparison(nextToken);
 
 		// Spiek wat het volgende token is.
-		nextToken = lex.peekToken();
+		nextToken = peekNextToken();
 
 		// Zolang het volgende token een OR of een AND operatie is voeren we deze uit.
 		while (nextToken.getType() == TokenType.BOOLEAN_OR || nextToken.getType() == TokenType.BOOLEAN_AND) {
 			// Haal het gespiekte token van de stack.
-			Token orOrAndToken = lex.getNextToken();
+			Token orOrAndToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = comparison(lex.getNextToken());
+			AbstractNode rhs = comparison(determineNextToken());
 
 			// Maak voor elke mogelijke boolean operatie een andere ASTNode aan.
 			if(nextToken.getType() == TokenType.BOOLEAN_AND) {
@@ -156,7 +172,7 @@ class Parser {
 			}
 
 			// Spiek naar het volgende token.
-			nextToken = lex.peekToken();
+			nextToken = peekNextToken();
 		}
 		// Geef het resultaat (de lhs) terug.
 		return lhs;
@@ -170,7 +186,7 @@ class Parser {
 		AbstractNode lhs = addition(nextToken);
 
 		// Spiek wat het volgende token is.
-		nextToken = lex.peekToken();
+		nextToken = peekNextToken();
 
 		// Zolang het volgende token een vergelijking is < <= == => > of != voeren we die operatie uit.
 		while (nextToken.getType() == TokenType.LT || nextToken.getType() == TokenType.LEQ 
@@ -179,9 +195,9 @@ class Parser {
 				|| nextToken.getType() == TokenType.NEQ
 				) {
 			// Haal het gespiekte token van de stack.
-			Token comparisonToken = lex.getNextToken();
+			Token comparisonToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = addition(lex.getNextToken());
+			AbstractNode rhs = addition(determineNextToken());
 
 			// Maak afhankelijk van de vergelijking de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.LT) {
@@ -199,7 +215,7 @@ class Parser {
 			}
 
 			// Spiek naar het volgende token.
-			nextToken = lex.peekToken();
+			nextToken = peekNextToken();
 		}
 		
 		// Geef de lhs terug.
@@ -214,14 +230,14 @@ class Parser {
 		AbstractNode lhs = term(nextToken);
 
 		// Spiek wat het volgende token is.
-		nextToken = lex.peekToken();
-		
+		nextToken = peekNextToken();
+
 		// Zolang het volgende token een sommatie is voeren we die operatie uit.
 		while (nextToken.getType() == TokenType.PLUS || nextToken.getType() == TokenType.MINUS) {
 			// Haal het gespiekte token van de stack.
-			Token additionToken = lex.getNextToken();
+			Token additionToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = term(lex.getNextToken());
+			AbstractNode rhs = term(determineNextToken());
 
 			// Maak afhankelijk van de operatie de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.PLUS) {
@@ -231,7 +247,7 @@ class Parser {
 			}
 
 			// Spiek naar het volgende token.
-			nextToken = lex.peekToken();
+			nextToken = peekNextToken();
 		}
 		// Geef de lhs terug.
 		return lhs;
@@ -245,15 +261,15 @@ class Parser {
 		AbstractNode lhs = power(nextToken);
 
 		// Spiek wat het volgende token is.
-		nextToken = lex.peekToken();
+		nextToken = peekNextToken();
 
 		// Zolang het volgende token een sommatie is voeren we die operatie uit.
 		while (nextToken.getType() == TokenType.MULTIPLY || nextToken.getType() == TokenType.DIVIDE 
 				|| nextToken.getType() == TokenType.PERCENT) {
 			// Haal het gespiekte token van de stack.
-			Token termToken = lex.getNextToken();
+			Token termToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = power(lex.getNextToken());
+			AbstractNode rhs = power(determineNextToken());
 
 			// Maak afhankelijk van de operatie de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.MULTIPLY) {
@@ -265,7 +281,7 @@ class Parser {
 			}
 			
 			// Spiek naar het volgende token.
-			nextToken = lex.peekToken();
+			nextToken = peekNextToken();
 		}
 		// Geef de lhs terug.
 		return lhs;
@@ -279,14 +295,14 @@ class Parser {
 		AbstractNode lhs = unary(nextToken);
 
 		// Spiek wat het volgende token is.
-		nextToken = lex.peekToken();
+		nextToken = peekNextToken();
 
 		// Als de volgende token een macht operator is voeren we die operatie uit.
 		if (nextToken.getType() == TokenType.POWER) {
 			// Haal het gespiekte token van de stack.
-			Token powerToken = lex.getNextToken();
+			Token powerToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = power(lex.getNextToken());
+			AbstractNode rhs = power(determineNextToken());
 			lhs = nodeFactory.createPowerNode(lhs, rhs, powerToken);
 		}
 		// Geef de lhs terug.
@@ -300,11 +316,11 @@ class Parser {
 	private AbstractNode unary(Token nextToken) throws CompilerException {
 		// Maak afhankelijk van het type van de token de juiste ASTNode aan.
 		if (nextToken.getType() == TokenType.PLUS) {
-			return nodeFactory.createPositiveNode(factor(lex.getNextToken()), nextToken);
+			return nodeFactory.createPositiveNode(factor(determineNextToken()), nextToken);
 		} else if (nextToken.getType() == TokenType.MINUS) {
-			return nodeFactory.createNegativeNode(factor(lex.getNextToken()), nextToken);
+			return nodeFactory.createNegativeNode(factor(determineNextToken()), nextToken);
 		} else if (nextToken.getType() == TokenType.NOT) {
-			return nodeFactory.createNotNode(factor(lex.getNextToken()), nextToken);
+			return nodeFactory.createNotNode(factor(determineNextToken()), nextToken);
 		}
 		// Wanneer we hier komen geven we een factor node terug.
 		return factor(nextToken);
@@ -344,9 +360,9 @@ class Parser {
 
 		// Wanneer het token een linker haakje is geven we een FactorNode terug.
 		} else if (nextToken.getType() == TokenType.LEFT_PARENTHESIS) {
-			AbstractNode factorNode = nodeFactory.createFactorNode(expression(lex.getNextToken()), nextToken);
+			AbstractNode factorNode = nodeFactory.createFactorNode(expression(determineNextToken()), nextToken);
 			// We verwachten een rechter haakje.
-			Token token = lex.getNextToken();
+			Token token = determineNextToken();
 			if (token.getType() != TokenType.RIGHT_PARENTHESIS) {
 				throw new ParserException("Expected ')'", token);
 			}
@@ -389,23 +405,23 @@ class Parser {
 
 	private List<AbstractNode> buildParameters() throws CompilerException {
 		// Haal het linkerhaakje van de stack.
-		lex.getNextToken();
+		determineNextToken();
 		// Maak een variabele met de parameters aan.
 		List<AbstractNode> params = new ArrayList<AbstractNode>();
 		// Wanneer het volgende token een rechterhaakje is heeft de functie geen parameters.
-		if (lex.peekToken().getType() == TokenType.RIGHT_PARENTHESIS) {
+		if (peekNextToken().getType() == TokenType.RIGHT_PARENTHESIS) {
 			// Haal het token van de stack en geef de lege array terug.
-			lex.getNextToken();
+			determineNextToken();
 			return params;
 		}
 
 		// Loop net zolang door een loop totdat we er zelf uitbreken.
 		while (true) {
 			// We verwachten een expressie.
-			params.add(expression(lex.getNextToken()));
+			params.add(expression(determineNextToken()));
 
 			// Het volgende token moet een , zijn of een rechterhaakje.
-			Token nextToken = lex.getNextToken();
+			Token nextToken = determineNextToken();
 			// Wanneer het volgende token een rechterhaakje is breken we de loop af.
 			if (nextToken.getType() == TokenType.RIGHT_PARENTHESIS) {
 				break;
@@ -443,7 +459,7 @@ class Parser {
 	 */
 	private boolean determineIsFunction(Token token) throws LexerException {
 		return token.getType() == TokenType.IDENTIFIER
-				&& lex.peekToken().getType() == TokenType.LEFT_PARENTHESIS;
+				&& peekNextToken().getType() == TokenType.LEFT_PARENTHESIS;
 	}
 	
 	/**

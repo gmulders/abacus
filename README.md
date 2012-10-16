@@ -47,8 +47,8 @@ The lexer recognises the following tokens:
 
 ### Definition
 	<statement-list>   := <statment> | <statement> <statement-list>
-	<statement>        := <assignment> <eos> | <expression> <eos>
-	<assignment>       := <variable> ASSIGNMENT <assignment> | <variable> ASSIGNMENT <expression>
+	<statement>        := <assignment> <eos>
+	<assignment>       := <expression> | <expression> ASSIGNMENT <assignment>
 	<expression>       := <conditional>
 	<conditional>      := <booleanoperation> | <booleanoperation> IF <expression> ELSE <expression>
 	<booleanoperation> := <comparison> | <comparison> ( BOOLEAN_AND | BOOLEAN_OR ) <booleanoperation>
