@@ -30,7 +30,7 @@ public class Compiler {
 		Parser parser = new Parser(lexer, nodeFactory);
 
 		// daarna laten we de parser een AST opbouwen,
-		AbstractNode tree = parser.buildAST();
+		AbstractNode tree = parser.parse();
 
 		// dan laten we de boom zichzelf analyseren, hierbij vereenvoudigt de boom zichzelf en controleert de boom of
 		// de types kloppen, hierbij heeft de boom de symbolTable nodig.

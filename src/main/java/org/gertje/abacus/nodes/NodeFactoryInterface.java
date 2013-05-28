@@ -8,7 +8,7 @@ import java.util.List;
 import org.gertje.abacus.Token;
 
 /**
- * Deze interface definieert methodes voor alle nodes die de lexer aan kan maken.
+ * Deze interface definieert methodes voor alle nodes die de parser aan kan maken.
  */
 public interface NodeFactoryInterface {
 

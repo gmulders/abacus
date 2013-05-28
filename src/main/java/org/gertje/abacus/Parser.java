@@ -58,7 +58,7 @@ class Parser {
 	 * Bouwt een AST op van de expressie.
 	 * @throws CompilerException
 	 */
-	public StatementListNode buildAST() throws CompilerException {
+	public StatementListNode parse() throws CompilerException {
 		return statementList(determineNextToken());
 	}
 

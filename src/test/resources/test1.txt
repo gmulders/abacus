@@ -81,3 +81,5 @@ null ? true : false|null|true||
 gaap;(3 * a < b ? true : false) ? c : d|Integer=2|false|Integer=a=2:Integer=b=2:Integer=c=1:Integer=d=2:Integer=gaap=1|Integer=a=2:Integer=b=2:Integer=c=1:Integer=d=2:Integer=gaap=1
 
 a * b|Integer=4|false|Integer=a=2:Integer=b=2|Integer=a=2:Integer=b=2
+
+aap.test * bah.test|Integer=4|false|Integer=aap.test=2:Integer=bah.test=2|Integer=aap.test=2:Integer=bah.test=2
