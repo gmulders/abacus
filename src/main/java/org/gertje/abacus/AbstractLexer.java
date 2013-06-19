@@ -5,7 +5,7 @@ import java.io.StringReader;
 
 import org.gertje.abacus.io.LexerReader;
 
-public abstract class AbstractLexer {
+public abstract class AbstractLexer implements LexerInterface {
 
 	protected LexerReader reader;
 
@@ -83,12 +83,5 @@ public abstract class AbstractLexer {
 			throw new LexerException(e.getMessage(), reader.getLineNumber(), reader.getColumnNumber());
 		}
 	}
-	
-	/**
-	 * Geeft het volgende token terug en haalt deze ook van de stack (de index wordt opgehoogd).
-	 * @return Het volgende token.
-	 * @throws LexerException
-	 */
-	abstract public Token getNextToken() throws LexerException;
 }
 

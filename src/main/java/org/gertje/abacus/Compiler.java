@@ -24,7 +24,7 @@ public class Compiler {
 	public AbstractNode compile(String expression, Class<?> allowedReturnType) throws CompilerException {
 		// Compileren bestaat uit een aantal stappen;
 		// eerst maken we een lexer aan,
-		Lexer lexer = new Lexer(expression);
+		LexerInterface lexer = new Lexer(expression);
 
 		// dan maken we een parser aan die we de lexer meegeven,
 		Parser parser = new Parser(lexer, nodeFactory);

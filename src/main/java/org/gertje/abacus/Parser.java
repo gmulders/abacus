@@ -19,14 +19,14 @@ class Parser {
 	/**
 	 * De lexer.
 	 */
-	private Lexer lex;
+	private LexerInterface lex;
 	
 	/**
 	 * De fabriek voor nodes.
 	 */
 	private NodeFactoryInterface nodeFactory;
 
-	public Parser(Lexer lex, NodeFactoryInterface nodeFactory) {
+	public Parser(LexerInterface lex, NodeFactoryInterface nodeFactory) {
 		this.lex = lex;
 		this.nodeFactory = nodeFactory;
 	}
@@ -140,8 +140,7 @@ class Parser {
 			AbstractNode elsebody = expression(determineNextToken());
 
 			// Maak een nieuwe ASTNode aan met het juiste type en de juiste operanden.
-			AbstractNode result = nodeFactory.createIfNode(condition, ifbody, elsebody, ifToken);
-			condition = result;
+			condition = nodeFactory.createIfNode(condition, ifbody, elsebody, ifToken);
 		}
 		// Geef het uiteindelijke resultaat terug.
 		return condition;
@@ -441,7 +440,7 @@ class Parser {
 	 * Bepaalt of het token een boolean is, dit is het geval wanneer het token:
 	 * - een identifier is
 	 * - EN gelijk is aan 'true' OF gelijk is aan 'false'.
-	 * @param token
+	 * @param token Het token waarvan bepaald moet worden of het een boolean is.
 	 * @return <code>true</code> wanneer het token een boolean is, anders <code>false</code>.
 	 */
 	private boolean determineIsBoolean(Token token) {
@@ -453,7 +452,7 @@ class Parser {
 	 * Bepaalt of het token een functie is, dit is het geval wanneer het token:
 	 * - een identifier is
 	 * - EN gevolgd wordt door een linkerhaakje.
-	 * @param token
+	 * @param token Het token waarvan bepaald moet worden of het een function is.
 	 * @return <code>true</code> wanneer het token een functie is, anders <code>false</code>.
 	 * @throws LexerException 
 	 */
@@ -467,7 +466,7 @@ class Parser {
 	 * - een identifier
 	 * - EN het is geen boolean
 	 * - EN het is geen functie.
-	 * @param nextToken
+	 * @param token Het token waarvan bepaald moet worden of het een variabele is.
 	 * @return <code>true</code> wanneer het token een variabele is, anders <code>false</code>.
 	 * @throws LexerException 
 	 */
