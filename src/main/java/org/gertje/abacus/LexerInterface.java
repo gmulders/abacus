@@ -1,7 +1,7 @@
 package org.gertje.abacus;
 
 /**
- * Deze klasse interface definieert een aantal methoden die een lexer standaard moet implementeren.
+ * Deze interface definieert een aantal methoden die een lexer standaard moet implementeren.
  */
 public interface LexerInterface {
 
