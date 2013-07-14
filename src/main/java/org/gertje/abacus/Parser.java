@@ -9,11 +9,12 @@ import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactoryInterface;
 import org.gertje.abacus.nodes.StatementListNode;
 
-class Parser {
+public class Parser {
 
-	// Constanten voor mogelijke waarden van booleans.
+	// Constanten voor mogelijke waarden van een boolean.
 	private static final String BOOLEAN_TRUE = "true";
 	private static final String BOOLEAN_FALSE = "false";
+	// Constante voor de NULL waarde.
 	private static final String NULL = "null";
 
 	/**
@@ -24,14 +25,14 @@ class Parser {
 	/**
 	 * De fabriek voor nodes.
 	 */
-	private NodeFactoryInterface nodeFactory;
+	protected NodeFactoryInterface nodeFactory;
 
 	public Parser(LexerInterface lex, NodeFactoryInterface nodeFactory) {
 		this.lex = lex;
 		this.nodeFactory = nodeFactory;
 	}
 
-	private Token determineNextToken() throws LexerException {
+	protected Token determineNextToken() throws LexerException {
 		Token nextToken = lex.getNextToken();
 
 		// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
@@ -42,7 +43,7 @@ class Parser {
 		return nextToken;
 	}
 	
-	private Token peekNextToken() throws LexerException {
+	protected Token peekNextToken() throws LexerException {
 		Token nextToken = lex.peekToken();
 
 		// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
@@ -58,7 +59,7 @@ class Parser {
 	 * Bouwt een AST op van de expressie.
 	 * @throws CompilerException
 	 */
-	public StatementListNode parse() throws CompilerException {
+	public AbstractNode parse() throws CompilerException {
 		return statementList(determineNextToken());
 	}
 
@@ -112,7 +113,7 @@ class Parser {
 		return lhs;
 	}
 
-	private AbstractNode expression(Token nextToken) throws CompilerException {
+	protected AbstractNode expression(Token nextToken) throws CompilerException {
 		return conditional(nextToken);
 	}
 
