@@ -1,11 +1,1 @@
 apply plugin: 'java'
-apply plugin: 'war'
-
-
-//
-task deployToTomcat(dependsOn: 'war') << {
-    copy {
-        from war.archivePath
-        into "${tomcatHome}/webapps"
-    }
-}
