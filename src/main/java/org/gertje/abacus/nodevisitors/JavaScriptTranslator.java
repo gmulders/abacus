@@ -372,7 +372,6 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 
 		/**
 		 * Maakt een nieuwe instantie aan. Vertaal de expressie en bouw nodige gedeelten op.
-		 * @param expression
 		 * @throws VisitingException 
 		 */
 		private ExpressionTranslator(AbstractNode node) throws VisitingException {
