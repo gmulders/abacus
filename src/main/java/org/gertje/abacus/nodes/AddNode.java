@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -26,7 +27,7 @@ public class AddNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) {
+	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
 		Object left = lhs.evaluate(sym);
 		Object right = rhs.evaluate(sym);
 
@@ -79,12 +80,16 @@ public class AddNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			if (getType().equals(BigDecimal.class)) {
-				return nodeFactory.createFloatNode((BigDecimal) evaluate(sym), token);
-			} else if (getType().equals(BigInteger.class)) {
-				return nodeFactory.createIntegerNode((BigInteger) evaluate(sym), token);
-			} else {
-				return nodeFactory.createStringNode((String) evaluate(sym), token);
+			try {
+				if (getType().equals(BigDecimal.class)) {
+					return nodeFactory.createFloatNode((BigDecimal) evaluate(sym), token);
+				} else if (getType().equals(BigInteger.class)) {
+					return nodeFactory.createIntegerNode((BigInteger) evaluate(sym), token);
+				} else {
+					return nodeFactory.createStringNode((String) evaluate(sym), token);
+				}
+			} catch (EvaluationException e) {
+				throw new AnalyserException(e.getMessage(), token);
 			}
 		}
 

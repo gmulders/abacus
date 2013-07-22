@@ -3,6 +3,7 @@ package org.gertje.abacus.nodes;
 import java.math.BigDecimal;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -24,7 +25,7 @@ public class PowerNode extends AbstractNode {
 	}
 
 	@Override
-	public BigDecimal evaluate(SymbolTableInterface sym) {
+	public BigDecimal evaluate(SymbolTableInterface sym) throws EvaluationException {
 		// Evalueer de expressies voor de basis en de macht.
 		Number baseValue = (Number) base.evaluate(sym);
 		Number powerValue = (Number) power.evaluate(sym);
@@ -60,7 +61,11 @@ public class PowerNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (base.getIsConstant() && power.getIsConstant()) {
-			return nodeFactory.createFloatNode(evaluate(sym), token);
+			try {
+				return nodeFactory.createFloatNode(evaluate(sym), token);
+			} catch (EvaluationException e) {
+				throw new AnalyserException(e.getMessage(), token);
+			}
 		}
 
 		// Geef de huidige instantie terug.

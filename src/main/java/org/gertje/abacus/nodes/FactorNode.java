@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -20,7 +21,7 @@ public class FactorNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) {
+	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
 		// Deze methode op deze node zou nooit aangeroepen mogen worden, want dat betekent dat de boom niet geanalyseerd
 		// is.
 		return argument.evaluate(sym);

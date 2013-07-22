@@ -1,9 +1,11 @@
 package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class VariableNode extends AbstractNode {
@@ -21,8 +23,12 @@ public class VariableNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) {
-		return sym.getVariableValue(identifier);
+	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
+		try {
+			return sym.getVariableValue(identifier);
+		} catch (NoSuchVariableException e) {
+			throw new EvaluationException(e.getMessage(), token);
+		}
 	}
 
 	@Override
@@ -32,8 +38,13 @@ public class VariableNode extends AbstractNode {
 			throw new AnalyserException("Variable '" + identifier + "' does not exist.", token);
 		}
 
-		// Haal het type van de variabele op.
-		type = sym.getVariableType(identifier);
+		try {
+			// Haal het type van de variabele op.
+			type = sym.getVariableType(identifier);
+		} catch (NoSuchVariableException e) {
+			throw new AnalyserException(e.getMessage(), token);
+		}
+
 		return this;
 	}
 

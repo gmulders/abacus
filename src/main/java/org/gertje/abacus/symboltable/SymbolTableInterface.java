@@ -16,7 +16,7 @@ public interface SymbolTableInterface {
 	
 	/**
 	 * Zet de waarde van de variabele met de meegegeven identifier op de meegegeven waarde.
-	 * @param key
+	 * @param identifier
 	 * @param value
 	 */
 	public void setVariableValue(String identifier, Object value);
@@ -26,14 +26,14 @@ public interface SymbolTableInterface {
 	 * @param identifier
 	 * @return de waarde van de variabele.
 	 */
-	public Object getVariableValue(String identifier);
+	public Object getVariableValue(String identifier) throws NoSuchVariableException;
 	
 	/**
 	 * Geeft het type van de variabele met de meegegeven identifier terug.
 	 * @param identifier
 	 * @return het type van de variabele.
 	 */
-	public Class<?> getVariableType(String identifier);
+	public Class<?> getVariableType(String identifier) throws NoSuchVariableException;
 	
 	/**
 	 * Bepaalt of de variabele met de meegegeven identifier een waarde van het meegegeven type kan bevatten.
@@ -46,10 +46,10 @@ public interface SymbolTableInterface {
 	/**
 	 * Bepaalt of de functie bestaat voor de meegegeven identifier met de meegegeven parameters.
 	 * @param identifier
-	 * @param params
+	 * @param types
 	 * @return <code>true</code> wanneer de functie bestaat, anders <code>false</code>.
 	 */
-	public boolean getExistsFunction(String identifier, List<AbstractNode> params);
+	public boolean getExistsFunction(String identifier, List<Class<?>> types);
 	
 	/**
 	 * Evalueert de functie met de meegegeven identifier met de meegegeven parameters.
@@ -57,7 +57,8 @@ public interface SymbolTableInterface {
 	 * @param params
 	 * @return de returnwaarde van de functie.
 	 */
-	public Object getFunctionReturnValue(String identifier, List<AbstractNode> params);
+	public Object getFunctionReturnValue(String identifier, List<Object> params, List<Class<?>> types)
+			throws NoSuchFunctionException;
 	
 	/**
 	 * Bepaalt het return type van functie met de meegegeven parameters.

@@ -1,11 +1,14 @@
 package org.gertje.abacus.nodes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 
@@ -26,14 +29,39 @@ public class FunctionNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) {
-		return sym.getFunctionReturnValue(identifier, parameters);
+	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
+		// Maak een lijst met alle resultaten van de evaluatie van de parameters.
+		List<Object> paramResults = new ArrayList<Object>();
+		// Maak een lijst met alle types van de parameters.
+		List<Class<?>> paramTypes = new ArrayList<Class<?>>();
+
+		// Loop over alle nodes heen en vul de lijsten met de geevaluuerde waarde en het type.
+		for (AbstractNode node : parameters) {
+			paramResults.add(node.evaluate(sym));
+			paramTypes.add(node.getType());
+		}
+
+		try {
+			return sym.getFunctionReturnValue(identifier, paramResults, paramTypes);
+		} catch (NoSuchFunctionException e) {
+			throw new EvaluationException(e.getMessage(), token);
+		}
 	}
 
 	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+		// Maak een lijst van Objecten aan waarin we de parameters gaan evalueren.
+		List<Class<?>> types = new ArrayList<Class<?>>();
+
+		// Loop over alle nodes heen.
+		for (AbstractNode param : parameters) {
+			// Voeg het type van de node toe aan de lijst.
+			types.add(param.getType());
+		}
+
+
 		// Controleer of de variabele bestaat. Als deze niet bestaat gooien we een exceptie.
-		if (!sym.getExistsFunction(identifier, parameters)) {
+		if (!sym.getExistsFunction(identifier, types)) {
 			throw new AnalyserException("Function '" + identifier + "' does not exist.", token);
 		}
 

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -25,7 +26,7 @@ public class SubstractNode extends AbstractNode {
 	}
 
 	@Override
-	public Number evaluate(SymbolTableInterface sym) {
+	public Number evaluate(SymbolTableInterface sym) throws EvaluationException {
 		Number lhsValue = (Number) lhs.evaluate(sym);
 		Number rhsValue = (Number) rhs.evaluate(sym);
 		
@@ -50,7 +51,7 @@ public class SubstractNode extends AbstractNode {
 	 * Controleert of de node correct is van syntax.
 	 */
 	private boolean checkTypes() {
-		// Zowel de basis als de macht moet een getal zijn.
+		// Zowel de lhs als de rhs moet een getal zijn.
 		return isNumber(lhs.getType()) && isNumber(rhs.getType());
 	}
 
@@ -67,7 +68,12 @@ public class SubstractNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			Number value = evaluate(sym);
+			Number value;
+			try {
+				value = evaluate(sym);
+			} catch (EvaluationException e) {
+				throw new AnalyserException(e.getMessage(), token);
+			}
 			if (value instanceof BigDecimal) {
 				return nodeFactory.createFloatNode((BigDecimal)value, token);
 			}

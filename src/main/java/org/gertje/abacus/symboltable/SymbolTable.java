@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.gertje.abacus.EvaluationException;
+import org.gertje.abacus.Token;
 import org.gertje.abacus.functions.FunctionInterface;
 import org.gertje.abacus.nodes.AbstractNode;
 
@@ -53,20 +55,20 @@ public class SymbolTable implements SymbolTableInterface {
 	}
 
 	@Override
-	public Object getVariableValue(String identifier) {
+	public Object getVariableValue(String identifier) throws NoSuchVariableException {
 		// De variabele moet altijd bestaan, wanneer deze niet bestaat gooien we een exceptie.
 		if (!variables.containsKey(identifier)) {
-			throw new RuntimeException("Variable '" + identifier + "' does not exsist.");
+			throw new NoSuchVariableException("Variable '" + identifier + "' does not exsist.");
 		}
 		// De variabele bestaat, geef de waarde terug.
 		return variables.get(identifier);
 	}
 
 	@Override
-	public Class<?> getVariableType(String identifier) {
+	public Class<?> getVariableType(String identifier) throws NoSuchVariableException {
 		// De variabele moet altijd bestaan, wanneer deze niet bestaat gooien we een exceptie.
 		if (!variables.containsKey(identifier)) {
-			throw new RuntimeException("Variable '" + identifier + "' does not exsist.");
+			throw new NoSuchVariableException("Variable '" + identifier + "' does not exsist.");
 		}
 		// De variabele bestaat, geef het type terug.
 		return variables.get(identifier).getClass();
@@ -80,42 +82,25 @@ public class SymbolTable implements SymbolTableInterface {
 	}
 
 	@Override
-	public boolean getExistsFunction(String identifier, List<AbstractNode> params) {
+	public boolean getExistsFunction(String identifier, List<Class<?>> types) {
 		if (!functions.containsKey(identifier)) {
 			return false;
 		}
 		
-		// Maak een lijst van Objecten aan waarin we de parameters gaan evalueren.
-		List<Class<?>> types = new ArrayList<Class<?>>();
-
-		// Loop over alle nodes heen.
-		for (AbstractNode param : params) {
-			// Voeg het type van de node toe aan de lijst.
-			types.add(param.getType());
-		}		
-
 		// Controleer of de functie de types accepteerd.
 		return functions.get(identifier).acceptsParameters(types);
 	}
 
 	@Override
-	public Object getFunctionReturnValue(String identifier, List<AbstractNode> params) {
+	public Object getFunctionReturnValue(String identifier, List<Object> params, List<Class<?>> types)
+			throws NoSuchFunctionException {
 		// De functie moet bestaan, wanneer deze niet bestaat gooien we een exceptie.
-		if (!getExistsFunction(identifier, params)) {
-			throw new RuntimeException("Function '" + identifier + "' does not exsist.");
+		if (!getExistsFunction(identifier, types)) {
+			throw new NoSuchFunctionException("Function '" + identifier + "' does not exsist.");
 		}
 
-		// Maak een lijst van Objecten aan waarin we de parameters gaan evalueren.
-		List<Object> evaluatedParams = new ArrayList<Object>();
-		
-		// Loop over alle nodes heen.
-		for (AbstractNode param : params) {
-			// Evalueer de nodes en sla het resultaat op in de lijst.
-			evaluatedParams.add(param.evaluate(this));
-		}
-		
 		// De functie bestaat; evalueer de functie met de meegegeven parameters.
-		return functions.get(identifier).evaluate(evaluatedParams);
+		return functions.get(identifier).evaluate(params);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
@@ -26,7 +27,7 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 	}
 
 	@Override
-	public Boolean evaluate(SymbolTableInterface sym) {
+	public Boolean evaluate(SymbolTableInterface sym) throws EvaluationException {
 		Object left = lhs.evaluate(sym);
 		Object right = rhs.evaluate(sym);
 
@@ -60,7 +61,11 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			return nodeFactory.createBooleanNode(evaluate(sym), token);
+			try {
+				return nodeFactory.createBooleanNode(evaluate(sym), token);
+			} catch (EvaluationException e) {
+				throw new AnalyserException(e.getMessage(), token);
+			}
 		}
 
 		// Geef de huidige instantie terug.

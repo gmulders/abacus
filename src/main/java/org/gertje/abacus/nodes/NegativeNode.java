@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -23,7 +24,7 @@ public class NegativeNode extends AbstractNode {
 	}
 
 	@Override
-	public Number evaluate(SymbolTableInterface sym) {
+	public Number evaluate(SymbolTableInterface sym) throws EvaluationException {
 		// Bepaal het getal dat we negatief gaan maken.
 		Number number = (Number)argument.evaluate(sym);
 		
@@ -57,16 +58,19 @@ public class NegativeNode extends AbstractNode {
 		// Controleer de node.
 		checkNode();
 
-		// Wanneer het argument constant is en een float kunnen we hem vereenvoudigen.
-		if (argument.getIsConstant() && argument.getType().equals(BigDecimal.class)) {
-			return nodeFactory.createFloatNode((BigDecimal)evaluate(sym), token);
-		} 
+		try {
+			// Wanneer het argument constant is en een float kunnen we hem vereenvoudigen.
+			if (argument.getIsConstant() && argument.getType().equals(BigDecimal.class)) {
+				return nodeFactory.createFloatNode((BigDecimal)evaluate(sym), token);
+			}
 
-		// Wanneer het argument constant is en een integer kunnen we hem vereenvoudigen.
-		if (argument.getIsConstant() && argument.getType().equals(Integer.class)) {
-			return nodeFactory.createIntegerNode((BigInteger)evaluate(sym), token);
+			// Wanneer het argument constant is en een integer kunnen we hem vereenvoudigen.
+			if (argument.getIsConstant() && argument.getType().equals(Integer.class)) {
+				return nodeFactory.createIntegerNode((BigInteger)evaluate(sym), token);
+			}
+		} catch (EvaluationException e) {
+			throw new AnalyserException(e.getMessage(), token);
 		}
-
 		// We kunnen de node niet vereenvoudigen, geef de huidige instantie terug.
 		return this;
 	}

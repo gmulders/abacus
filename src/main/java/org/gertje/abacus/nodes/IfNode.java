@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -25,7 +26,7 @@ public class IfNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) {
+	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
 		// Evauleer de conditie.
 		Boolean cond = (Boolean)condition.evaluate(sym);
 		
@@ -69,10 +70,14 @@ public class IfNode extends AbstractNode {
 		
 		// Wanneer de conditie constant is geven we afhankelijk van de waarde een body terug.
 		if (condition.getIsConstant()) {
-			if (Boolean.TRUE.equals(condition.evaluate(sym))) {
-				return ifbody;
-			} else {
-				return elsebody;
+			try {
+				if (Boolean.TRUE.equals(condition.evaluate(sym))) {
+					return ifbody;
+				} else {
+					return elsebody;
+				}
+			} catch (EvaluationException e) {
+				throw new AnalyserException(e.getMessage(), token);
 			}
 		}
 

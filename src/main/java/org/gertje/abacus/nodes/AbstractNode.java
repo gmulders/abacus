@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -46,7 +47,7 @@ abstract public class AbstractNode {
 	/**
 	 * Evalueert de node, moet per node overschreven worden.
 	 */
-	abstract public Object evaluate(SymbolTableInterface sym);
+	abstract public Object evaluate(SymbolTableInterface sym) throws EvaluationException;
 
 	/**
 	 * Analyseert de node, dit betekent:

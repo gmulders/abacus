@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -20,7 +21,7 @@ public class NotNode extends AbstractNode {
 	}
 
 	@Override
-	public Boolean evaluate(SymbolTableInterface sym) {
+	public Boolean evaluate(SymbolTableInterface sym) throws EvaluationException {
 		// Bepaal de waarde van de boolean.
 		Boolean bool = (Boolean) argument.evaluate(sym);
 		
@@ -41,9 +42,13 @@ public class NotNode extends AbstractNode {
 			throw new AnalyserException("Expected a boolean expression in NotNode.", token);
 		}
 
-		// Wanneer het argument constant is kunnen we hem vereenvoudigen.
-		if (argument.getIsConstant()) {
-			return nodeFactory.createBooleanNode(evaluate(sym), token);
+		try {
+			// Wanneer het argument constant is kunnen we hem vereenvoudigen.
+			if (argument.getIsConstant()) {
+				return nodeFactory.createBooleanNode(evaluate(sym), token);
+			}
+		} catch (EvaluationException e) {
+			throw new AnalyserException(e.getMessage(), token);
 		}
 
 		// We kunnen de node niet vereenvoudigen, geef de huidige instantie terug.

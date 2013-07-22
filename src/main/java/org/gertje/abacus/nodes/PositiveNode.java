@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -23,7 +24,7 @@ public class PositiveNode extends AbstractNode {
 	}
 
 	@Override
-	public Number evaluate(SymbolTableInterface sym) {
+	public Number evaluate(SymbolTableInterface sym) throws EvaluationException {
 		return (Number) argument.evaluate(sym);
 	}
 

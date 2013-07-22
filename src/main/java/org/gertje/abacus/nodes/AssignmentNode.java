@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -57,7 +58,7 @@ public class AssignmentNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) {
+	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
 		// Evalueer de rechterkant van de toekenning.
 		Object result = rhs.evaluate(sym);
 

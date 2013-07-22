@@ -7,6 +7,7 @@ import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodevisitors.JavaScriptTranslator;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SymbolTable;
 
 public class AbacusTestCase {
@@ -44,7 +45,7 @@ public class AbacusTestCase {
 		try {
 			node = compiler.compile(expression, null);
 			value = node.evaluate(sym);
-		} catch (CompilerException ce) {
+		} catch (AbacusException ce) {
 			exception = ce.getMessage();
 			return expectException;
 		}
@@ -93,12 +94,15 @@ public class AbacusTestCase {
 
 	
 	private boolean checkSymbolTable(SymbolTable sym) {
-		for (Map.Entry<String, Object> entry : symbolsAfter.entrySet()) {
-			if (((Comparable) entry.getValue()).compareTo(sym.getVariableValue(entry.getKey())) != 0) {
-				return false;
-			}			
-        }
-
+		try {
+			for (Map.Entry<String, Object> entry : symbolsAfter.entrySet()) {
+				if (((Comparable) entry.getValue()).compareTo(sym.getVariableValue(entry.getKey())) != 0) {
+					return false;
+				}
+			}
+		} catch (NoSuchVariableException e) {
+			return false;
+		}
 		return true;
 	}
 	

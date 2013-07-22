@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
@@ -20,7 +21,7 @@ abstract class AbstractTermNode extends AbstractNode {
 	}
 
 	@Override
-	public Number evaluate(SymbolTableInterface sym) {
+	public Number evaluate(SymbolTableInterface sym) throws EvaluationException {
 		Number leftValue = (Number) lhs.evaluate(sym);
 		Number rightValue = (Number) rhs.evaluate(sym);
 		
@@ -59,7 +60,12 @@ abstract class AbstractTermNode extends AbstractNode {
 
 		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
 		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			Number value = evaluate(sym);
+			Number value;
+			try {
+				value = evaluate(sym);
+			} catch (EvaluationException e) {
+				throw new AnalyserException(e.getMessage(), token);
+			}
 			if (value instanceof BigDecimal) {
 				return nodeFactory.createFloatNode((BigDecimal)value, token);
 			}

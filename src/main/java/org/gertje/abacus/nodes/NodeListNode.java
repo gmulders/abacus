@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.gertje.abacus.AnalyserException;
+import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
@@ -39,7 +40,7 @@ public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode 
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) {
+	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
 		// Evalueer alle AbstractNodes en geef het resultaat van de laatste node terug.
 		Object result = null;
 		for (T node : nodeList) {
