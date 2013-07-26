@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
-import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
@@ -90,7 +90,7 @@ abstract public class AbstractNode {
 	 * @param visitor De visitor.
 	 * @throws VisitingException 
 	 */
-    abstract public void accept(NodeVisitorInterface visitor) throws VisitingException;
+    abstract public <R, X extends VisitingException> R accept(NodeVisitor<R, X> visitor) throws X;
 
 	/**
 	 * Bepaalt of het meegegeven type een nummer is.

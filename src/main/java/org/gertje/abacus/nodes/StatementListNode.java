@@ -1,7 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.Token;
-import org.gertje.abacus.nodevisitors.NodeVisitorInterface;
+import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
 /**
@@ -14,8 +14,8 @@ public class StatementListNode extends NodeListNode<AbstractNode> {
 	}
 
 	@Override
-	public void accept(NodeVisitorInterface visitor) throws VisitingException {
-		visitor.visit(this);		
+	public <R, X extends VisitingException> R accept(NodeVisitor<R, X> visitor) throws X {
+		return visitor.visit(this);
 	}
 
 	// Voor de rest gebeurt alle magie in NodeListNode<T>.
