@@ -8,7 +8,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 /**
  * Deze klasse stelt een node in een AbstractSyntaxTree voor.
@@ -28,7 +28,7 @@ abstract public class AbstractNode {
 	/**
 	 * Bevat de factory die de node moet gebruiken wanneer deze nieuwe nodes aanmaakt.
 	 */
-	protected NodeFactoryInterface nodeFactory;
+	protected NodeFactory nodeFactory;
 
 	/**
 	 * Contructor.
@@ -38,7 +38,7 @@ abstract public class AbstractNode {
 	 * @param token Bevat het token waaruit deze node is ontstaan.
 	 * @param nodeFactory Bevat de factory die de node moet gebruiken wanneer deze nieuwe nodes aanmaakt.
 	 */
-	public AbstractNode(int precedence, Token token, NodeFactoryInterface nodeFactory) {
+	public AbstractNode(int precedence, Token token, NodeFactory nodeFactory) {
 		this.precedence = precedence;
 		this.token = token;
 		this.nodeFactory = nodeFactory;
@@ -47,7 +47,7 @@ abstract public class AbstractNode {
 	/**
 	 * Evalueert de node, moet per node overschreven worden.
 	 */
-	abstract public Object evaluate(SymbolTableInterface sym) throws EvaluationException;
+	abstract public Object evaluate(SymbolTable sym) throws EvaluationException;
 
 	/**
 	 * Analyseert de node, dit betekent:
@@ -55,7 +55,7 @@ abstract public class AbstractNode {
 	 * - vereenvoudigd de node indien mogelijk.
 	 * @throws AnalyserException
 	 */
-	abstract public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException;
+	abstract public AbstractNode analyse(SymbolTable sym) throws AnalyserException;
 
 	/**
 	 * Geeft het type van de node terug.

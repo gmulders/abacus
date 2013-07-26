@@ -5,14 +5,14 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class AssignmentNode extends AbstractNode {
 
 	AbstractNode lhs;
 	AbstractNode rhs;
 
-	public AssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+	public AssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
 		super(1, token, nodeFactory);
 
 		this.lhs = lhs;
@@ -20,7 +20,7 @@ public class AssignmentNode extends AbstractNode {
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		// Analyseer de linker en de rechterkant van de expressie.
 		lhs = lhs.analyse(sym);
 		rhs = rhs.analyse(sym);
@@ -58,7 +58,7 @@ public class AssignmentNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Object evaluate(SymbolTable sym) throws EvaluationException {
 		// Evalueer de rechterkant van de toekenning.
 		Object result = rhs.evaluate(sym);
 

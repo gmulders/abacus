@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 abstract class AbstractTermNode extends AbstractNode {
 
@@ -14,14 +14,14 @@ abstract class AbstractTermNode extends AbstractNode {
 	protected AbstractNode rhs;
 
 	public AbstractTermNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence,
-			NodeFactoryInterface nodeFactory) {
+			NodeFactory nodeFactory) {
 		super(precedence, token, nodeFactory);
 		this.lhs = lhs;
 		this.rhs = rhs;
 	}
 
 	@Override
-	public Number evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Number evaluate(SymbolTable sym) throws EvaluationException {
 		Number leftValue = (Number) lhs.evaluate(sym);
 		Number rightValue = (Number) rhs.evaluate(sym);
 		
@@ -47,7 +47,7 @@ abstract class AbstractTermNode extends AbstractNode {
 	abstract protected Number term(BigInteger left, BigInteger right);
 	
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.analyse(sym);
 		rhs = rhs.analyse(sym);

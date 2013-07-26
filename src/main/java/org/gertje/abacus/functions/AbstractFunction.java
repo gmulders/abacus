@@ -2,7 +2,7 @@ package org.gertje.abacus.functions;
 
 import java.util.List;
 
-abstract class AbstractFunction implements FunctionInterface {
+abstract class AbstractFunction implements Function {
 
 	private List<Class<?>> allowedTypes;
 	private boolean canLastTypeRepeat;
@@ -27,7 +27,7 @@ abstract class AbstractFunction implements FunctionInterface {
 	 * Geeft terug of beide functies hetzelfde zijn, dit is het geval wanneer:
 	 * - de functies dezelfde parameters accepteren.
 	 */
-	public boolean equals(FunctionInterface function) {
+	public boolean equals(Function function) {
 		// Bepaal of de types overeenkomen.
 		return determineTypesMatch(((AbstractFunction) function).allowedTypes);
 	}

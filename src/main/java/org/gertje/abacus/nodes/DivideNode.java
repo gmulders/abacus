@@ -12,7 +12,7 @@ public class DivideNode extends AbstractTermNode {
 	/**
 	 * Constructor
 	 */
-	public DivideNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+	public DivideNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
 		super(lhs, rhs, token, 4, nodeFactory);
 	}
 

@@ -9,7 +9,7 @@ import java.util.ListIterator;
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 /**
  * Abstracte klasse die een lijst van Nodes voorstelt.
@@ -19,14 +19,14 @@ public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode 
 	List<T> nodeList;
 
 	// Constructor.
-	public NodeListNode(Token token, NodeFactoryInterface nodeFactory) {
+	public NodeListNode(Token token, NodeFactory nodeFactory) {
 		super(0, token, nodeFactory);
 		// Maak een lijst aan om de objecten op te slaan.
 		nodeList = new ArrayList<T>();
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		// Loop over de lijst heen om alle nodes in de lijst te analyseren.
 		for (int i = 0; i < nodeList.size(); i++) {
 			// LET OP! De nodeList kan alleen objecten bevatten van het type T of een type dat T extends. Dit betekent
@@ -40,7 +40,7 @@ public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode 
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Object evaluate(SymbolTable sym) throws EvaluationException {
 		// Evalueer alle AbstractNodes en geef het resultaat van de laatste node terug.
 		Object result = null;
 		for (T node : nodeList) {

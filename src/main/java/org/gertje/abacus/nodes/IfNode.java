@@ -5,7 +5,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class IfNode extends AbstractNode {
 
@@ -17,7 +17,7 @@ public class IfNode extends AbstractNode {
 	 * Constructor
 	 */
 	public IfNode(AbstractNode condition, AbstractNode ifbody, AbstractNode elsebody, Token token, 
-			NodeFactoryInterface nodeFactory) {
+			NodeFactory nodeFactory) {
 		super(10, token, nodeFactory);
 
 		this.condition = condition;
@@ -26,7 +26,7 @@ public class IfNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Object evaluate(SymbolTable sym) throws EvaluationException {
 		// Evauleer de conditie.
 		Boolean cond = (Boolean)condition.evaluate(sym);
 		
@@ -45,7 +45,7 @@ public class IfNode extends AbstractNode {
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		// Probeer de nodes zoveel mogelijk te vereenvoudigen.
 		condition = condition.analyse(sym);
 		ifbody = ifbody.analyse(sym);

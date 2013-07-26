@@ -13,7 +13,7 @@ public class EqNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public EqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+	public EqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
 		super(lhs, rhs, token, 7, nodeFactory);
 
 		allowedTypes = new ArrayList<Class<?>>();

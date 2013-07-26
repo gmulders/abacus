@@ -4,13 +4,13 @@ package org.gertje.abacus;
  * Klasse die een tokensoort voorstelt. 
  * 
  * De reden dat ik hier geen enum gebruik, is dat een enum niet te extenden is. Wanneer we een uitbreiding van Abacus
- * willen parsen (bijvoorbeeld Crayon), kunnen we een nieuwe Lexer maken die een uitgebreide syntax parst. Om het juiste
+ * willen parsen (bijvoorbeeld Crayon), kunnen we een nieuwe AbacusLexer maken die een uitgebreide syntax parst. Om het juiste
  * tokensoort terug te kunnen geven moeten we deze wel overschrijven. (Zie ook het Crayon project.)
  * 
  * We maken de constructor protected, zodat er geen andere tokensoorten aangemaakt kunnen worden. We gebruiken de Java
  * == operator om de soorten te kunnen vergelijken.
  */
-public class TokenType implements TokenTypeInterface {
+public class TokenType {
 	
 	public static final TokenType END_OF_INPUT = new TokenType("END_OF_INPUT");
 	public static final TokenType END_OF_EXPRESSION = new TokenType("END_OF_EXPRESSION");
@@ -71,7 +71,7 @@ public class TokenType implements TokenTypeInterface {
 
 
 /*
-public enum TokenType implements TokenTypeInterface {
+public enum TokenType {
 	END_OF_INPUT,
 	END_OF_EXPRESSION,
 	WHITE_SPACE,

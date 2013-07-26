@@ -1,16 +1,16 @@
 package org.gertje.abacus;
 
 import org.gertje.abacus.nodes.AbstractNode;
-import org.gertje.abacus.nodes.NodeFactoryInterface;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class Compiler {
 
-	private SymbolTableInterface symbolTable;
+	private SymbolTable symbolTable;
 
-	private NodeFactoryInterface nodeFactory;
+	private NodeFactory nodeFactory;
 
-	public Compiler(SymbolTableInterface symbolTable, NodeFactoryInterface nodeFactory) {
+	public Compiler(SymbolTable symbolTable, NodeFactory nodeFactory) {
 		this.symbolTable = symbolTable;
 		this.nodeFactory = nodeFactory;
 	}
@@ -24,7 +24,7 @@ public class Compiler {
 	public AbstractNode compile(String expression, Class<?> allowedReturnType) throws CompilerException {
 		// Compileren bestaat uit een aantal stappen;
 		// eerst maken we een lexer aan,
-		LexerInterface lexer = new Lexer(expression);
+		Lexer lexer = new AbacusLexer(expression);
 
 		// dan maken we een parser aan die we de lexer meegeven,
 		Parser parser = new Parser(lexer, nodeFactory);

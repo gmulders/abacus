@@ -5,7 +5,7 @@ import java.io.StringReader;
 
 import org.gertje.abacus.io.LexerReader;
 
-public abstract class AbstractLexer implements LexerInterface {
+public abstract class AbstractLexer implements Lexer {
 
 	protected LexerReader reader;
 

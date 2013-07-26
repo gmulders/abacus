@@ -7,7 +7,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class PowerNode extends AbstractNode {
 
@@ -17,7 +17,7 @@ public class PowerNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public PowerNode(AbstractNode base, AbstractNode power, Token token, NodeFactoryInterface nodeFactory) {
+	public PowerNode(AbstractNode base, AbstractNode power, Token token, NodeFactory nodeFactory) {
 		super(4, token, nodeFactory);
 
 		this.base = base;
@@ -25,7 +25,7 @@ public class PowerNode extends AbstractNode {
 	}
 
 	@Override
-	public BigDecimal evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public BigDecimal evaluate(SymbolTable sym) throws EvaluationException {
 		// Evalueer de expressies voor de basis en de macht.
 		Number baseValue = (Number) base.evaluate(sym);
 		Number powerValue = (Number) power.evaluate(sym);
@@ -49,7 +49,7 @@ public class PowerNode extends AbstractNode {
 	}
 	
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
         // Vereenvoudig de nodes indien mogelijk.
 		base = base.analyse(sym);
 		power = power.analyse(sym);

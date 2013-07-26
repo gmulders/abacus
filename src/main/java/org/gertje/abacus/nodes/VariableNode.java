@@ -6,7 +6,7 @@ import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class VariableNode extends AbstractNode {
 
@@ -16,14 +16,14 @@ public class VariableNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public VariableNode(String identifier, Token token, NodeFactoryInterface nodeFactory) {
+	public VariableNode(String identifier, Token token, NodeFactory nodeFactory) {
 		super(1, token, nodeFactory);
 
 		this.identifier = identifier;
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Object evaluate(SymbolTable sym) throws EvaluationException {
 		try {
 			return sym.getVariableValue(identifier);
 		} catch (NoSuchVariableException e) {
@@ -32,7 +32,7 @@ public class VariableNode extends AbstractNode {
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		// Controleer of de variabele bestaat. Als deze niet bestaat gooien we een exceptie.
 		if (!sym.getExistsVariable(identifier)) {
 			throw new AnalyserException("Variable '" + identifier + "' does not exist.", token);

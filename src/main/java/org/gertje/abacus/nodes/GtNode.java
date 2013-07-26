@@ -13,7 +13,7 @@ public class GtNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public GtNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+	public GtNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
 		super(lhs, rhs, token, 6, nodeFactory);
 		
 		allowedTypes = new ArrayList<Class<?>>();

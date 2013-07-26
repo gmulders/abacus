@@ -12,7 +12,7 @@ public class ModuloNode extends AbstractTermNode {
 	/**
 	 * Constructor
 	 */
-	public ModuloNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+	public ModuloNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
 		super(lhs, rhs, token, 4, nodeFactory);
 	}
 

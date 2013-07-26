@@ -8,7 +8,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class SubstractNode extends AbstractNode {
 
@@ -18,7 +18,7 @@ public class SubstractNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public SubstractNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+	public SubstractNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
 		super(5, token, nodeFactory);
 
 		this.lhs = lhs;
@@ -26,7 +26,7 @@ public class SubstractNode extends AbstractNode {
 	}
 
 	@Override
-	public Number evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Number evaluate(SymbolTable sym) throws EvaluationException {
 		Number lhsValue = (Number) lhs.evaluate(sym);
 		Number rhsValue = (Number) rhs.evaluate(sym);
 		
@@ -56,7 +56,7 @@ public class SubstractNode extends AbstractNode {
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
         // Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.analyse(sym);
 		rhs = rhs.analyse(sym);

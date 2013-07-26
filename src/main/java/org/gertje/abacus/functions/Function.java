@@ -2,7 +2,7 @@ package org.gertje.abacus.functions;
 
 import java.util.List;
 
-public interface FunctionInterface {
+public interface Function {
 
 	/**
 	 * Geeft de naam van de functie terug.
@@ -27,5 +27,5 @@ public interface FunctionInterface {
 	/**
 	 * Controleert of de functie gelijk is aan de meegegeven functie.
 	 */
-	public boolean equals(FunctionInterface function);
+	public boolean equals(Function function);
 }

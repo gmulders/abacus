@@ -8,7 +8,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class PositiveNode extends AbstractNode {
 
@@ -17,19 +17,19 @@ public class PositiveNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public PositiveNode(AbstractNode argument, Token token, NodeFactoryInterface nodeFactory) {
+	public PositiveNode(AbstractNode argument, Token token, NodeFactory nodeFactory) {
 		super(2, token, nodeFactory);
 
 		this.argument = argument;
 	}
 
 	@Override
-	public Number evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Number evaluate(SymbolTable sym) throws EvaluationException {
 		return (Number) argument.evaluate(sym);
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		argument = argument.analyse(sym);
 
 		// Het argument moet een float of een integer zijn.

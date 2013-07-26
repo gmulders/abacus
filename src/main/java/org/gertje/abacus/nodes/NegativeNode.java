@@ -8,7 +8,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class NegativeNode extends AbstractNode {
 
@@ -17,14 +17,14 @@ public class NegativeNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public NegativeNode(AbstractNode argument, Token token, NodeFactoryInterface nodeFactory) {
+	public NegativeNode(AbstractNode argument, Token token, NodeFactory nodeFactory) {
 		super(2, token, nodeFactory);
 
 		this.argument = argument;
 	}
 
 	@Override
-	public Number evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Number evaluate(SymbolTable sym) throws EvaluationException {
 		// Bepaal het getal dat we negatief gaan maken.
 		Number number = (Number)argument.evaluate(sym);
 		
@@ -52,7 +52,7 @@ public class NegativeNode extends AbstractNode {
 	}
 	
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		argument = argument.analyse(sym);
 
 		// Controleer de node.

@@ -9,7 +9,7 @@ import org.gertje.abacus.nodevisitors.VisitingException;
  */
 public class StatementListNode extends NodeListNode<AbstractNode> {
 
-	public StatementListNode(Token token, NodeFactoryInterface nodeFactory) {
+	public StatementListNode(Token token, NodeFactory nodeFactory) {
 		super(token, nodeFactory);
 	}
 

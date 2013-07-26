@@ -2,7 +2,7 @@ package org.gertje.abacus;
 
 public class Token {
 
-	private TokenTypeInterface type;
+	private TokenType type;
 	private String value;
 	private int lineNumber;
 	private int columnNumber;
@@ -12,11 +12,11 @@ public class Token {
 		this.columnNumber = columnNumber;
 	}
 
-	public void setType(TokenTypeInterface type) {
+	public void setType(TokenType type) {
 		this.type = type;
 	}
 
-	public TokenTypeInterface getType() {
+	public TokenType getType() {
 		return type;
 	}
 

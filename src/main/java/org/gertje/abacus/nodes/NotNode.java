@@ -5,7 +5,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class NotNode extends AbstractNode {
 
@@ -14,14 +14,14 @@ public class NotNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public NotNode(AbstractNode argument, Token token, NodeFactoryInterface nodeFactory) {
+	public NotNode(AbstractNode argument, Token token, NodeFactory nodeFactory) {
 		super(2, token, nodeFactory);
 
 		this.argument = argument;
 	}
 
 	@Override
-	public Boolean evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Boolean evaluate(SymbolTable sym) throws EvaluationException {
 		// Bepaal de waarde van de boolean.
 		Boolean bool = (Boolean) argument.evaluate(sym);
 		
@@ -34,7 +34,7 @@ public class NotNode extends AbstractNode {
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		argument = argument.analyse(sym);
 
 		// Het argument moet een boolean zijn.

@@ -7,7 +7,7 @@ import java.util.List;
 import org.gertje.abacus.AnalyserException;
 import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public abstract class AbstractComparisonNode extends AbstractNode {
 
@@ -20,14 +20,14 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 	protected List<Class<?>> allowedTypes;
 
 	public AbstractComparisonNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence,
-			NodeFactoryInterface nodeFactory) {
+			NodeFactory nodeFactory) {
 		super(precedence, token, nodeFactory);
 		this.lhs = lhs;
 		this.rhs = rhs;
 	}
 
 	@Override
-	public Boolean evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Boolean evaluate(SymbolTable sym) throws EvaluationException {
 		Object left = lhs.evaluate(sym);
 		Object right = rhs.evaluate(sym);
 
@@ -49,7 +49,7 @@ public abstract class AbstractComparisonNode extends AbstractNode {
 	abstract protected <T extends Comparable<? super T>> boolean compare(T left, T right);
 	
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.analyse(sym);
 		rhs = rhs.analyse(sym);

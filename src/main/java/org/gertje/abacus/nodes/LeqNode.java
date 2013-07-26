@@ -13,7 +13,7 @@ public class LeqNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public LeqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+	public LeqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
 		super(lhs, rhs, token, 6, nodeFactory);
 		
 		allowedTypes = new ArrayList<Class<?>>();

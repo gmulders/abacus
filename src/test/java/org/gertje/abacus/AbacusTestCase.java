@@ -3,12 +3,12 @@ package org.gertje.abacus;
 import java.util.Map;
 
 import org.gertje.abacus.functions.RandFunction;
+import org.gertje.abacus.nodes.AbacusNodeFactory;
 import org.gertje.abacus.nodes.AbstractNode;
-import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodevisitors.JavaScriptTranslator;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
-import org.gertje.abacus.symboltable.SymbolTable;
+import org.gertje.abacus.symboltable.SimpleSymbolTable;
 
 public class AbacusTestCase {
 
@@ -36,9 +36,9 @@ public class AbacusTestCase {
 	
 	private boolean runTest() {
 		// Maak een nieuwe symboltable en vul deze met wat waarden.
-		SymbolTable sym = createSymbolTable();
+		SimpleSymbolTable sym = createSymbolTable();
 		
-		Compiler compiler = new Compiler(sym, new NodeFactory());
+		Compiler compiler = new Compiler(sym, new AbacusNodeFactory());
 		AbstractNode node = null;
 
 		Object value;
@@ -93,7 +93,7 @@ public class AbacusTestCase {
 	}
 
 	
-	private boolean checkSymbolTable(SymbolTable sym) {
+	private boolean checkSymbolTable(SimpleSymbolTable sym) {
 		try {
 			for (Map.Entry<String, Object> entry : symbolsAfter.entrySet()) {
 				if (((Comparable) entry.getValue()).compareTo(sym.getVariableValue(entry.getKey())) != 0) {
@@ -106,8 +106,8 @@ public class AbacusTestCase {
 		return true;
 	}
 	
-	private SymbolTable createSymbolTable() {
-		SymbolTable sym = new SymbolTable();
+	private SimpleSymbolTable createSymbolTable() {
+		SimpleSymbolTable sym = new SimpleSymbolTable();
 
 		sym.setVariables(symbolsBefore);
 		

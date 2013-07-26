@@ -5,7 +5,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class OrNode extends AbstractNode {
 
@@ -15,7 +15,7 @@ public class OrNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public OrNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactoryInterface nodeFactory) {
+	public OrNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
 		super(8, token, nodeFactory);
 
 		this.lhs = lhs;
@@ -23,7 +23,7 @@ public class OrNode extends AbstractNode {
 	}
 
 	@Override
-	public Boolean evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Boolean evaluate(SymbolTable sym) throws EvaluationException {
 		Boolean left = (Boolean) lhs.evaluate(sym);
 		Boolean right = (Boolean) rhs.evaluate(sym);
 
@@ -41,7 +41,7 @@ public class OrNode extends AbstractNode {
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.analyse(sym);
 		rhs = rhs.analyse(sym);

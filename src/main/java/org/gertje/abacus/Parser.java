@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gertje.abacus.nodes.AbstractNode;
-import org.gertje.abacus.nodes.NodeFactoryInterface;
+import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodes.StatementListNode;
 
 public class Parser {
@@ -20,14 +20,14 @@ public class Parser {
 	/**
 	 * De lexer.
 	 */
-	private LexerInterface lex;
+	private Lexer lex;
 	
 	/**
 	 * De fabriek voor nodes.
 	 */
-	protected NodeFactoryInterface nodeFactory;
+	protected NodeFactory nodeFactory;
 
-	public Parser(LexerInterface lex, NodeFactoryInterface nodeFactory) {
+	public Parser(Lexer lex, NodeFactory nodeFactory) {
 		this.lex = lex;
 		this.nodeFactory = nodeFactory;
 	}

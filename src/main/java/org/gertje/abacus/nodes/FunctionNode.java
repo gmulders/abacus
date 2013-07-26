@@ -9,7 +9,7 @@ import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 
 public class FunctionNode extends AbstractNode {
@@ -21,7 +21,7 @@ public class FunctionNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public FunctionNode(String identifier, List<AbstractNode> parameters, Token token, NodeFactoryInterface nodeFactory) {
+	public FunctionNode(String identifier, List<AbstractNode> parameters, Token token, NodeFactory nodeFactory) {
 		super(1, token, nodeFactory);
 
 		this.identifier = identifier;
@@ -29,7 +29,7 @@ public class FunctionNode extends AbstractNode {
 	}
 
 	@Override
-	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
+	public Object evaluate(SymbolTable sym) throws EvaluationException {
 		// Maak een lijst met alle resultaten van de evaluatie van de parameters.
 		List<Object> paramResults = new ArrayList<Object>();
 		// Maak een lijst met alle types van de parameters.
@@ -49,7 +49,7 @@ public class FunctionNode extends AbstractNode {
 	}
 
 	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
+	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
 		// Maak een lijst van Objecten aan waarin we de parameters gaan evalueren.
 		List<Class<?>> types = new ArrayList<Class<?>>();
 

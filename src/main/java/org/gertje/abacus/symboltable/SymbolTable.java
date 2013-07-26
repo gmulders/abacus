@@ -1,116 +1,70 @@
 package org.gertje.abacus.symboltable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.gertje.abacus.EvaluationException;
-import org.gertje.abacus.Token;
-import org.gertje.abacus.functions.FunctionInterface;
 import org.gertje.abacus.nodes.AbstractNode;
 
-/**
- * Deze klasse stelt een vrij simpele implementatie van een SymbolTable voor. Voor de meeste toepassingen is dit 
- * voldoende. Wanneer de toepassing meer eisen stelt kan deze klasse overschreven worden, of een eigen implementatie van
- * SymbolTableInterface gemaakt worden.
- * 
- * Een aantal eigenschappen van deze implementatie zijn:
- * - Alle variabelen 'leven' in dezelfde 'ruimte', d.w.z. er wordt geen stack bijgehouden.
- * - Ook alle functies 'leven' in dezelfde 'ruimte'.
- * - Functies kunnen niet overloaded worden, d.w.z. een functie met een bepaalde naam bestaat maar een keer.
- */
-public class SymbolTable implements SymbolTableInterface {
 
-	private Map<String, Object> variables;
-	private Map<String, FunctionInterface> functions;
+public interface SymbolTable {
 
-	public SymbolTable() {
-		variables = new HashMap<String, Object>();
-		functions = new HashMap<String, FunctionInterface>();
-	}
+	/**
+	 * Bepaalt of de variabele met de meegegeven identifier bestaat.
+	 * @param identifier
+	 * @return <code>true</code> wanneer de variabele bestaat, anders <code>false</code>.
+	 */
+	public boolean getExistsVariable(String identifier);
 	
 	/**
-	 * Voegt de variabelen toe aan de symboltable, wanneer de variabele al bestaat wordt de waarde hiervan overschreven.
+	 * Zet de waarde van de variabele met de meegegeven identifier op de meegegeven waarde.
+	 * @param identifier
+	 * @param value
 	 */
-	public void setVariables(Map<String, Object> variables) {
-		this.variables.putAll(variables);
-	}
+	public void setVariableValue(String identifier, Object value);
+	
+	/**
+	 * Geeft de waarde van de variabele met de meegegeven identifier terug.
+	 * @param identifier
+	 * @return de waarde van de variabele.
+	 */
+	public Object getVariableValue(String identifier) throws NoSuchVariableException;
+	
+	/**
+	 * Geeft het type van de variabele met de meegegeven identifier terug.
+	 * @param identifier
+	 * @return het type van de variabele.
+	 */
+	public Class<?> getVariableType(String identifier) throws NoSuchVariableException;
+	
+	/**
+	 * Bepaalt of de variabele met de meegegeven identifier een waarde van het meegegeven type kan bevatten.
+	 * @param identifier
+	 * @param type
+	 * @return <code>true</code> wanneer de variabele van het meegegeven type is, anders <code>false</code>.
+	 */
+	public boolean getIsVariableTypeAllowed(String identifier, Class<?> type);
 
 	/**
-	 * Haal alle variabalen op uit de symboltable.
+	 * Bepaalt of de functie bestaat voor de meegegeven identifier met de meegegeven parameters.
+	 * @param identifier
+	 * @param types
+	 * @return <code>true</code> wanneer de functie bestaat, anders <code>false</code>.
 	 */
-	public Map<String, Object> getVariables() {
-		return variables;
-	}
-
-	@Override
-	public void setVariableValue(String key, Object value) {
-		variables.put(key, value);
-	}
-
-	@Override
-	public boolean getExistsVariable(String identifier) {
-		return variables.containsKey(identifier);
-	}
-
-	@Override
-	public Object getVariableValue(String identifier) throws NoSuchVariableException {
-		// De variabele moet altijd bestaan, wanneer deze niet bestaat gooien we een exceptie.
-		if (!variables.containsKey(identifier)) {
-			throw new NoSuchVariableException("Variable '" + identifier + "' does not exsist.");
-		}
-		// De variabele bestaat, geef de waarde terug.
-		return variables.get(identifier);
-	}
-
-	@Override
-	public Class<?> getVariableType(String identifier) throws NoSuchVariableException {
-		// De variabele moet altijd bestaan, wanneer deze niet bestaat gooien we een exceptie.
-		if (!variables.containsKey(identifier)) {
-			throw new NoSuchVariableException("Variable '" + identifier + "' does not exsist.");
-		}
-		// De variabele bestaat, geef het type terug.
-		return variables.get(identifier).getClass();
-	}
-
+	public boolean getExistsFunction(String identifier, List<Class<?>> types);
+	
 	/**
-	 * Voegt een functie toe aan de symboltable.
+	 * Evalueert de functie met de meegegeven identifier met de meegegeven parameters.
+	 * @param identifier
+	 * @param params
+	 * @return de returnwaarde van de functie.
 	 */
-	public void registerFunction(FunctionInterface function) {
-		functions.put(function.getName(), function);
-	}
-
-	@Override
-	public boolean getExistsFunction(String identifier, List<Class<?>> types) {
-		if (!functions.containsKey(identifier)) {
-			return false;
-		}
-		
-		// Controleer of de functie de types accepteerd.
-		return functions.get(identifier).acceptsParameters(types);
-	}
-
-	@Override
 	public Object getFunctionReturnValue(String identifier, List<Object> params, List<Class<?>> types)
-			throws NoSuchFunctionException {
-		// De functie moet bestaan, wanneer deze niet bestaat gooien we een exceptie.
-		if (!getExistsFunction(identifier, types)) {
-			throw new NoSuchFunctionException("Function '" + identifier + "' does not exsist.");
-		}
-
-		// De functie bestaat; evalueer de functie met de meegegeven parameters.
-		return functions.get(identifier).evaluate(params);
-	}
-
-	@Override
-	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params) {
-		// Bepaal het return type.
-		return functions.get(identifier).getReturnType();
-	}
+			throws NoSuchFunctionException;
 	
-	@Override
-	public boolean getIsVariableTypeAllowed(String identifier, Class<?> type) {
-		return true;
-	}
+	/**
+	 * Bepaalt het return type van functie met de meegegeven parameters.
+	 * @param identifier
+	 * @param params
+	 * @return het return type van de functie.
+	 */
+	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params);
 }
