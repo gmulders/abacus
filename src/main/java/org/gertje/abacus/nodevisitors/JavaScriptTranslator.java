@@ -33,7 +33,7 @@ import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
 
-public class JavaScriptTranslator extends AbstractNodeVisitor {
+public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingException> {
 
 	/**
 	 * Deze stack gebruiken we om gedeeltelijke vertalingen in op te slaan.
@@ -78,17 +78,19 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 	}
 	
 	@Override
-	public void visit(AddNode node) throws VisitingException {
+	public Void visit(AddNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "+");
+		return null;
 	}
 
 	@Override
-	public void visit(AndNode node) throws VisitingException {
+	public Void visit(AndNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "&&");
+		return null;
 	}
 
 	@Override
-	public void visit(AssignmentNode node) throws VisitingException {
+	public Void visit(AssignmentNode node) throws VisitingException {
 		node.getLhs().accept(this);
 		// Pop tussendoor even de assignee van de variabelestack om te voorkomen dat we controleren of de assignee niet
 		// null is. Anders zou je zoiets krijgen: a = 3 --> (function(){if(a==null)return null;return a = 3;})()
@@ -104,42 +106,49 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), rhsScript);
 		
 		partStack.push(script);
+		return null;
 	}
 
 	@Override
-	public void visit(BooleanNode node) throws VisitingException {
+	public Void visit(BooleanNode node) throws VisitingException {
 		partStack.push(node.getValue().booleanValue() ? "true" : "false");
+		return null;
 	}
 
 	@Override
-	public void visit(DateNode node) throws VisitingException {
+	public Void visit(DateNode node) throws VisitingException {
 		// TODO: data (meervoud van datum) kunnen we nog niet parsen...
 		partStack.push("new Date('TODO')");
+		return null;
 	}
 
 	@Override
-	public void visit(DivideNode node) throws VisitingException {
+	public Void visit(DivideNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "/");
+		return null;
 	}
 
 	@Override
-	public void visit(EqNode node) throws VisitingException {
+	public Void visit(EqNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "==");
+		return null;
 	}
 
 	@Override
-	public void visit(FactorNode node) throws VisitingException {
+	public Void visit(FactorNode node) throws VisitingException {
 		node.getArgument().accept(this);
-		partStack.push("(" + partStack.pop() + ")");		
+		partStack.push("(" + partStack.pop() + ")");
+		return null;
 	}
 
 	@Override
-	public void visit(FloatNode node) throws VisitingException {
+	public Void visit(FloatNode node) throws VisitingException {
 		partStack.push(node.getValue().toString());
+		return null;
 	}
 
 	@Override
-	public void visit(FunctionNode node) throws VisitingException {
+	public Void visit(FunctionNode node) throws VisitingException {
 		// Loop eerst over alle parameters heen, om de stack op te bouwen.
 		for (AbstractNode childNode : node.getParameters()) {
 			childNode.accept(this);
@@ -152,20 +161,23 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		}
 		
 		partStack.push(node.getIdentifier() + "(" + arguments + ")");
+		return null;
 	}
 
 	@Override
-	public void visit(GeqNode node) throws VisitingException {
+	public Void visit(GeqNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), ">=");
+		return null;
 	}
 
 	@Override
-	public void visit(GtNode node) throws VisitingException {
+	public Void visit(GtNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), ">");
+		return null;
 	}
 
 	@Override
-	public void visit(IfNode node) throws VisitingException {
+	public Void visit(IfNode node) throws VisitingException {
 
 		ExpressionTranslator conditionTranslator = new ExpressionTranslator(node.getCondition());
 		ExpressionTranslator ifBodyTranslator = new ExpressionTranslator(node.getIfbody());
@@ -192,71 +204,83 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		String variable = "_" + variableStack.size();
 		partStack.push(variable);
 		variableStack.push(variable);
+		return null;
 	}
 
 	@Override
-	public void visit(IntegerNode node) throws VisitingException {
+	public Void visit(IntegerNode node) throws VisitingException {
 		partStack.push(node.getValue().toString());
+		return null;
 	}
 
 	@Override
-	public void visit(LeqNode node) throws VisitingException {
+	public Void visit(LeqNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "<=");
+		return null;
 	}
 
 	@Override
-	public void visit(LtNode node) throws VisitingException {
+	public Void visit(LtNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "<");
+		return null;
 	}
 
 	@Override
-	public void visit(ModuloNode node) throws VisitingException {
+	public Void visit(ModuloNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "%");
+		return null;
 	}
 
 	@Override
-	public void visit(MultiplyNode node) throws VisitingException {
+	public Void visit(MultiplyNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "*");
+		return null;
 	}
 
 	@Override
-	public void visit(NegativeNode node) throws VisitingException {
+	public Void visit(NegativeNode node) throws VisitingException {
 		node.getArgument().accept(this);
 		
 		partStack.push("-" + partStack.pop());
+		return null;
 	}
 
 	@Override
-	public void visit(NeqNode node) throws VisitingException {
+	public Void visit(NeqNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "!=");
+		return null;
 	}
 
 	@Override
-	public void visit(NotNode node) throws VisitingException {
+	public Void visit(NotNode node) throws VisitingException {
 		node.getArgument().accept(this);
 		
 		partStack.push("!" + partStack.pop());
+		return null;
 	}
 
 	@Override
-	public void visit(NullNode node) throws VisitingException {
+	public Void visit(NullNode node) throws VisitingException {
 		partStack.push("null");
+		return null;
 	}
 
 	@Override
-	public void visit(OrNode node) throws VisitingException {
+	public Void visit(OrNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "||");
+		return null;
 	}
 
 	@Override
-	public void visit(PositiveNode node) throws VisitingException {
+	public Void visit(PositiveNode node) throws VisitingException {
 		node.getArgument().accept(this);
 		
 		partStack.push(partStack.pop());
+		return null;
 	}
 
 	@Override
-	public void visit(PowerNode node) throws VisitingException {
+	public Void visit(PowerNode node) throws VisitingException {
 		node.getBase().accept(this);
 		node.getPower().accept(this);
 
@@ -264,16 +288,17 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		String base = partStack.pop();
 
 		partStack.push("Math.pow(" + base + ", " + power + ")");
+		return null;
 	}
 
 	@Override
-	public void visit(StatementListNode node) throws VisitingException {
+	public Void visit(StatementListNode node) throws VisitingException {
 		// Wanneer er 1 statement in de lijst zit hoeven we dit statement niet te bundelen in een closure.
 		if (node.size() == 1) {
 			// Haal het ene element op en zorg dat het op de stack terecht komt.
 			node.get(0).accept(this);
 			// Doe NIETS: stack.push(stack.pop());
-			return;
+			return null;
 		}
 
 		// Er zitten meerdere statements in de lijst, bundel ze in een closure.
@@ -299,24 +324,28 @@ public class JavaScriptTranslator extends AbstractNodeVisitor {
 		closure += "})()";
 
 		partStack.push(closure);
+		return null;
 	}
 
 	@Override
-	public void visit(StringNode node) throws VisitingException {
+	public Void visit(StringNode node) throws VisitingException {
 		partStack.push("'" + node.getValue() + "'");
+		return null;
 	}
 
 	@Override
-	public void visit(SubstractNode node) throws VisitingException {
+	public Void visit(SubstractNode node) throws VisitingException {
 		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "-");
+		return null;
 	}
 
 	@Override
-	public void visit(VariableNode node) throws VisitingException {
+	public Void visit(VariableNode node) throws VisitingException {
 		// Duw de identifier op de variabelen stack, doe dit zodat we hierover kunnen beschikken in een IfNode. Dit doen
 		// we omdat JavaScript anders omgaat met NULL-waardes dan Abacus.
 		variableStack.push(node.getIdentifier());
 		partStack.push(node.getIdentifier());
+		return null;
 	}
 
 	/**
