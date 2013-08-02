@@ -87,7 +87,7 @@ public class IfNode extends AbstractNode {
 
 	@Override
 	public Class<?> getType() {
-		return ifbody.getType();
+		return !ifbody.getType().equals(Object.class) ? ifbody.getType() : elsebody.getType();
 	}
 
 	@Override
