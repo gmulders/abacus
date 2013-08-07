@@ -41,7 +41,7 @@ public interface SymbolTableInterface {
 	 * @param type
 	 * @return <code>true</code> wanneer de variabele van het meegegeven type is, anders <code>false</code>.
 	 */
-	public boolean getIsVariableTypeAllowed(String identifier, Class<?> type);
+	public boolean getIsVariableTypeAllowed(String identifier, Class<?> type) throws NoSuchVariableException;
 
 	/**
 	 * Bepaalt of de functie bestaat voor de meegegeven identifier met de meegegeven parameters.
@@ -66,5 +66,5 @@ public interface SymbolTableInterface {
 	 * @param params
 	 * @return het return type van de functie.
 	 */
-	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params);
+	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params) throws NoSuchFunctionException;
 }

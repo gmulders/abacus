@@ -10,19 +10,19 @@ import org.gertje.abacus.symboltable.SymbolTableInterface;
 public class IfNode extends AbstractNode {
 
 	private AbstractNode condition;
-	private AbstractNode ifbody;
-	private AbstractNode elsebody;
+	private AbstractNode ifBody;
+	private AbstractNode elseBody;
 
 	/**
 	 * Constructor
 	 */
-	public IfNode(AbstractNode condition, AbstractNode ifbody, AbstractNode elsebody, Token token, 
+	public IfNode(AbstractNode condition, AbstractNode ifBody, AbstractNode elseBody, Token token, 
 			NodeFactoryInterface nodeFactory) {
 		super(10, token, nodeFactory);
 
 		this.condition = condition;
-		this.ifbody = ifbody;
-		this.elsebody = elsebody;
+		this.ifBody = ifBody;
+		this.elseBody = elseBody;
 	}
 
 	@Override
@@ -37,19 +37,19 @@ public class IfNode extends AbstractNode {
 
 		// Wanneer de conditie waar is geven we de geevalueerde if body terug, anders geven we de else body terug.
 		if (Boolean.TRUE.equals(cond)) {
-			return ifbody.evaluate(sym);
+			return ifBody.evaluate(sym);
 		}
 
 		// We moeten de else body geevaluateueerd teruggeven.
-		return elsebody.evaluate(sym);
+		return elseBody.evaluate(sym);
 	}
 
 	@Override
 	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
 		// Probeer de nodes zoveel mogelijk te vereenvoudigen.
 		condition = condition.analyse(sym);
-		ifbody = ifbody.analyse(sym);
-		elsebody = elsebody.analyse(sym);
+		ifBody = ifBody.analyse(sym);
+		elseBody = elseBody.analyse(sym);
 
 		// De waarde van de conditie moet van het type 'boolean' zijn.
 		if (!condition.getType().equals(Boolean.class)) {
@@ -57,14 +57,14 @@ public class IfNode extends AbstractNode {
 		}
 
 		// De waardes van beide bodies moeten van het zelfde type zijn of een van beide mag null zijn.
-		if (ifbody.getType() != elsebody.getType() 
-				&& !ifbody.getType().equals(Object.class) 
-				&& !elsebody.getType().equals(Object.class)) {
+		if (ifBody.getType() != elseBody.getType() 
+				&& !ifBody.getType().equals(Object.class) 
+				&& !elseBody.getType().equals(Object.class)) {
 			throw new AnalyserException("IF-body and ELSE-body should have the same type.", token);
 		}
 
 		// De waardes van de bodies mogen niet allebei null zijn.
-		if (ifbody.getType().equals(Object.class) && elsebody.getType().equals(Object.class)) {
+		if (ifBody.getType().equals(Object.class) && elseBody.getType().equals(Object.class)) {
 			throw new AnalyserException("IF-body and ELSE-body should not be both null.", token);
 		}
 		
@@ -72,9 +72,9 @@ public class IfNode extends AbstractNode {
 		if (condition.getIsConstant()) {
 			try {
 				if (Boolean.TRUE.equals(condition.evaluate(sym))) {
-					return ifbody;
+					return ifBody;
 				} else {
-					return elsebody;
+					return elseBody;
 				}
 			} catch (EvaluationException e) {
 				throw new AnalyserException(e.getMessage(), token);
@@ -87,7 +87,7 @@ public class IfNode extends AbstractNode {
 
 	@Override
 	public Class<?> getType() {
-		return ifbody.getType();
+		return ifBody.getType();
 	}
 
 	@Override
@@ -108,19 +108,19 @@ public class IfNode extends AbstractNode {
 		this.condition = condition;
 	}
 
-	public AbstractNode getIfbody() {
-		return ifbody;
+	public AbstractNode getIfBody() {
+		return ifBody;
 	}
 
-	public void setIfbody(AbstractNode ifbody) {
-		this.ifbody = ifbody;
+	public void setIfBody(AbstractNode ifBody) {
+		this.ifBody = ifBody;
 	}
 
-	public AbstractNode getElsebody() {
-		return elsebody;
+	public AbstractNode getElseBody() {
+		return elseBody;
 	}
 
-	public void setElsebody(AbstractNode elsebody) {
-		this.elsebody = elsebody;
+	public void setElseBody(AbstractNode elseBody) {
+		this.elseBody = elseBody;
 	}
 }

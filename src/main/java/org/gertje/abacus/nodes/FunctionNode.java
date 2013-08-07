@@ -66,7 +66,12 @@ public class FunctionNode extends AbstractNode {
 		}
 
 		// Haal het type van de variabele op.
-		returnType = sym.getFunctionReturnType(identifier, parameters);
+		try {
+			returnType = sym.getFunctionReturnType(identifier, parameters);
+		} catch (NoSuchFunctionException e) {
+			throw new AnalyserException(e.getMessage(), token);
+		}
+
 		return this;
 	}
 

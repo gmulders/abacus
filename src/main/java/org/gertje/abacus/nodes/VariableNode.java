@@ -62,8 +62,16 @@ public class VariableNode extends AbstractNode {
 	public <R, X extends VisitingException> R accept(NodeVisitor<R, X> visitor) throws X {
 		return visitor.visit(this);
 	}
-	
+
+	public void setType(Class<?> type) {
+		this.type = type;
+	}
+
 	public String getIdentifier() {
 		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 }

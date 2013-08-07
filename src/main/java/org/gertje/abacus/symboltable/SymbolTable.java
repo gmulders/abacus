@@ -104,11 +104,24 @@ public class SymbolTable implements SymbolTableInterface {
 	}
 
 	@Override
-	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params) {
+	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params) 
+			throws NoSuchFunctionException {
+		List<Class<?>> types = new ArrayList<Class<?>>();
+
+		// Loop over alle parameters heen om de types te bepalen.
+		for (AbstractNode param : params) {
+			types.add(param.getType());
+		}
+
+		// De functie moet bestaan, wanneer deze niet bestaat gooien we een exceptie.
+		if (!getExistsFunction(identifier, types)) {
+			throw new NoSuchFunctionException("Function '" + identifier + "' does not exsist.");
+		}
+
 		// Bepaal het return type.
 		return functions.get(identifier).getReturnType();
 	}
-	
+
 	@Override
 	public boolean getIsVariableTypeAllowed(String identifier, Class<?> type) {
 		return true;
