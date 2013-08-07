@@ -1,36 +1,11 @@
 package org.gertje.abacus.nodevisitors;
 
-import org.gertje.abacus.nodes.AbstractNode;
-import org.gertje.abacus.nodes.AddNode;
-import org.gertje.abacus.nodes.AndNode;
-import org.gertje.abacus.nodes.AssignmentNode;
-import org.gertje.abacus.nodes.BooleanNode;
-import org.gertje.abacus.nodes.DateNode;
-import org.gertje.abacus.nodes.DivideNode;
-import org.gertje.abacus.nodes.EqNode;
-import org.gertje.abacus.nodes.FactorNode;
-import org.gertje.abacus.nodes.FloatNode;
-import org.gertje.abacus.nodes.FunctionNode;
-import org.gertje.abacus.nodes.GeqNode;
-import org.gertje.abacus.nodes.GtNode;
-import org.gertje.abacus.nodes.IfNode;
-import org.gertje.abacus.nodes.IntegerNode;
-import org.gertje.abacus.nodes.LeqNode;
-import org.gertje.abacus.nodes.LtNode;
-import org.gertje.abacus.nodes.ModuloNode;
-import org.gertje.abacus.nodes.MultiplyNode;
-import org.gertje.abacus.nodes.NegativeNode;
-import org.gertje.abacus.nodes.NeqNode;
-import org.gertje.abacus.nodes.NotNode;
-import org.gertje.abacus.nodes.NullNode;
-import org.gertje.abacus.nodes.OrNode;
-import org.gertje.abacus.nodes.PositiveNode;
-import org.gertje.abacus.nodes.PowerNode;
-import org.gertje.abacus.nodes.StatementListNode;
-import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
-import org.gertje.abacus.nodes.VariableNode;
+import org.gertje.abacus.*;
+import org.gertje.abacus.nodes.*;
 import org.gertje.abacus.symboltable.SymbolTable;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class Simplifier extends AbstractNodeVisitor<AbstractNode, SimplificationException> {
 
@@ -40,10 +15,24 @@ public class Simplifier extends AbstractNodeVisitor<AbstractNode, Simplification
 	private SymbolTable symbolTable;
 
 	/**
+	 * De nodefactory die we gebruiken om nodes aan te maken.
+	 */
+	private NodeFactory nodeFactory;
+
+	/**
+	 * De evaluator die we gebruiken om nodes te vereenvoudigen waar mogelijk.
+	 */
+	private Evaluator evaluator;
+
+	/**
 	 * Constructor.
 	 */
-	public Simplifier(SymbolTable symbolTable) {
+	public Simplifier(SymbolTable symbolTable, NodeFactory nodeFactory) {
 		this.symbolTable = symbolTable;
+		this.nodeFactory = nodeFactory;
+
+		// Maak een evaluator aan om de nodes te vereenvoudigen.
+		evaluator = new Evaluator(symbolTable);
 	}
 
 	public AbstractNode simplify(AbstractNode node) throws SimplificationException {
@@ -52,27 +41,93 @@ public class Simplifier extends AbstractNodeVisitor<AbstractNode, Simplification
 
 	@Override
 	public AbstractNode visit(AddNode node) throws SimplificationException {
-		return null;
+		AbstractNode lhs = node.getLhs();
+		AbstractNode rhs = node.getRhs();
+
+		// Vereenvoudig de nodes indien mogelijk.
+		lhs = lhs.accept(this); node.setLhs(lhs);
+		rhs = rhs.accept(this); node.setRhs(rhs);
+
+		// Wanneer een van beide zijden niet constant is kunnen we de node niet verder vereenvoudigen. Geef de huidige
+		// instantie terug.
+		if (!lhs.getIsConstant() || !rhs.getIsConstant()) {
+			return node;
+		}
+
+		// Wanneer we hier komen zijn beide zijden constant. Vereenvoudig de node.
+		Object result;
+		try {
+			result = evaluator.evaluate(node);
+		} catch (EvaluationException e) {
+			throw new SimplificationException(e.getMessage(), node);
+		}
+
+		if (node.getType().equals(BigDecimal.class)) {
+			return nodeFactory.createFloatNode((BigDecimal) result, node.getToken());
+		} else if (node.getType().equals(BigInteger.class)) {
+			return nodeFactory.createIntegerNode((BigInteger) result, node.getToken());
+		} else {
+			return nodeFactory.createStringNode((String) result, node.getToken());
+		}
 	}
 
 	@Override
 	public AbstractNode visit(AndNode node) throws SimplificationException {
-		return null;
+		AbstractNode lhs = node.getLhs();
+		AbstractNode rhs = node.getRhs();
+
+		// Vereenvoudig de nodes indien mogelijk.
+		lhs = lhs.accept(this); node.setLhs(lhs);
+		rhs = rhs.accept(this); node.setRhs(rhs);
+
+		try {
+			// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
+			if (lhs.getIsConstant() && rhs.getIsConstant()) {
+				return nodeFactory.createBooleanNode((Boolean)evaluator.evaluate(node), node.getToken());
+			}
+
+			// Wanneer slechts de linker zijde of de rechter zijde constant is en deze naar 'false' evalueert, evalueert
+			// de hele expressie naar false en kunnen we de node vereenvoudigen.
+			if (lhs.getIsConstant() && !((Boolean)evaluator.evaluate(lhs)).booleanValue()
+					|| rhs.getIsConstant() && !((Boolean)evaluator.evaluate(rhs)).booleanValue()) {
+				return nodeFactory.createBooleanNode(Boolean.FALSE, node.getToken());
+			}
+
+			// Wanneer slechts de linker zijde of de rechter zijde constant is en deze naar 'true' evalueert, evalueert
+			// de huidige expressie naar de niet constante expressie.
+			if (lhs.getIsConstant() && ((Boolean)evaluator.evaluate(lhs)).booleanValue()) {
+				return rhs;
+			} else if (rhs.getIsConstant() && ((Boolean)evaluator.evaluate(rhs)).booleanValue()) {
+				return lhs;
+			}
+		} catch (EvaluationException e) {
+			throw new SimplificationException(e.getMessage(), node);
+		}
+
+		return node;
 	}
 
 	@Override
 	public AbstractNode visit(AssignmentNode node) throws SimplificationException {
-		return null;
+		AbstractNode lhs = node.getLhs();
+		AbstractNode rhs = node.getRhs();
+
+		// Vereenvoudig de nodes indien mogelijk.
+		lhs = lhs.accept(this); node.setLhs(lhs);
+		rhs = rhs.accept(this); node.setRhs(rhs);
+
+		// We kunnen deze node niet verder vereenvoudigen, geef de node terug.
+		return node;
 	}
 
 	@Override
 	public AbstractNode visit(BooleanNode node) throws SimplificationException {
-		return null;
+		return node;
 	}
 
 	@Override
 	public AbstractNode visit(DateNode node) throws SimplificationException {
-		return null;
+		return node;
 	}
 
 	@Override
