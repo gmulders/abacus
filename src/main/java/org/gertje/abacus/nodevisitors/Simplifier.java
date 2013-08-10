@@ -1,6 +1,5 @@
 package org.gertje.abacus.nodevisitors;
 
-import org.gertje.abacus.*;
 import org.gertje.abacus.nodes.*;
 import org.gertje.abacus.symboltable.SymbolTable;
 

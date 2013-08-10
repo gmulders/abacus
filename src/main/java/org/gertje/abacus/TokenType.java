@@ -49,7 +49,7 @@ public class TokenType {
 	
 	/**
 	 * Constructor.
-	 * @param name
+	 * @param name Naam van het token.
 	 */
 	protected TokenType(String name) {
 		this.name = name;

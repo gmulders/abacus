@@ -275,7 +275,7 @@ public class AbacusLexer extends AbstractLexer {
 			char n = peekChar();
 			// Wanneer het volgende teken een . is en er nog geen punt gevonden is voegen we deze op het einde toe.
 			if (n == '.') {
-				if (hasDot == true) {
+				if (hasDot) {
 					throw new LexerException("Illegal number format; unexpected '.'.", 
 							reader.getLineNumber(), reader.getColumnNumber());
 				}

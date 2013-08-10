@@ -5,15 +5,15 @@ import java.util.Map;
 import org.gertje.abacus.functions.RandFunction;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
 import org.gertje.abacus.nodes.AbstractNode;
+import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodevisitors.JavaScriptTranslator;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
 import org.gertje.abacus.nodevisitors.Evaluator;
-import org.gertje.abacus.nodevisitors.SemanticsCheckException;
 import org.gertje.abacus.nodevisitors.Simplifier;
-import org.gertje.abacus.nodevisitors.SimplificationException;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SimpleSymbolTable;
+import org.gertje.abacus.symboltable.SymbolTable;
 
 public class AbacusTestCase {
 
@@ -43,9 +43,9 @@ public class AbacusTestCase {
 		// Maak een nieuwe symboltable en vul deze met wat waarden.
 		SymbolTable sym = createSymbolTable();
 
-		NodeFactory nodeFactory = new NodeFactory();
+		NodeFactory nodeFactory = new AbacusNodeFactory();
 
-		LexerInterface lexer = new Lexer(expression);
+		Lexer lexer = new AbacusLexer(expression);
  		Parser parser = new Parser(lexer, nodeFactory);
 
 		AbstractNode tree;
@@ -127,7 +127,7 @@ public class AbacusTestCase {
 	}
 	
 	private SymbolTable createSymbolTable() {
-		SymbolTable sym = new SimpleSymbolTable();
+		SimpleSymbolTable sym = new SimpleSymbolTable();
 
 		sym.setVariables(symbolsBefore);
 		

@@ -2,9 +2,6 @@ package org.gertje.abacus.nodevisitors;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EvaluationHelper {
 

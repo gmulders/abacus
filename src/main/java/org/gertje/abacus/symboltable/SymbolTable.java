@@ -66,5 +66,5 @@ public interface SymbolTable {
 	 * @param params
 	 * @return het return type van de functie.
 	 */
-	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params);
+	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params) throws NoSuchFunctionException;
 }
