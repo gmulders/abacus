@@ -6,6 +6,11 @@ import org.gertje.abacus.functions.RandFunction;
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodevisitors.JavaScriptTranslator;
+import org.gertje.abacus.nodevisitors.SemanticsChecker;
+import org.gertje.abacus.nodevisitors.Evaluator;
+import org.gertje.abacus.nodevisitors.SemanticsCheckException;
+import org.gertje.abacus.nodevisitors.Simplifier;
+import org.gertje.abacus.nodevisitors.SimplificationException;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -37,16 +42,31 @@ public class AbacusTestCase {
 	private boolean runTest() {
 		// Maak een nieuwe symboltable en vul deze met wat waarden.
 		SymbolTable sym = createSymbolTable();
-		
-		Compiler compiler = new Compiler(sym, new NodeFactory());
-		AbstractNode node = null;
+
+		NodeFactory nodeFactory = new NodeFactory();
+
+		LexerInterface lexer = new Lexer(expression);
+ 		Parser parser = new Parser(lexer, nodeFactory);
+
+		AbstractNode tree;
+		try {
+			tree = parser.parse();
+		}  catch (CompilerException e) {
+			exception = e.getMessage();
+			return expectException;
+		}
+
+		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
+		Simplifier simplifier = new Simplifier(sym, nodeFactory);
+		Evaluator evaluator = new Evaluator(sym);
 
 		Object value;
 		try {
-			node = compiler.compile(expression, null);
-			value = node.evaluate(sym);
-		} catch (AbacusException ce) {
-			exception = ce.getMessage();
+			semanticsChecker.check(tree);
+			tree = simplifier.simplify(tree);
+			value = evaluator.evaluate(tree);
+		} catch (VisitingException e) {
+			exception = e.getMessage();
 			return expectException;
 		}
 
@@ -56,7 +76,7 @@ public class AbacusTestCase {
 		
 		try {
 			JavaScriptTranslator javaScriptTranslator = new JavaScriptTranslator();
-			javaScript = javaScriptTranslator.translate(node);
+			javaScript = javaScriptTranslator.translate(tree);
 		} catch (VisitingException ve) {
 			exception = ve.getMessage();
 			return false;

@@ -60,7 +60,7 @@ public class OrNode extends AbstractNode {
 			// Wanneer slechts de linker zijde of de rechter zijde constant is en deze naar 'true' evalueert, evalueert de
 			// hele expressie naar true en kunnen we de node vereenvoudigen.
 			if (lhs.getIsConstant() && ((Boolean)lhs.evaluate(sym)).booleanValue()
-					|| rhs.getIsConstant() && !((Boolean)rhs.evaluate(sym)).booleanValue()) {
+					|| rhs.getIsConstant() && ((Boolean)rhs.evaluate(sym)).booleanValue()) {
 				return nodeFactory.createBooleanNode(Boolean.TRUE, token);
 			}
 

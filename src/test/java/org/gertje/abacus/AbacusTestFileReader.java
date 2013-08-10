@@ -31,7 +31,7 @@ public class AbacusTestFileReader {
 		if (line == null) {
 			return null;
 		}
-		String[] tokens = line.split("\\|");
+		String[] tokens = line.split("@");
 		
 		return new AbacusTestCase(
 				tokens[0], 

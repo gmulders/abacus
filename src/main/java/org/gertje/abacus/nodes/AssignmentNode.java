@@ -94,7 +94,7 @@ public class AssignmentNode extends AbstractNode {
 		return lhs;
 	}
 
-	public void setLhs(VariableNode lhs) {
+	public void setLhs(AbstractNode lhs) {
 		this.lhs = lhs;
 	}
 

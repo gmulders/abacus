@@ -113,8 +113,8 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 		AbstractNode lhs = node.getLhs();
 		AbstractNode rhs = node.getRhs();
 
-		Boolean left = (Boolean) lhs.accept(this);
-		Boolean right = (Boolean) rhs.accept(this);
+		Number left = (Number) lhs.accept(this);
+		Number right = (Number) rhs.accept(this);
 
 		return EvaluationHelper.divide(left, right);
 	}
@@ -241,8 +241,8 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 		AbstractNode lhs = node.getLhs();
 		AbstractNode rhs = node.getRhs();
 
-		Boolean left = (Boolean) lhs.accept(this);
-		Boolean right = (Boolean) rhs.accept(this);
+		Number left = (Number) lhs.accept(this);
+		Number right = (Number) rhs.accept(this);
 
 		return EvaluationHelper.modulo(left, right);
 	}
@@ -252,8 +252,8 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 		AbstractNode lhs = node.getLhs();
 		AbstractNode rhs = node.getRhs();
 
-		Boolean left = (Boolean) lhs.accept(this);
-		Boolean right = (Boolean) rhs.accept(this);
+		Number left = (Number) lhs.accept(this);
+		Number right = (Number) rhs.accept(this);
 
 		return EvaluationHelper.multiply(left, right);
 	}

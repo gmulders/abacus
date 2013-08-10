@@ -8,7 +8,7 @@ import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.symboltable.SymbolTableInterface;
 
-abstract class AbstractTermNode extends AbstractNode {
+public abstract class AbstractTermNode extends AbstractNode {
 
 	protected AbstractNode lhs;
 	protected AbstractNode rhs;

@@ -269,6 +269,10 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 		AbstractNode ifbody = node.getIfBody();
 		AbstractNode elsebody = node.getElseBody();
 
+		condition.accept(this);
+		ifbody.accept(this);
+		elsebody.accept(this);
+
 		// De waarde van de conditie moet van het type 'boolean' zijn.
  		if (!condition.getType().equals(Boolean.class)) {
 			throw new SemanticsCheckException("Expected boolean parameter to IF-expression.", node);
