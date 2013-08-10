@@ -1,14 +1,8 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import org.gertje.abacus.AnalyserException;
-import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 /**
  * Deze klasse stelt een node in een AbstractSyntaxTree voor.
@@ -45,19 +39,6 @@ abstract public class AbstractNode {
 	}
 
 	/**
-	 * Evalueert de node, moet per node overschreven worden.
-	 */
-	abstract public Object evaluate(SymbolTableInterface sym) throws EvaluationException;
-
-	/**
-	 * Analyseert de node, dit betekent:
-	 * - controleert de node op correctheid
-	 * - vereenvoudigd de node indien mogelijk.
-	 * @throws AnalyserException
-	 */
-	abstract public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException;
-
-	/**
 	 * Geeft het type van de node terug.
 	 */
 	abstract public Class<?> getType();
@@ -88,18 +69,8 @@ abstract public class AbstractNode {
 	 * De bedoeling is dat een node deze methode ook aanroept bij zijn child-nodes.
 	 * 
 	 * @param visitor De visitor.
-	 * @throws VisitingException 
 	 */
     abstract public <R, X extends VisitingException> R accept(NodeVisitor<R, X> visitor) throws X;
-
-	/**
-	 * Bepaalt of het meegegeven type een nummer is.
-	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
-	 * @return <code>true</code> wanneer het meegegeven type een nummer is, anders <code>false</code>.
-	 */
-	protected boolean isNumber(Class<?> type) {
-		return BigDecimal.class.equals(type) || BigInteger.class.equals(type);
-	}
 
 	/**
 	 * Geeft het token terug.

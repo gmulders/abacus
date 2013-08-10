@@ -6,10 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.gertje.abacus.AnalyserException;
-import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 /**
  * Abstracte klasse die een lijst van Nodes voorstelt.
@@ -23,31 +20,6 @@ public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode 
 		super(0, token, nodeFactory);
 		// Maak een lijst aan om de objecten op te slaan.
 		nodeList = new ArrayList<T>();
-	}
-
-	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
-		// Loop over de lijst heen om alle nodes in de lijst te analyseren.
-		for (int i = 0; i < nodeList.size(); i++) {
-			// LET OP! De nodeList kan alleen objecten bevatten van het type T of een type dat T extends. Dit betekent
-			// dat we ervoor moeten zorgen dat wanneer we een node van het type T analyseren ook weer een node van dit
-			// type terug krijgen.
-			nodeList.set(i, (T)nodeList.get(i).analyse(sym));
-		}
-
-		// Geef altijd this terug.
-		return this;
-	}
-
-	@Override
-	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
-		// Evalueer alle AbstractNodes en geef het resultaat van de laatste node terug.
-		Object result = null;
-		for (T node : nodeList) {
-			result = node.evaluate(sym);
-		}
-
-		return result;
 	}
 
 	@Override

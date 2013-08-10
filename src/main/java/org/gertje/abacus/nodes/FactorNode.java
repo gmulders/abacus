@@ -1,11 +1,8 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.AnalyserException;
-import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTableInterface;
 
 public class FactorNode extends AbstractNode {
 
@@ -18,19 +15,6 @@ public class FactorNode extends AbstractNode {
 		super(0, token, nodeFactory);
 
 		this.argument = argument;
-	}
-
-	@Override
-	public Object evaluate(SymbolTableInterface sym) throws EvaluationException {
-		// Deze methode op deze node zou nooit aangeroepen mogen worden, want dat betekent dat de boom niet geanalyseerd
-		// is.
-		return argument.evaluate(sym);
-	}
-
-	@Override
-	public AbstractNode analyse(SymbolTableInterface sym) throws AnalyserException {
-		// De meest voor de hand liggende vereenvoudiging van alle nodes, gewoon zijn argument...
-		return argument.analyse(sym);
 	}
 
 	@Override

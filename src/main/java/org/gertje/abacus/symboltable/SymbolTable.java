@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.gertje.abacus.EvaluationException;
-import org.gertje.abacus.Token;
 import org.gertje.abacus.functions.FunctionInterface;
 import org.gertje.abacus.nodes.AbstractNode;
 
