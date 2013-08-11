@@ -3,7 +3,6 @@ package org.gertje.abacus.nodes;
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.symboltable.SymbolTable;
 
 public class StringNode extends AbstractNode {
 
@@ -16,17 +15,6 @@ public class StringNode extends AbstractNode {
 		super(1, token, nodeFactory);
 
 		this.value = value;
-	}
-
-	@Override
-	public String evaluate(SymbolTable sym) {
-		return value;
-	}
-
-	@Override
-	public AbstractNode analyse(SymbolTable sym) {
-		// Deze node kunnen we niet eenvoudiger maken. Geef de huidige instantie terug.	
-		return this;
 	}
 
 	@Override

@@ -1,102 +1,17 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
-
-import org.gertje.abacus.AnalyserException;
-import org.gertje.abacus.EvaluationException;
 import org.gertje.abacus.Token;
-import org.gertje.abacus.symboltable.SymbolTable;
 
 public abstract class AbstractComparisonNode extends AbstractNode {
 
 	protected AbstractNode lhs;
 	protected AbstractNode rhs;
-	
-	/**
-	 * Lijst met toegestane types voor deze operatie.
-	 */
-	protected List<Class<?>> allowedTypes;
 
 	public AbstractComparisonNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence,
 			NodeFactory nodeFactory) {
 		super(precedence, token, nodeFactory);
 		this.lhs = lhs;
 		this.rhs = rhs;
-	}
-
-	@Override
-	public Boolean evaluate(SymbolTable sym) throws EvaluationException {
-		Object left = lhs.evaluate(sym);
-		Object right = rhs.evaluate(sym);
-
-		if (left == null || right == null) {
-			return null;
-		}
-		
-		// Wanneer de waarde een BigInteger is casten we het naar een BigDecimal.
-		if (left instanceof BigInteger) {
-			left = new BigDecimal((BigInteger)left);
-		}
-		// Wanneer de waarde een BigInteger is casten we het naar een BigDecimal.
-		if (right instanceof BigInteger) {
-			right = new BigDecimal((BigInteger)right);
-		}
-		return Boolean.valueOf(compare((Comparable<Object>)left, (Comparable<Object>)right));
-	}
-
-	abstract protected <T extends Comparable<? super T>> boolean compare(T left, T right);
-	
-	@Override
-	public AbstractNode analyse(SymbolTable sym) throws AnalyserException {
-		// Vereenvoudig de nodes indien mogelijk.
-		lhs = lhs.analyse(sym);
-		rhs = rhs.analyse(sym);
-
-		// Beide zijden moeten van het hetzelfde, toegestane type zijn.
-		if (!checkTypes()) {
-			throw new AnalyserException("Expected two parameters of the same type to comparison-expression.", token);
-		}
-
-		// Wanneer beide zijden constant zijn kunnen we de node vereenvoudigen.
-		if (lhs.getIsConstant() && rhs.getIsConstant()) {
-			try {
-				return nodeFactory.createBooleanNode(evaluate(sym), token);
-			} catch (EvaluationException e) {
-				throw new AnalyserException(e.getMessage(), token);
-			}
-		}
-
-		// Geef de huidige instantie terug.
-		return this;
-	}
-
-	/**
-	 * Controleert de typen van de lhs en de rhs, wanneer beiden niet van het zelfde type zijn of ze komen niet voor in
-	 * de lijst met toegestane typen geeft de methode false terug.
-	 * @return <code>true</code> wanneer de typen goed zijn, anders <code>false</code>.
-	 */
-	private boolean checkTypes() {
-		for(Class<?> type : allowedTypes) {
-			Class<?> lhsType = lhs.getType();
-			Class<?> rhsType = rhs.getType();
-			
-			// We casten de BigInteger's naar BigDecimal's, omdat dit makkelijk te vergelijken is.
-			if (lhsType.equals(BigInteger.class)) {
-				lhsType = BigDecimal.class;
-			}
-			// We casten de BigInteger's naar BigDecimal's, omdat dit makkelijk te vergelijken is.
-			if (rhsType.equals(BigInteger.class)) {
-				rhsType = BigDecimal.class;
-			}
-			
-			if (lhsType.equals(type) && rhsType.equals(type)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	@Override
