@@ -180,8 +180,8 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 	public Void visit(IfNode node) throws VisitingException {
 
 		ExpressionTranslator conditionTranslator = new ExpressionTranslator(node.getCondition());
-		ExpressionTranslator ifBodyTranslator = new ExpressionTranslator(node.getIfbody());
-		ExpressionTranslator elseBodyTranslator = new ExpressionTranslator(node.getElsebody());
+		ExpressionTranslator ifBodyTranslator = new ExpressionTranslator(node.getIfBody());
+		ExpressionTranslator elseBodyTranslator = new ExpressionTranslator(node.getElseBody());
 		
 		// Bouw javascript op die
 		StringBuilder ifExpression = new StringBuilder();
