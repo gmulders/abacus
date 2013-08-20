@@ -1,13 +1,13 @@
 package org.gertje.abacus;
 
+import org.gertje.abacus.nodes.AbstractNode;
+import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodes.StatementListNode;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.gertje.abacus.nodes.AbstractNode;
-import org.gertje.abacus.nodes.NodeFactory;
-import org.gertje.abacus.nodes.StatementListNode;
 
 public class Parser {
 
@@ -134,8 +134,8 @@ public class Parser {
 			// Haal het volgende token op.
 			nextToken = determineNextToken();
 			// Het token moet een else token zijn.
-			if (nextToken.getType() != TokenType.ELSE) {
-				throw new ParserException("Expected ELSE token (:).", nextToken);
+			if (nextToken.getType() != TokenType.COLON) {
+				throw new ParserException("Expected COLON token (:).", nextToken);
 			}
 			// De else-body kan ook een if-else zijn.
 			AbstractNode elsebody = expression(determineNextToken());

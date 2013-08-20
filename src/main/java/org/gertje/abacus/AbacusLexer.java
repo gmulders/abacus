@@ -184,9 +184,9 @@ public class AbacusLexer extends AbstractLexer {
 		} else if (c == '?') {
 			token.setType(TokenType.IF);
 
-		// ELSE (:)
+		// COLON (:)
 		} else if (c == ':') {
-			token.setType(TokenType.ELSE);
+			token.setType(TokenType.COLON);
 
 		// COMMA
 		} else if (c == ',') {

@@ -37,7 +37,7 @@ public class TokenType {
 	public static final TokenType GT = new TokenType("GT");
 	public static final TokenType EQ = new TokenType("EQ");
 	public static final TokenType IF = new TokenType("IF");
-	public static final TokenType ELSE = new TokenType("ELSE");
+	public static final TokenType COLON = new TokenType("COLON");
 	public static final TokenType PERCENT = new TokenType("PERCENT");
 	public static final TokenType POWER = new TokenType("POWER");
 	public static final TokenType ASSIGNMENT = new TokenType("ASSIGNMENT");
@@ -97,7 +97,7 @@ public enum TokenType {
 	GT,
 	EQ,
 	IF,
-	ELSE,
+	COLON,
 	PERCENT,
 	POWER,
 	ASSIGNMENT
