@@ -5,7 +5,11 @@ public class AbacusException extends Exception {
 	private int columnNumber;
 
 	public AbacusException(String message, int lineNumber, int columnNumber) {
-		super(message + " at line: " + lineNumber + " column: " + columnNumber);
+		this(message, lineNumber, columnNumber, null);
+	}
+
+	public AbacusException(String message, int lineNumber, int columnNumber, Exception cause) {
+		super(message + " at line: " + lineNumber + " column: " + columnNumber, cause);
 
 		this.lineNumber = lineNumber;
 		this.columnNumber = columnNumber;
