@@ -9,6 +9,7 @@ public class IfNode extends AbstractNode {
 	private AbstractNode condition;
 	private AbstractNode ifBody;
 	private AbstractNode elseBody;
+	private Class<?> type;
 
 	/**
 	 * Constructor
@@ -24,7 +25,7 @@ public class IfNode extends AbstractNode {
 
 	@Override
 	public Class<?> getType() {
-		return ifBody.getType();
+		return type;
 	}
 
 	@Override
@@ -59,5 +60,9 @@ public class IfNode extends AbstractNode {
 
 	public void setElseBody(AbstractNode elseBody) {
 		this.elseBody = elseBody;
+	}
+
+	public void setType(Class<?> type) {
+		this.type = type;
 	}
 }

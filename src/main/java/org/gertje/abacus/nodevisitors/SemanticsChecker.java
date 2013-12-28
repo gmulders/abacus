@@ -1,11 +1,5 @@
 package org.gertje.abacus.nodevisitors;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
@@ -36,9 +30,15 @@ import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
-import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
+import org.gertje.abacus.symboltable.SymbolTable;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckException> {
 
@@ -207,7 +207,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 		}
 
 		// Haal het type van de variabele op en zet deze op de node.
-		// TODO: Moet dit wel hier gebeuren?
+		// TODO: Moet dit wel hier gebeuren? Zie ook TODO hieronder.
 		try {
 			node.setReturnType(symbolTable.getFunctionReturnType(identifier, parameters));
 		} catch (NoSuchFunctionException e) {
@@ -288,6 +288,13 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 		// De waardes van de bodies mogen niet allebei null zijn.
 		if (ifbody.getType().equals(Object.class) && elsebody.getType().equals(Object.class)) {
 			throw new SemanticsCheckException("IF-body and ELSE-body should not be both null.", node);
+		}
+
+		// Het type van deze node is het type van de body die niet null is.
+		if (!ifbody.getType().equals(Object.class)) {
+			node.setType(ifbody.getType());
+		} else {
+			node.setType(elsebody.getType());
 		}
 
 		return null;
@@ -521,15 +528,13 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 			throw new SemanticsCheckException("Variable '" + identifier + "' does not exist.", node);
 		}
 
-		Class<?> type;
 		try {
 			// Haal het type van de variabele op.
-			type = symbolTable.getVariableType(identifier);
+			// TODO: Moet dit wel hier gebeuren? Zie ook TODO hierboven.
+			node.setType(symbolTable.getVariableType(identifier));
 		} catch (NoSuchVariableException e) {
 			throw new SemanticsCheckException(e.getMessage(), node);
 		}
-
-		node.setType(type);
 
 		return null;
 	}
@@ -548,7 +553,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 	 * de lijst met toegestane typen geeft de methode false terug.
 	 * @return <code>true</code> wanneer de typen goed zijn, anders <code>false</code>.
 	 */
-	private boolean checkComparisonTypes(Class<?> lhsType, Class<?> rhsType, List<Class<?>> allowedTypes) {
+	protected boolean checkComparisonTypes(Class<?> lhsType, Class<?> rhsType, List<Class<?>> allowedTypes) {
 		// We casten de BigInteger's naar BigDecimal's, omdat dit makkelijk te vergelijken is.
 		if (lhsType.equals(BigInteger.class)) {
 			lhsType = BigDecimal.class;
