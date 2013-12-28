@@ -1,9 +1,9 @@
 Abacus
 ======
 
-Intro
------
-Abacus is a small library 
+Introduction
+------------
+Abacus is a small library that parses and evaluates expressions.
 
 Language definition
 -------------------

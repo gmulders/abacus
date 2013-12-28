@@ -1,5 +1,3 @@
 - Parser omschrijven zodat deze aan de Lexer vraagt of er nog meer tokens zijn, ipv controle op TokenType.END_OF_INPUT.
   Maak de methode Lexer.hasNext() en hernoem getNextToken() naar next(). Mogelijk is het handig om Lexer (de interface)
   Iterable te laten extenden.
-- Methodes analyse en evaluate op alle nodes door een Visitor vervangen. Dit kan nu omdat we de Visitor interface hebben
-  herschreven zodat deze generics gebruikt om de return type en de exception type te bepalen.
