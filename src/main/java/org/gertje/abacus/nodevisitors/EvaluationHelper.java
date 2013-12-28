@@ -25,15 +25,7 @@ public class EvaluationHelper {
 		return ((String)left)+((String)right);
 	}
 
-	public static Boolean and(Boolean left, Boolean right) {
-		if (left == null || right == null) {
-			return null;
-		}
-
-		return Boolean.valueOf(left.booleanValue() && right.booleanValue());
-	}
-
-	public static Number divide(Object left, Object right) {
+	public static Number divide(Number left, Number right) {
 		return term(left, right, new TermEvaluator() {
 				@Override
 				public BigDecimal term(BigDecimal left, BigDecimal right) {
@@ -102,7 +94,7 @@ public class EvaluationHelper {
 		});
 	}
 
-	public static Number modulo(Object left, Object right) {
+	public static Number modulo(Number left, Number right) {
 		return term(left, right, new TermEvaluator() {
 				@Override
 				public BigInteger term(BigDecimal left, BigDecimal right) {
@@ -126,7 +118,7 @@ public class EvaluationHelper {
 		});
 	}
 
-	public static Number multiply(Object left, Object right) {
+	public static Number multiply(Number left, Number right) {
 		return term(left, right, new TermEvaluator() {
 				@Override
 				public BigDecimal term(BigDecimal left, BigDecimal right) {
@@ -182,21 +174,6 @@ public class EvaluationHelper {
 		return Boolean.valueOf(!bool.booleanValue());
 	}
 
-	// TODO: Dit is nu geen short-circuit operator....... 
-	public static Boolean or(Boolean left, Boolean right) {
-		// Wanneer de linkerkant leeg is, is het resultaat van deze expressie ook leeg.
-	   	if (left == null) {
-			return null;
-		}
-
-		// Wanneer de linkerkant false is en de rechterkant is leeg, is het resultaat van deze expressie ook leeg.
-		if (!left.booleanValue() && right == null) {
-			return null;
-		}
-
-		return Boolean.valueOf(left.booleanValue() || right.booleanValue());
-	}
-
 	public static BigDecimal power(Number baseValue, Number powerValue) {
 		// Wanneer de basis of de macht leeg is, is het resultaat van deze expressie ook leeg.
 		if (baseValue == null || powerValue == null) {
@@ -237,7 +214,7 @@ public class EvaluationHelper {
 	/**
 	 * Bepaalt de uitkomst voor de de term-nodes.
 	 */
-	public static Number term(Object left, Object right, TermEvaluator termEvaluator) {
+	private static Number term(Object left, Object right, TermEvaluator termEvaluator) {
 		if (left == null || right == null) {
 			return null;
 		}
@@ -264,7 +241,7 @@ public class EvaluationHelper {
 	/**
 	 * Bepaalt de uitkomst voor de comparison-nodes.
 	 */
-	public static Boolean comparison(Object left, Object right, ComparisonEvaluator comparisonEvaluator) {
+	private static Boolean comparison(Object left, Object right, ComparisonEvaluator comparisonEvaluator) {
 		if (left == null || right == null) {
 			return null;
 		}

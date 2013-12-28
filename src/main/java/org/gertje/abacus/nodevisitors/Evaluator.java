@@ -1,8 +1,5 @@
 package org.gertje.abacus.nodevisitors;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
@@ -36,6 +33,9 @@ import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SymbolTable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> {
 
@@ -72,9 +72,18 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 		AbstractNode rhs = node.getRhs();
 
 		Boolean left = (Boolean) lhs.accept(this);
-		Boolean right = (Boolean) rhs.accept(this);
 
-		return EvaluationHelper.and(left, right);
+		// Wanneer links leeg is, is het resultaat leeg.
+		if (left == null) {
+			return null;
+		}
+
+		// Wanneer links false is, is het resultaat false.
+		if (!left.booleanValue()) {
+			return Boolean.FALSE;
+		}
+
+		return rhs.accept(this);
 	}
 
 	@Override
@@ -300,9 +309,21 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 		AbstractNode rhs = node.getRhs();
 
 		Boolean left = (Boolean) lhs.accept(this);
+
+		// Wanneer de linkerkant leeg is, is het resultaat van deze expressie ook leeg.
+		if (left == null) {
+			return null;
+		}
+
+		// Wanneer de linkerkant true is, is de expressie ook true.
+		if (left.booleanValue()) {
+			return Boolean.TRUE;
+		}
+
 		Boolean right = (Boolean) rhs.accept(this);
 
-		return EvaluationHelper.or(left, right);
+		// Het resultaat van deze expressie is nu gewoon de rechterkant.
+		return right;
 	}
 
 	@Override
