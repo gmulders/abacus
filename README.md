@@ -19,12 +19,12 @@ The lexer recognises the following tokens:
 	WHITE_SPACE       = " " | "\t" | "\n" | "\r"
 	NEW_LINE          = "\n" | "\r\n"
 	COMMA             = ","
-	IDENTIFIER        = 
+	IDENTIFIER        = [a-zA-Z][a-zA-Z0-9]*
 	LEFT_PARENTHESIS  = "("
 	RIGHT_PARENTHESIS = ")"
-	STRING            = 
-	FLOAT             =
-	INTEGER           =
+	STRING            = \'(\\.|[^\\'])*\'  (escaping of special characters is possible)
+	FLOAT             = ([0-9]+ \. [0-9]* | \. [0-9]+)
+	INTEGER           = 0 | [1-9][0-9]*
 	BOOLEAN_AND       = "&&"
 	BOOLEAN_OR        = "||"
 	PLUS              = "+"
@@ -39,18 +39,18 @@ The lexer recognises the following tokens:
 	GT                = ">"
 	EQ                = "=="
 	IF                = "?"
-	ELSE              = ":"
+	COLON             = ":"
 	PERCENT           = "%"
 	POWER             = "^"
 	ASSIGNMENT        = "="
 	NULL              = "null"
 
 ### Definition
-	<statement-list>   := <statment> | <statement> <statement-list>
+	<statement-list>   := <statement> | <statement> <statement-list>
 	<statement>        := <assignment> <eos>
 	<assignment>       := <expression> | <expression> ASSIGNMENT <assignment>
 	<expression>       := <conditional>
-	<conditional>      := <booleanoperation> | <booleanoperation> IF <expression> ELSE <expression>
+	<conditional>      := <booleanoperation> | <booleanoperation> IF <expression> COLON <expression>
 	<booleanoperation> := <comparison> | <comparison> ( BOOLEAN_AND | BOOLEAN_OR ) <booleanoperation>
 	<comparison>       := <addition> | <addition> ( EQ | NEQ | LT | LEQ | GEQ | GT ) <comparison>
 	<addition>         := <term> | <term> ( PLUS | MINUS ) <comparison>
@@ -58,7 +58,7 @@ The lexer recognises the following tokens:
 	<power>            := <unary> | <unary> ( POWER ) <power>
 	<unary>            := ( epsilon | PLUS | MINUS | NOT ) <factor>
 	<factor>           := FLOAT | INTEGER | STRING | ( LEFT_PARENTHESIS <expression> RIGHT_PARENTHESIS ) 
-	                         | IDENTIFIER (epsilon | LEFT_PARENTHESIS <expression-list> RIGHT_PARENTHESIS)
+	                         | IDENTIFIER ( epsilon | LEFT_PARENTHESIS <expression-list> RIGHT_PARENTHESIS )
 	<expression-list>  := <expression> | <expression> <expression-list>
 	
 	<eos> := ; | end of input
