@@ -1,7 +1,9 @@
-package org.gertje.abacus.nodevisitors;
+package org.gertje.abacus.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class EvaluationHelper {
 
@@ -9,6 +11,10 @@ public class EvaluationHelper {
 		if (left == null || right == null) {
 			return null;
 		}
+
+		// Map het type naar een compatible type.
+		left = mapTypeToCompatibleType(left);
+		right = mapTypeToCompatibleType(right);
 
 		// Wanneer het type een number is moeten we gewoon plus doen, anders gebruiken we een plus om de strings aan
 		// elkaar te plakken.
@@ -148,6 +154,9 @@ public class EvaluationHelper {
 			return null;
 		}
 
+		// Map het type naar een compatible type.
+		number = (Number)mapTypeToCompatibleType(number);
+
 		// Cast het argument naar het juiste type voordat we negate erop aan kunnen roepen.
 		if (number instanceof BigDecimal) {
 			return ((BigDecimal) number).negate();
@@ -180,6 +189,10 @@ public class EvaluationHelper {
 			return null;
 		}
 
+		// Map het type naar een compatible type.
+		baseValue = (Number)mapTypeToCompatibleType(baseValue);
+		powerValue = (Number)mapTypeToCompatibleType(powerValue);
+
 		return BigDecimal.valueOf(Math.pow(baseValue.doubleValue(), powerValue.doubleValue()));
 	}
 
@@ -188,6 +201,10 @@ public class EvaluationHelper {
 		if (left == null || right == null) {
 			return null;
 		}
+
+		// Map het type naar een compatible type.
+		left = (Number)mapTypeToCompatibleType(left);
+		right = (Number)mapTypeToCompatibleType(right);
 
 		// Wanneer een van beide zijden een BigDecimal is, is het resultaat een BigDecimal, anders een BigInteger.
 		if (left instanceof BigDecimal && right instanceof BigDecimal) {
@@ -219,6 +236,10 @@ public class EvaluationHelper {
 			return null;
 		}
 
+		// Map het type naar een compatible type.
+		left = (Number)mapTypeToCompatibleType(left);
+		right = (Number)mapTypeToCompatibleType(right);
+
 		// Bepaal aan de hand van het type van links en rechts welke term we aan moeten roepen.
 		if (left instanceof BigDecimal && right instanceof BigDecimal) {
 			return termEvaluator.term((BigDecimal)left, (BigDecimal)right);
@@ -229,6 +250,20 @@ public class EvaluationHelper {
 		} else {
 			return termEvaluator.term((BigInteger)left, (BigInteger)right);
 		}
+	}
+
+	private static Object mapTypeToCompatibleType(Object object) {
+		// Wanneer het object van een floatingpoint type is moeten we er een bigdecimal van maken.
+		if (object instanceof Float || object instanceof Double) {
+			object = BigDecimal.valueOf(((Number) object).doubleValue());
+
+		// Wanneer het object van een integraal type is moeten we er een biginteger van maken.
+		} else if (object instanceof AtomicInteger || object instanceof AtomicLong || object instanceof Byte ||
+				object instanceof Integer || object instanceof Long || object instanceof Short) {
+			object = BigInteger.valueOf(((Number) object).longValue());
+		}
+
+		return object;
 	}
 
 	/**
@@ -245,6 +280,10 @@ public class EvaluationHelper {
 		if (left == null || right == null) {
 			return null;
 		}
+
+		// Map het type naar een compatible type.
+		left = mapTypeToCompatibleType(left);
+		right = mapTypeToCompatibleType(right);
 
 		// Wanneer de waarde een BigInteger is casten we het naar een BigDecimal.
 		if (left instanceof BigInteger) {

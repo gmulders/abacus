@@ -33,6 +33,7 @@ import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SymbolTable;
+import org.gertje.abacus.util.EvaluationHelper;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
