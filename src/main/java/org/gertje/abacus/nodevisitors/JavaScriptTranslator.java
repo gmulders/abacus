@@ -1,11 +1,10 @@
 package org.gertje.abacus.nodevisitors;
 
-import java.util.Stack;
-
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
+import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DivideNode;
@@ -32,6 +31,8 @@ import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
+
+import java.util.Stack;
 
 public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingException> {
 
@@ -79,13 +80,13 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 	
 	@Override
 	public Void visit(AddNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "+");
+		createScriptForBinaryOperationNode(node, "+");
 		return null;
 	}
 
 	@Override
 	public Void visit(AndNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "&&");
+		createScriptForBinaryOperationNode(node, "&&");
 		return null;
 	}
 
@@ -124,13 +125,13 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(DivideNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "/");
+		createScriptForBinaryOperationNode(node, "/");
 		return null;
 	}
 
 	@Override
 	public Void visit(EqNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "==");
+		createScriptForBinaryOperationNode(node, "==");
 		return null;
 	}
 
@@ -166,13 +167,13 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(GeqNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), ">=");
+		createScriptForBinaryOperationNode(node, ">=");
 		return null;
 	}
 
 	@Override
 	public Void visit(GtNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), ">");
+		createScriptForBinaryOperationNode(node, ">");
 		return null;
 	}
 
@@ -215,25 +216,25 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(LeqNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "<=");
+		createScriptForBinaryOperationNode(node, "<=");
 		return null;
 	}
 
 	@Override
 	public Void visit(LtNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "<");
+		createScriptForBinaryOperationNode(node, "<");
 		return null;
 	}
 
 	@Override
 	public Void visit(ModuloNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "%");
+		createScriptForBinaryOperationNode(node, "%");
 		return null;
 	}
 
 	@Override
 	public Void visit(MultiplyNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "*");
+		createScriptForBinaryOperationNode(node, "*");
 		return null;
 	}
 
@@ -247,7 +248,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(NeqNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "!=");
+		createScriptForBinaryOperationNode(node, "!=");
 		return null;
 	}
 
@@ -267,7 +268,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(OrNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "||");
+		createScriptForBinaryOperationNode(node, "||");
 		return null;
 	}
 
@@ -335,7 +336,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(SubstractNode node) throws VisitingException {
-		createScriptForSimpleTwoSideNode(node, node.getLhs(), node.getRhs(), "-");
+		createScriptForBinaryOperationNode(node, "-");
 		return null;
 	}
 
@@ -353,7 +354,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 	 * 
 	 * @param parentNodePrecedence getal van volgorde van executie van de parent node.
 	 * @param childNodePrecedence getal van volgorde van executie van de child node.
-	 * @param part
+	 * @param part Het stukje JavaScript.
 	 * @return het JavaScript stukje met, indien nodig, haakjes eromheen.
 	 */
 	protected static String parenthesize(int parentNodePrecedence, int childNodePrecedence, String part) {
@@ -366,23 +367,21 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	/**
 	 * Maakt JavaScript aan voor een node die een lhs en een rhs side heeft.
-	 * @param node
-	 * @param lhs
-	 * @param rhs
-	 * @param operator
+	 * @param node De node die een binaire operatie voorstelt.
+	 * @param operator De JavaScript representatie van de operatie.
 	 * @throws VisitingException
 	 */
-	protected void createScriptForSimpleTwoSideNode(AbstractNode node, AbstractNode lhs, AbstractNode rhs, 
-			String operator) throws VisitingException {
-		lhs.accept(this);
-		rhs.accept(this);
+	protected void createScriptForBinaryOperationNode(BinaryOperationNode node, String operator)
+			throws VisitingException {
+		node.getLhs().accept(this);
+		node.getRhs().accept(this);
 		
 		String rhsScript = partStack.pop();
 		String lhsScript = partStack.pop();
 		
-		String script = parenthesize(node.getPrecedence(), lhs.getPrecedence(), lhsScript) 
+		String script = parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), lhsScript)
 				+ operator 
-				+ parenthesize(node.getPrecedence(), rhs.getPrecedence(), rhsScript);
+				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), rhsScript);
 		
 		partStack.push(script);
 	}
@@ -428,7 +427,6 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		 * 
 		 * @param size De grootte van de variabelestack voordat de node waarvoor nullablescript aangemaakt moet worden 
 		 * 			ge-visit was.
-		 * @return String met het gedeelte wat op null-waarden controleert.
 		 */
 		protected void createNullableScript(int size) {
 			// Wanneer de index tot waar we de stack moeten poppen kleiner of gelijk is aan de stackgrootte zijn we klaar.
