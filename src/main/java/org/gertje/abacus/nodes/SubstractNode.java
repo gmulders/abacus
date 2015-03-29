@@ -1,13 +1,13 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
-public class SubstractNode extends AbstractNode {
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+public class SubstractNode extends AbstractNode implements BinaryOperationNode {
 
 	private AbstractNode lhs;
 	private AbstractNode rhs;
@@ -15,8 +15,8 @@ public class SubstractNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public SubstractNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(5, token, nodeFactory);
+	public SubstractNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(5, token);
 
 		this.lhs = lhs;
 		this.rhs = rhs;

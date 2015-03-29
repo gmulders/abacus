@@ -11,8 +11,8 @@ public class BooleanNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public BooleanNode(Boolean value, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public BooleanNode(Boolean value, Token token) {
+		super(1, token);
 
 		this.value = value;
 	}

@@ -1,10 +1,10 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigDecimal;
-
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+
+import java.math.BigDecimal;
 
 public class FloatNode extends AbstractNode {
 
@@ -13,8 +13,8 @@ public class FloatNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public FloatNode(BigDecimal value, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public FloatNode(BigDecimal value, Token token) {
+		super(1, token);
 
 		this.value = value;
 	}

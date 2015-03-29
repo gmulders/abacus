@@ -9,8 +9,8 @@ public class AssignmentNode extends AbstractNode {
 	AbstractNode lhs;
 	AbstractNode rhs;
 
-	public AssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public AssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(1, token);
 
 		this.lhs = lhs;
 		this.rhs = rhs;

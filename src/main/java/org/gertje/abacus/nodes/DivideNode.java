@@ -1,19 +1,19 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class DivideNode extends AbstractTermNode {
 
 	/**
 	 * Constructor
 	 */
-	public DivideNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(lhs, rhs, token, 4, nodeFactory);
+	public DivideNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(lhs, rhs, token, 4);
 	}
 
 	@Override

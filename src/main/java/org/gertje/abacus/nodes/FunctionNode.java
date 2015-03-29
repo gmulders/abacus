@@ -1,10 +1,10 @@
 package org.gertje.abacus.nodes;
 
-import java.util.List;
-
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+
+import java.util.List;
 
 public class FunctionNode extends AbstractNode {
 
@@ -15,8 +15,8 @@ public class FunctionNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public FunctionNode(String identifier, List<AbstractNode> parameters, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public FunctionNode(String identifier, List<AbstractNode> parameters, Token token) {
+		super(1, token);
 
 		this.identifier = identifier;
 		this.parameters = parameters;

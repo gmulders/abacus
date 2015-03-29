@@ -12,8 +12,8 @@ public class VariableNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public VariableNode(String identifier, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public VariableNode(String identifier, Token token) {
+		super(1, token);
 
 		this.identifier = identifier;
 	}

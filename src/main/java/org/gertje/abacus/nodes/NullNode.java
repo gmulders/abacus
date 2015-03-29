@@ -6,8 +6,11 @@ import org.gertje.abacus.nodevisitors.VisitingException;
 
 public class NullNode extends AbstractNode {
 
-	public NullNode(Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	/**
+	 * Constructor
+	 */
+	public NullNode(Token token) {
+		super(1, token);
 	}
 
 	@Override

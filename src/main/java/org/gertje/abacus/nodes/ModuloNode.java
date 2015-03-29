@@ -1,18 +1,18 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigInteger;
-
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+
+import java.math.BigInteger;
 
 public class ModuloNode extends AbstractTermNode {
 
 	/**
 	 * Constructor
 	 */
-	public ModuloNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(lhs, rhs, token, 4, nodeFactory);
+	public ModuloNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(lhs, rhs, token, 4);
 	}
 
 	@Override

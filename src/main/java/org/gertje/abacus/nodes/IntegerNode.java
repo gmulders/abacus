@@ -1,10 +1,10 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigInteger;
-
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+
+import java.math.BigInteger;
 
 public class IntegerNode extends AbstractNode {
 
@@ -13,8 +13,8 @@ public class IntegerNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public IntegerNode(BigInteger value, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public IntegerNode(BigInteger value, Token token) {
+		super(1, token);
 
 		this.value = value;
 	}

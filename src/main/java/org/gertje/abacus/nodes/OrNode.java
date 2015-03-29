@@ -4,7 +4,7 @@ import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
-public class OrNode extends AbstractNode {
+public class OrNode extends AbstractNode implements BinaryOperationNode {
 
 	private AbstractNode lhs;
 	private AbstractNode rhs;
@@ -12,8 +12,8 @@ public class OrNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public OrNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(8, token, nodeFactory);
+	public OrNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(8, token);
 
 		this.lhs = lhs;
 		this.rhs = rhs;
