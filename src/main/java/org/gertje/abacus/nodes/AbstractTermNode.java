@@ -2,14 +2,13 @@ package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.Token;
 
-public abstract class AbstractTermNode extends AbstractNode {
+public abstract class AbstractTermNode extends AbstractNode implements BinaryOperationNode {
 
 	protected AbstractNode lhs;
 	protected AbstractNode rhs;
 
-	public AbstractTermNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence,
-			NodeFactory nodeFactory) {
-		super(precedence, token, nodeFactory);
+	public AbstractTermNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence) {
+		super(precedence, token);
 		this.lhs = lhs;
 		this.rhs = rhs;
 	}
@@ -34,6 +33,4 @@ public abstract class AbstractTermNode extends AbstractNode {
 	public void setRhs(AbstractNode rhs) {
 		this.rhs = rhs;
 	}
-	
-	
 }

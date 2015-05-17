@@ -11,8 +11,8 @@ public class FactorNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public FactorNode(AbstractNode argument, Token token, NodeFactory nodeFactory) {
-		super(0, token, nodeFactory);
+	public FactorNode(AbstractNode argument, Token token) {
+		super(0, token);
 
 		this.argument = argument;
 	}

@@ -9,8 +9,8 @@ public class GtNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public GtNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(lhs, rhs, token, 6, nodeFactory);
+	public GtNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(lhs, rhs, token, 6);
 	}
 
 	@Override

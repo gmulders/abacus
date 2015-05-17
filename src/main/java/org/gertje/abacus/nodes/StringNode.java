@@ -11,8 +11,8 @@ public class StringNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public StringNode(String value, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public StringNode(String value, Token token) {
+		super(1, token);
 
 		this.value = value;
 	}

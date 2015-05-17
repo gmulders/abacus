@@ -11,8 +11,8 @@ public class NotNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public NotNode(AbstractNode argument, Token token, NodeFactory nodeFactory) {
-		super(2, token, nodeFactory);
+	public NotNode(AbstractNode argument, Token token) {
+		super(2, token);
 
 		this.argument = argument;
 	}

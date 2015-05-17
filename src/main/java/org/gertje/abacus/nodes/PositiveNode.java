@@ -11,8 +11,8 @@ public class PositiveNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public PositiveNode(AbstractNode argument, Token token, NodeFactory nodeFactory) {
-		super(2, token, nodeFactory);
+	public PositiveNode(AbstractNode argument, Token token) {
+		super(2, token);
 
 		this.argument = argument;
 	}

@@ -2,14 +2,13 @@ package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.Token;
 
-public abstract class AbstractComparisonNode extends AbstractNode {
+public abstract class AbstractComparisonNode extends AbstractNode implements BinaryOperationNode {
 
 	protected AbstractNode lhs;
 	protected AbstractNode rhs;
 
-	public AbstractComparisonNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence,
-			NodeFactory nodeFactory) {
-		super(precedence, token, nodeFactory);
+	public AbstractComparisonNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence) {
+		super(precedence, token);
 		this.lhs = lhs;
 		this.rhs = rhs;
 	}

@@ -1,19 +1,19 @@
 package org.gertje.abacus;
 
-import java.util.Map;
-
 import org.gertje.abacus.functions.RandFunction;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodevisitors.Evaluator;
 import org.gertje.abacus.nodevisitors.JavaScriptTranslator;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
-import org.gertje.abacus.nodevisitors.Evaluator;
 import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SimpleSymbolTable;
 import org.gertje.abacus.symboltable.SymbolTable;
+
+import java.util.Map;
 
 public class AbacusTestCase {
 

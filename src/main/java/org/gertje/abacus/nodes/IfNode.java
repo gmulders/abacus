@@ -14,9 +14,8 @@ public class IfNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public IfNode(AbstractNode condition, AbstractNode ifBody, AbstractNode elseBody, Token token, 
-			NodeFactory nodeFactory) {
-		super(10, token, nodeFactory);
+	public IfNode(AbstractNode condition, AbstractNode ifBody, AbstractNode elseBody, Token token) {
+		super(10, token);
 
 		this.condition = condition;
 		this.ifBody = ifBody;

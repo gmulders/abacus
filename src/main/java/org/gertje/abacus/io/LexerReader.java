@@ -6,7 +6,7 @@ import java.io.Reader;
 /**
  * LexerReader is een Reader met de volgende eigenschappen:
  * - de reader kan bufferen
- * - de reader kan voor uit spieken
+ * - de reader kan vooruit spieken
  * - de reader houdt regelnummers en kolomnummers bij
  * - de reader ondersteund markering
  * - de reader kan NIET een heel blok tekens ineens inlezen of tekens overslaan.

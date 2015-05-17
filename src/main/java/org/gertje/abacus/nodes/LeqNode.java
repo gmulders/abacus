@@ -9,8 +9,8 @@ public class LeqNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public LeqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(lhs, rhs, token, 6, nodeFactory);
+	public LeqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(lhs, rhs, token, 6);
 	}
 
 	@Override

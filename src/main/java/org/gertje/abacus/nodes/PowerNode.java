@@ -1,12 +1,12 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigDecimal;
-
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
-public class PowerNode extends AbstractNode {
+import java.math.BigDecimal;
+
+public class PowerNode extends AbstractNode implements BinaryOperationNode {
 
 	private AbstractNode base;
 	private AbstractNode power;
@@ -14,8 +14,8 @@ public class PowerNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public PowerNode(AbstractNode base, AbstractNode power, Token token, NodeFactory nodeFactory) {
-		super(4, token, nodeFactory);
+	public PowerNode(AbstractNode base, AbstractNode power, Token token) {
+		super(4, token);
 
 		this.base = base;
 		this.power = power;
@@ -50,5 +50,15 @@ public class PowerNode extends AbstractNode {
 
 	public void setPower(AbstractNode power) {
 		this.power = power;
+	}
+
+	@Override
+	public AbstractNode getLhs() {
+		return base;
+	}
+
+	@Override
+	public AbstractNode getRhs() {
+		return power;
 	}
 }

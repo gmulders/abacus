@@ -9,8 +9,8 @@ public class LtNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public LtNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(lhs, rhs, token, 6, nodeFactory);
+	public LtNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+		super(lhs, rhs, token, 6);
 	}
 
 	@Override

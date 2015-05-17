@@ -1,10 +1,10 @@
 package org.gertje.abacus.nodes;
 
-import java.sql.Date;
-
 import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+
+import java.sql.Date;
 
 public class DateNode extends AbstractNode {
 
@@ -13,8 +13,8 @@ public class DateNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public DateNode(Date value, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public DateNode(Date value, Token token) {
+		super(1, token);
 
 		this.value = value;
 	}
