@@ -12,6 +12,12 @@ public class ParserException extends CompilerException {
 		this.token = token;
 	}
 
+	public ParserException(String message, LexerException lexerException) {
+		super(message, lexerException.getLineNumber(), lexerException.getColumnNumber());
+
+		this.initCause(lexerException);
+	}
+
 	public Token getToken() {
 		return token;
 	}

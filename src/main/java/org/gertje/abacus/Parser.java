@@ -32,38 +32,45 @@ public class Parser {
 		this.nodeFactory = nodeFactory;
 	}
 
-	protected Token determineNextToken() throws LexerException {
-		Token nextToken = lex.getNextToken();
+	protected Token determineNextToken() throws ParserException {
+		try {
+			Token nextToken = lex.getNextToken();
 
-		// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
-		while (nextToken.getType() == TokenType.WHITE_SPACE || nextToken.getType() == TokenType.NEW_LINE) {
-			nextToken = lex.getNextToken();
+			// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
+			while (nextToken.getType() == TokenType.WHITE_SPACE || nextToken.getType() == TokenType.NEW_LINE) {
+				nextToken = lex.getNextToken();
+			}
+
+			return nextToken;
+		} catch (LexerException e) {
+			throw new ParserException("Next token could not be determined.", e);
 		}
-		
-		return nextToken;
 	}
 	
-	protected Token peekNextToken() throws LexerException {
-		Token nextToken = lex.peekToken();
+	protected Token peekNextToken() throws ParserException {
+		try {
+			Token nextToken = lex.peekToken();
 
-		// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
-		while (nextToken.getType() == TokenType.WHITE_SPACE || nextToken.getType() == TokenType.NEW_LINE) {
-			lex.getNextToken();
-			nextToken = lex.peekToken();
+			// Haal net zo lang een nieuw token op totdat het geen whitespace of een nieuwe regel is.
+			while (nextToken.getType() == TokenType.WHITE_SPACE || nextToken.getType() == TokenType.NEW_LINE) {
+				lex.getNextToken();
+				nextToken = lex.peekToken();
+			}
+
+			return nextToken;
+		} catch (LexerException e) {
+			throw new ParserException("Could not peek next token.", e);
 		}
-
-		return nextToken;
 	}
 	
 	/**
 	 * Bouwt een AST op van de expressie.
-	 * @throws CompilerException
 	 */
-	public AbstractNode parse() throws CompilerException {
+	public AbstractNode parse() throws ParserException {
 		return statementList(determineNextToken());
 	}
 
-	private StatementListNode statementList(Token nextToken) throws CompilerException {
+	private StatementListNode statementList(Token nextToken) throws ParserException {
 		StatementListNode list = nodeFactory.createStatementListNode(nextToken);
 		// Zolang het token niet het einde van de input aangeeft maken we expressies aan.
 		while (nextToken.getType() != TokenType.END_OF_INPUT) {
@@ -74,7 +81,7 @@ public class Parser {
 		return list;
 	}
 
-	private AbstractNode statement(Token nextToken) throws CompilerException {
+	private AbstractNode statement(Token nextToken) throws ParserException {
 		// Een statement is een assignment gevolgd door een 'end of expression' of het 'end of input' token.
 		AbstractNode statement = assignment(nextToken);
 
@@ -93,7 +100,7 @@ public class Parser {
 		return statement;
 	}
 
-	private AbstractNode assignment(Token nextToken) throws CompilerException {
+	private AbstractNode assignment(Token nextToken) throws ParserException {
 		AbstractNode lhs = expression(nextToken);
 
 		// Spiek wat het volgende token is.
@@ -113,11 +120,11 @@ public class Parser {
 		return lhs;
 	}
 
-	protected AbstractNode expression(Token nextToken) throws CompilerException {
+	protected AbstractNode expression(Token nextToken) throws ParserException {
 		return conditional(nextToken);
 	}
 
-	private AbstractNode conditional(Token nextToken) throws CompilerException {
+	private AbstractNode conditional(Token nextToken) throws ParserException {
 		// Geef de 
 		AbstractNode condition = booleanOp(nextToken);
 
@@ -149,9 +156,8 @@ public class Parser {
 
 	/**
 	 * Voert de operatie uit voor boolean operators of geef hem door aan sterkere operators.
-	 * @throws CompilerException
 	 */
-	private AbstractNode booleanOp(Token nextToken) throws CompilerException {
+	private AbstractNode booleanOp(Token nextToken) throws ParserException {
 		AbstractNode lhs = comparison(nextToken);
 
 		// Spiek wat het volgende token is.
@@ -180,9 +186,8 @@ public class Parser {
 
 	/**
 	 * Voert de operatie uit voor conditie operators of geef hem door aan sterkere operators.
-	 * @throws CompilerException
 	 */
-	private AbstractNode comparison(Token nextToken) throws CompilerException {
+	private AbstractNode comparison(Token nextToken) throws ParserException {
 		AbstractNode lhs = addition(nextToken);
 
 		// Spiek wat het volgende token is.
@@ -224,9 +229,8 @@ public class Parser {
 
 	/**
 	 * Voert de operatie uit voor de plus en min operators of geef hem door aan sterkere operators.
-	 * @throws CompilerException 
 	 */
-	private AbstractNode addition(Token nextToken) throws CompilerException {
+	private AbstractNode addition(Token nextToken) throws ParserException {
 		AbstractNode lhs = term(nextToken);
 
 		// Spiek wat het volgende token is.
@@ -255,9 +259,8 @@ public class Parser {
 
 	/**
 	 * Voert de operatie uit voor de vermenigvuldig operators of geef hem door aan sterkere operators.
-	 * @throws CompilerException
 	 */
-	private AbstractNode term(Token nextToken) throws CompilerException {
+	private AbstractNode term(Token nextToken) throws ParserException {
 		AbstractNode lhs = power(nextToken);
 
 		// Spiek wat het volgende token is.
@@ -289,9 +292,8 @@ public class Parser {
 
 	/**
 	 * Voert de operatie uit voor de macht operator of geef hem door aan sterkere operators.
-	 * @throws CompilerException
 	 */
-	private AbstractNode power(Token nextToken) throws CompilerException {
+	private AbstractNode power(Token nextToken) throws ParserException {
 		AbstractNode lhs = unary(nextToken);
 
 		// Spiek wat het volgende token is.
@@ -311,9 +313,8 @@ public class Parser {
 
 	/**
 	 * Geeft een Node terug specifiek voor de unary methode, of geeft de token door aan een sterkere operator.
-	 * @throws CompilerException
 	 */
-	private AbstractNode unary(Token nextToken) throws CompilerException {
+	private AbstractNode unary(Token nextToken) throws ParserException {
 		// Maak afhankelijk van het type van de token de juiste ASTNode aan.
 		if (nextToken.getType() == TokenType.PLUS) {
 			return nodeFactory.createPositiveNode(factor(determineNextToken()), nextToken);
@@ -328,9 +329,8 @@ public class Parser {
 
 	/**
 	 * Geeft een Node terug specifiek voor een getal, een factor, een variabele of een functie.
-	 * @throws CompilerException 
 	 */
-	private AbstractNode factor(Token nextToken) throws CompilerException {
+	private AbstractNode factor(Token nextToken) throws ParserException {
 		// Wanneer het token een decimaal getal is geven we een FloatNode terug.
 		if (nextToken.getType() == TokenType.FLOAT) {
 			BigDecimal number;
@@ -403,11 +403,11 @@ public class Parser {
 				+ "', value: '" + nextToken.getValue() + "'.", nextToken);
 	}
 
-	private List<AbstractNode> buildParameters() throws CompilerException {
+	private List<AbstractNode> buildParameters() throws ParserException {
 		// Haal het linkerhaakje van de stack.
 		determineNextToken();
 		// Maak een variabele met de parameters aan.
-		List<AbstractNode> params = new ArrayList<AbstractNode>();
+		List<AbstractNode> params = new ArrayList<>();
 		// Wanneer het volgende token een rechterhaakje is heeft de functie geen parameters.
 		if (peekNextToken().getType() == TokenType.RIGHT_PARENTHESIS) {
 			// Haal het token van de stack en geef de lege array terug.
@@ -455,9 +455,8 @@ public class Parser {
 	 * - EN gevolgd wordt door een linkerhaakje.
 	 * @param token Het token waarvan bepaald moet worden of het een function is.
 	 * @return <code>true</code> wanneer het token een functie is, anders <code>false</code>.
-	 * @throws LexerException 
 	 */
-	private boolean determineIsFunction(Token token) throws LexerException {
+	private boolean determineIsFunction(Token token) throws ParserException {
 		return token.getType() == TokenType.IDENTIFIER
 				&& peekNextToken().getType() == TokenType.LEFT_PARENTHESIS;
 	}
@@ -469,9 +468,8 @@ public class Parser {
 	 * - EN het is geen functie.
 	 * @param token Het token waarvan bepaald moet worden of het een variabele is.
 	 * @return <code>true</code> wanneer het token een variabele is, anders <code>false</code>.
-	 * @throws LexerException 
 	 */
-	private boolean determineIsVariable(Token token) throws LexerException {
+	private boolean determineIsVariable(Token token) throws ParserException {
 		return token.getType() == TokenType.IDENTIFIER
 				&& !determineIsBoolean(token)
 				&& !determineIsFunction(token);
