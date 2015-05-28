@@ -28,7 +28,7 @@ public class EvaluationHelper {
 			return ((BigInteger)left).add((BigInteger)right);
 		}
 
-		return ((String)left)+((String)right);
+		return ((String)left) + right;
 	}
 
 	public static Number divide(Number left, Number right) {
@@ -237,8 +237,8 @@ public class EvaluationHelper {
 		}
 
 		// Map het type naar een compatible type.
-		left = (Number)mapTypeToCompatibleType(left);
-		right = (Number)mapTypeToCompatibleType(right);
+		left = mapTypeToCompatibleType(left);
+		right = mapTypeToCompatibleType(right);
 
 		// Bepaal aan de hand van het type van links en rechts welke term we aan moeten roepen.
 		if (left instanceof BigDecimal && right instanceof BigDecimal) {

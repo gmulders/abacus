@@ -10,12 +10,12 @@ public interface Lexer {
 	 * @return Het volgende token.
 	 * @throws LexerException
 	 */
-	public Token peekToken() throws LexerException;
+	Token peekToken() throws LexerException;
 
 	/**
 	 * Geeft het volgende token terug en haalt deze ook van de stack (de index wordt opgehoogd).
 	 * @return Het volgende token.
 	 * @throws LexerException
 	 */
-	public Token getNextToken() throws LexerException;
+	Token getNextToken() throws LexerException;
 }
