@@ -1,6 +1,6 @@
 package org.gertje.abacus.translator;
 
-import org.gertje.abacus.runtime.F;
+import org.gertje.abacus.translator.java.runtime.F;
 import org.junit.Test;
 
 public class TranslationTest {
