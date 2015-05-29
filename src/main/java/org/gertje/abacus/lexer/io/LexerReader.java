@@ -1,4 +1,4 @@
-package org.gertje.abacus.io;
+package org.gertje.abacus.lexer.io;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -138,7 +138,7 @@ public class LexerReader extends Reader {
 	 * Controleert of de input stream nog open is, wanneer dit niet het geval is gooit de methode een exceptie.
 	 * @throws IOException
 	 */
-	public void checkInputStream() throws IOException {
+	private void checkInputStream() throws IOException {
 		// Wanneer de input stream niet open is gooien we een exceptie.
 		if (in == null) {
 			throw new IOException("Closed input stream.");

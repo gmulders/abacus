@@ -1,4 +1,4 @@
-package org.gertje.abacus;
+package org.gertje.abacus.token;
 
 /**
  * Klasse die een tokensoort voorstelt. 

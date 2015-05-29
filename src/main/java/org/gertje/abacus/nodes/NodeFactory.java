@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
-import org.gertje.abacus.Token;
+import org.gertje.abacus.token.Token;
 
 /**
  * Deze interface definieert methodes voor alle nodes die de parser aan kan maken.

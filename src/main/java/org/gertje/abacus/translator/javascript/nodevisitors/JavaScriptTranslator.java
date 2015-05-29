@@ -1,4 +1,4 @@
-package org.gertje.abacus.nodevisitors;
+package org.gertje.abacus.translator.javascript.nodevisitors;
 
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AddNode;
@@ -31,6 +31,8 @@ import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
+import org.gertje.abacus.nodevisitors.AbstractNodeVisitor;
+import org.gertje.abacus.nodevisitors.VisitingException;
 
 import java.util.Stack;
 

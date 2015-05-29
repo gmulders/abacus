@@ -1,6 +1,6 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.Token;
+import org.gertje.abacus.token.Token;
 
 /**
  * Deze klasse stelt een node in een AbstractSyntaxTree voor.

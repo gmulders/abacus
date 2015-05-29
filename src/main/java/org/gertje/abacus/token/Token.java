@@ -1,4 +1,4 @@
-package org.gertje.abacus;
+package org.gertje.abacus.token;
 
 public class Token {
 

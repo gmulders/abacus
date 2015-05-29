@@ -1,4 +1,6 @@
-package org.gertje.abacus;
+package org.gertje.abacus.lexer;
+
+import org.gertje.abacus.exception.CompilerException;
 
 public class LexerException extends CompilerException {
 

@@ -1,4 +1,4 @@
-package org.gertje.abacus; 
+package org.gertje.abacus.exception;
 
 public class AbacusException extends Exception {
 	private int lineNumber;
