@@ -9,7 +9,6 @@ import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodevisitors.Evaluator;
 import org.gertje.abacus.parser.Parser;
-import org.gertje.abacus.translator.javascript.nodevisitors.JavaScriptTranslator;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
 import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -28,7 +27,6 @@ public class AbacusTestCase {
 	private Map<String, Object> symbolsAfter;
 	private String exception;
 	private boolean result;
-	private String javaScript;
 
 	public AbacusTestCase(String expression, Object expectedValue, boolean expectException, Map<String, Object> symbolsBefore, Map<String, Object> symbolsAfter) {
 		this.expression = expression;
@@ -78,14 +76,6 @@ public class AbacusTestCase {
 			return false;
 		}
 		
-		try {
-			JavaScriptTranslator javaScriptTranslator = new JavaScriptTranslator();
-			javaScript = javaScriptTranslator.translate(tree);
-		} catch (VisitingException ve) {
-			exception = ve.getMessage();
-			return false;
-		}
-		
 		// Wanneer het resultaat null is en we hadden dit ook verwacht geven we true terug.
 		if (value == null && expectedValue == null) {
 			return true;
@@ -98,10 +88,6 @@ public class AbacusTestCase {
 		}
 		
 		if (!expectedValue.getClass().equals(value.getClass())) {
-			return false;
-		}
-
-		if (value == null) {
 			return false;
 		}
 
@@ -141,9 +127,9 @@ public class AbacusTestCase {
 
 	public boolean printResult() {
 		if (result) {
-			System.out.println("OK: " + expression + " " + (exception != null ? exception : "") + " " + (javaScript != null ? javaScript : ""));
+			System.out.println("OK: " + expression + " " + (exception != null ? exception : ""));
 		} else {
-			System.out.println("Error: " + expression + " " + (exception != null ? exception : "") + " " + (javaScript != null ? javaScript : ""));
+			System.out.println("Error: " + expression + " " + (exception != null ? exception : ""));
 		}
 		
 		return result;
