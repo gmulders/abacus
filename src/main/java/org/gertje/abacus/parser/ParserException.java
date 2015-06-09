@@ -1,4 +1,8 @@
-package org.gertje.abacus;
+package org.gertje.abacus.parser;
+
+import org.gertje.abacus.exception.CompilerException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.lexer.LexerException;
 
 public class ParserException extends CompilerException {
 	/**

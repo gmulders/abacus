@@ -1,9 +1,10 @@
-package org.gertje.abacus;
+package org.gertje.abacus.lexer;
+
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.lexer.io.LexerReader;
 
 import java.io.IOException;
 import java.io.StringReader;
-
-import org.gertje.abacus.io.LexerReader;
 
 public abstract class AbstractLexer implements Lexer {
 

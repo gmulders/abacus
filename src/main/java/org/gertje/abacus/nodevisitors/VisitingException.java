@@ -1,6 +1,6 @@
 package org.gertje.abacus.nodevisitors;
 
-import org.gertje.abacus.AbacusException;
+import org.gertje.abacus.exception.AbacusException;
 import org.gertje.abacus.nodes.AbstractNode;
 
 public class VisitingException extends AbacusException {

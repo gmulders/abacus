@@ -1,4 +1,6 @@
-package org.gertje.abacus;
+package org.gertje.abacus.lexer;
+
+import org.gertje.abacus.token.Token;
 
 /**
  * Deze interface definieert een aantal methoden die een lexer standaard moet implementeren.
