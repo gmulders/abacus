@@ -1,4 +1,4 @@
-package org.gertje.abacus.nodevisitors;
+package org.gertje.abacus.translator.java.nodevisitors;
 
 import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AddNode;
@@ -30,8 +30,9 @@ import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
+import org.gertje.abacus.nodevisitors.AbstractNodeVisitor;
 import org.gertje.abacus.symboltable.SymbolTable;
-import org.gertje.abacus.util.JavaEscaper;
+import org.gertje.abacus.translator.java.util.JavaEscaper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

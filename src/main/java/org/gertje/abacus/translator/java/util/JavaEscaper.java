@@ -1,4 +1,4 @@
-package org.gertje.abacus.util;
+package org.gertje.abacus.translator.java.util;
 
 public class JavaEscaper {
 

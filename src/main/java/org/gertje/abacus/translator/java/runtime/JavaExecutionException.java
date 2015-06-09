@@ -1,6 +1,6 @@
-package org.gertje.abacus.runtime;
+package org.gertje.abacus.translator.java.runtime;
 
-import org.gertje.abacus.AbacusException;
+import org.gertje.abacus.exception.AbacusException;
 
 public class JavaExecutionException extends AbacusException {
 
