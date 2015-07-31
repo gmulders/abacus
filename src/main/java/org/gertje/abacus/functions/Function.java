@@ -1,31 +1,36 @@
 package org.gertje.abacus.functions;
 
+import org.gertje.abacus.types.Type;
+
 import java.util.List;
 
+/**
+ * Interface that every function should implement.
+ */
 public interface Function {
 
 	/**
 	 * Geeft de naam van de functie terug.
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Returns the return-type of the function.
 	 */
-	public Class<?> getReturnType();
+	Type getReturnType();
 
 	/**
 	 * Evaluates the function.
 	 */
-	public Object evaluate(List<Object> params);
+	Object evaluate(List<Object> params);
 
 	/**
 	 * Verifieert of de functie de parameters accepteert.
 	 */
-    public boolean acceptsParameters(List<Class<?>> types);
+	boolean acceptsParameters(List<Type> types);
 
 	/**
 	 * Controleert of de functie gelijk is aan de meegegeven functie.
 	 */
-	public boolean equals(Function function);
+	boolean equals(Function function);
 }

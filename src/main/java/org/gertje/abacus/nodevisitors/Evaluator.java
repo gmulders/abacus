@@ -1,15 +1,15 @@
 package org.gertje.abacus.nodevisitors;
 
-import org.gertje.abacus.nodes.AbstractNode;
+import org.gertje.abacus.context.AbacusContext;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.DateNode;
+import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
 import org.gertje.abacus.nodes.FactorNode;
-import org.gertje.abacus.nodes.FloatNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
 import org.gertje.abacus.nodes.GtNode;
@@ -21,6 +21,7 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
@@ -30,15 +31,23 @@ import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
+import org.gertje.abacus.symboltable.IllegalTypeException;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SymbolTable;
+import org.gertje.abacus.types.Type;
+import org.gertje.abacus.util.CastHelper;
 import org.gertje.abacus.util.EvaluationHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> {
+
+	/**
+	 * De context waarbinnen de interpreter werkt.
+	 */
+	private final AbacusContext abacusContext;
 
 	/**
 	 * De symboltable met de variabelen en de functies.
@@ -48,64 +57,82 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 	/**
 	 * Constructor.
 	 */
-	public Evaluator(SymbolTable symbolTable) {
-		this.symbolTable = symbolTable;
+	public Evaluator(AbacusContext abacusContext) {
+		this.abacusContext = abacusContext;
+		this.symbolTable = abacusContext.getSymbolTable();
 	}
 
-	public Object evaluate(AbstractNode node) throws EvaluationException {
+	public Object evaluate(Node node) throws EvaluationException {
 		return node.accept(this);
 	}
 
 	@Override
 	public Object visit(AddNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.add(left, right);
+		return EvaluationHelper.add(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
 	public Object visit(AndNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Boolean left = (Boolean) lhs.accept(this);
 
-		// Wanneer links leeg is, is het resultaat leeg.
-		if (left == null) {
-			return null;
-		}
-
-		// Wanneer links false is, is het resultaat false.
-		if (!left.booleanValue()) {
+		// Wanneer links false is, is het resultaat van de operatie false.
+		if (left != null && !left.booleanValue()) {
 			return Boolean.FALSE;
 		}
 
-		return rhs.accept(this);
+		Boolean right = (Boolean) rhs.accept(this);
+
+		// Wanneer rechts false is, is het resultaat van de operatie false.
+		if (right != null && !right.booleanValue()) {
+			return Boolean.FALSE;
+		}
+
+		// Geen van beide zijden is false, wanneer tenminste 1 van beide zijden null is, is het resultaat van de
+		// operatie null.
+		if (left == null || right == null) {
+			return null;
+		}
+
+		// Geen van beide zijden is false of null, dus het resultaat van de operatie is true.
+		return Boolean.TRUE;
 	}
 
 	@Override
 	public Object visit(AssignmentNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		// Evalueer de rechterkant van de toekenning.
 		Object result = rhs.accept(this);
+
+		VariableNode variableNode;
 
 		// Zet het resultaat in de symboltable.
 		// Wanneer de linkerkant een variabele is kunnen we het direct in de variabele zetten, anders moeten we eerst
 		// de variabele uit de rechterkant halen.
 		if (lhs instanceof VariableNode) {
-			symbolTable.setVariableValue(((VariableNode) lhs).getIdentifier(), result);
+			variableNode = (VariableNode)lhs;
 		} else {
-			symbolTable.setVariableValue(((VariableNode) ((AssignmentNode)lhs).getRhs()).getIdentifier(), result);
+			variableNode = (VariableNode)((AssignmentNode)lhs).getRhs();
+		}
+
+		try {
+			symbolTable.setVariableValue(variableNode.getIdentifier(), rhs.getType(), result);
+		} catch (IllegalTypeException e) {
+			throw new EvaluationException("Could not set the variable value.", node, e);
 		}
 
 		// Geef het resultaat terug.
-		return result;
+		return CastHelper.castValue(result, rhs.getType(), variableNode.getType());
 	}
 
 	@Override
@@ -120,24 +147,24 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 
 	@Override
 	public Object visit(DivideNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Number left = (Number) lhs.accept(this);
 		Number right = (Number) rhs.accept(this);
 
-		return EvaluationHelper.divide(left, right);
+		return EvaluationHelper.divide(left, lhs.getType(), right, rhs.getType(), abacusContext.getMathContext());
 	}
 
 	@Override
 	public Object visit(EqNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.eq(left, right);
+		return EvaluationHelper.eq(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
@@ -146,23 +173,23 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 	}
 
 	@Override
-	public Object visit(FloatNode node) throws EvaluationException {
+	public Object visit(DecimalNode node) throws EvaluationException {
 		return node.getValue();
 	}
 
 	@Override
 	public Object visit(FunctionNode node) throws EvaluationException {
-		List<AbstractNode> parameters = node.getParameters();
+		List<Node> parameters = node.getParameters();
 		String identifier = node.getIdentifier();
 
 		// Maak een lijst met alle resultaten van de evaluatie van de parameters.
-		List<Object> paramResults = new ArrayList<Object>();
+		List<Object> paramResults = new ArrayList<>();
 
 		// Maak een lijst met alle types van de parameters.
-		List<Class<?>> paramTypes = new ArrayList<Class<?>>();
+		List<Type> paramTypes = new ArrayList<>();
 
 		// Loop over alle nodes heen en vul de lijsten met de geevaluuerde waarde en het type.
-		for (AbstractNode parameter : parameters) {
+		for (Node parameter : parameters) {
 			paramResults.add(parameter.accept(this));
 			paramTypes.add(parameter.getType());
 		}
@@ -176,31 +203,31 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 
 	@Override
 	public Object visit(GeqNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.geq(left, right);
+		return EvaluationHelper.geq(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
 	public Object visit(GtNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
- 		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+ 		Node rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.gt(left, right);
+		return EvaluationHelper.gt(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
 	public Object visit(IfNode node) throws EvaluationException {
-		AbstractNode condition = node.getCondition();
-		AbstractNode ifBody = node.getIfBody();
-		AbstractNode elseBody = node.getElseBody();
+		Node condition = node.getCondition();
+		Node ifBody = node.getIfBody();
+		Node elseBody = node.getElseBody();
 
 		// Evauleer de conditie.
 		Boolean cond = (Boolean)condition.accept(this);
@@ -212,11 +239,11 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 
 		// Wanneer de conditie waar is geven we de geevalueerde if body terug, anders geven we de else body terug.
 		if (Boolean.TRUE.equals(cond)) {
-			return ifBody.accept(this);
+			return cast(ifBody.accept(this), ifBody.getType(), node.getType());
 		}
 
 		// We moeten de else body geevaluateueerd teruggeven.
-		return elseBody.accept(this);
+		return cast(elseBody.accept(this), elseBody.getType(), node.getType());
 	}
 
 	@Override
@@ -226,72 +253,72 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 
 	@Override
 	public Object visit(LeqNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
- 		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+ 		Node rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.leq(left, right);
+		return EvaluationHelper.leq(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
 	public Object visit(LtNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.lt(left, right);
+		return EvaluationHelper.lt(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
 	public Object visit(ModuloNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Number left = (Number) lhs.accept(this);
 		Number right = (Number) rhs.accept(this);
 
-		return EvaluationHelper.modulo(left, right);
+		return EvaluationHelper.modulo(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
 	public Object visit(MultiplyNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Number left = (Number) lhs.accept(this);
 		Number right = (Number) rhs.accept(this);
 
-		return EvaluationHelper.multiply(left, right);
+		return EvaluationHelper.multiply(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
 	public Object visit(NegativeNode node) throws EvaluationException {
-		AbstractNode argument = node.getArgument();
+		Node argument = node.getArgument();
 
 		// Bepaal het getal dat we negatief gaan maken.
 		Number number = (Number)argument.accept(this);
 
-		return EvaluationHelper.negative(number);
+		return EvaluationHelper.negative(number, argument.getType());
 	}
 
 	@Override
 	public Object visit(NeqNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.neq(left, right);
+		return EvaluationHelper.neq(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
 	public Object visit(NotNode node) throws EvaluationException {
-		AbstractNode argument = node.getArgument();
+		Node argument = node.getArgument();
 
 		// Bepaal de waarde van de boolean.
 		Boolean bool = (Boolean)argument.accept(this);
@@ -306,49 +333,55 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 
 	@Override
 	public Object visit(OrNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Boolean left = (Boolean) lhs.accept(this);
 
-		// Wanneer de linkerkant leeg is, is het resultaat van deze expressie ook leeg.
-		if (left == null) {
-			return null;
-		}
-
-		// Wanneer de linkerkant true is, is de expressie ook true.
-		if (left.booleanValue()) {
+		// Wanneer links true is, is het resultaat van de operatie true.
+		if (left != null && left.booleanValue()) {
 			return Boolean.TRUE;
 		}
 
 		Boolean right = (Boolean) rhs.accept(this);
 
-		// Het resultaat van deze expressie is nu gewoon de rechterkant.
-		return right;
+		// Wanneer rechts true is, is het resultaat van de operatie true.
+		if (right != null && right.booleanValue()) {
+			return Boolean.TRUE;
+		}
+
+		// Geen van beide zijden is true, wanneer tenminste 1 van beide zijden null is, is het resultaat van de
+		// operatie null.
+		if (left == null || right == null) {
+			return null;
+		}
+
+		// Geen van beide zijden is true of null, dus het resultaat van de operatie is false.
+		return Boolean.FALSE;
 	}
 
 	@Override
 	public Object visit(PositiveNode node) throws EvaluationException {
-		AbstractNode argument = node.getArgument();
+		Node argument = node.getArgument();
 		return argument.accept(this);
 	}
 
 	@Override
 	public Object visit(PowerNode node) throws EvaluationException {
-		AbstractNode base = node.getBase();
-		AbstractNode power = node.getPower();
+		Node base = node.getBase();
+		Node power = node.getPower();
 
 		Number baseValue = (Number)base.accept(this);
 		Number powerValue = (Number)power.accept(this);
 
-		return EvaluationHelper.power(baseValue, powerValue);
+		return EvaluationHelper.power(baseValue, base.getType(), powerValue, power.getType());
 	}
 
 	@Override
 	public Object visit(StatementListNode node) throws EvaluationException {
 		// Evalueer alle AbstractNodes en geef het resultaat van de laatste node terug.
 		Object result = null;
-		for (AbstractNode subNode : node) {
+		for (Node subNode : node) {
 			result = subNode.accept(this);
 		}
 
@@ -362,13 +395,13 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 
 	@Override
 	public Object visit(SubstractNode node) throws EvaluationException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		Number left = (Number) lhs.accept(this);
 		Number right = (Number) rhs.accept(this);
 
-		return EvaluationHelper.substract(left, right);
+		return EvaluationHelper.substract(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
@@ -379,5 +412,26 @@ public class Evaluator extends AbstractNodeVisitor<Object, EvaluationException> 
 		} catch (NoSuchVariableException e) {
 			throw new EvaluationException(e.getMessage(), node);
 		}
+	}
+
+	/**
+	 * Casts the given object from one type to another.
+	 * @param object The object to cast.
+	 * @param fromType The original type of the expression.
+	 * @param toType The resulting type of the expression.
+	 * @return The given expression casted to the desired type.
+	 */
+	private Object cast(Object object, Type fromType, Type toType) {
+		if (fromType == toType || fromType == null || toType == null) {
+			return object;
+		}
+
+		// Cast the expression from integer to decimal.
+		if (fromType == Type.INTEGER && toType == Type.DECIMAL) {
+			return new java.math.BigDecimal(object.toString(), abacusContext.getMathContext());
+		}
+
+		// We only need to cast from integer to decimal.
+		throw new IllegalStateException("An unexpected type cast was needed.");
 	}
 }

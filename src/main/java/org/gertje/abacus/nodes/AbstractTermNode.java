@@ -2,12 +2,15 @@ package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.token.Token;
 
+/**
+ * Abstract super class for all term nodes.
+ */
 public abstract class AbstractTermNode extends AbstractNode implements BinaryOperationNode {
 
-	protected AbstractNode lhs;
-	protected AbstractNode rhs;
+	protected Node lhs;
+	protected Node rhs;
 
-	public AbstractTermNode(AbstractNode lhs, AbstractNode rhs, Token token, int precedence) {
+	public AbstractTermNode(Node lhs, Node rhs, Token token, int precedence) {
 		super(precedence, token);
 		this.lhs = lhs;
 		this.rhs = rhs;
@@ -18,19 +21,19 @@ public abstract class AbstractTermNode extends AbstractNode implements BinaryOpe
 		return false;
 	}
 
-	public AbstractNode getLhs() {
+	public Node getLhs() {
 		return lhs;
 	}
 
-	public void setLhs(AbstractNode lhs) {
+	public void setLhs(Node lhs) {
 		this.lhs = lhs;
 	}
 
-	public AbstractNode getRhs() {
+	public Node getRhs() {
 		return rhs;
 	}
 
-	public void setRhs(AbstractNode rhs) {
+	public void setRhs(Node rhs) {
 		this.rhs = rhs;
 	}
 }

@@ -1,24 +1,28 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents a factor.
+ */
 public class FactorNode extends AbstractNode {
 
-	private AbstractNode argument;
+	private Node argument;
 
 	/**
 	 * Constructor
 	 */
-	public FactorNode(AbstractNode argument, Token token) {
+	public FactorNode(Node argument, Token token) {
 		super(0, token);
 
 		this.argument = argument;
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		// Het type van de factor node is het type van zijn argument.
 		return argument.getType();
 	}
@@ -30,11 +34,11 @@ public class FactorNode extends AbstractNode {
 		return false;
 	}
 
-	public AbstractNode getArgument() {
+	public Node getArgument() {
 		return argument;
 	}
 
-	public void setArgument(AbstractNode argument) {
+	public void setArgument(Node argument) {
 		this.argument = argument;
 	}
 

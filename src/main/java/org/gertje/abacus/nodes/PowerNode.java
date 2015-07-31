@@ -1,20 +1,22 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
-import java.math.BigDecimal;
-
+/**
+ * Node that represents the power.
+ */
 public class PowerNode extends AbstractNode implements BinaryOperationNode {
 
-	private AbstractNode base;
-	private AbstractNode power;
+	private Node base;
+	private Node power;
 
 	/**
 	 * Constructor
 	 */
-	public PowerNode(AbstractNode base, AbstractNode power, Token token) {
+	public PowerNode(Node base, Node power, Token token) {
 		super(4, token);
 
 		this.base = base;
@@ -22,8 +24,8 @@ public class PowerNode extends AbstractNode implements BinaryOperationNode {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return BigDecimal.class;
+	public Type getType() {
+		return Type.DECIMAL;
 	}
 
 	@Override
@@ -36,29 +38,39 @@ public class PowerNode extends AbstractNode implements BinaryOperationNode {
 		return visitor.visit(this);
 	}
 
-	public AbstractNode getBase() {
+	public Node getBase() {
 		return base;
 	}
 
-	public void setBase(AbstractNode base) {
+	public void setBase(Node base) {
 		this.base = base;
 	}
 
-	public AbstractNode getPower() {
+	public Node getPower() {
 		return power;
 	}
 
-	public void setPower(AbstractNode power) {
+	public void setPower(Node power) {
 		this.power = power;
 	}
 
 	@Override
-	public AbstractNode getLhs() {
+	public Node getLhs() {
 		return base;
 	}
 
 	@Override
-	public AbstractNode getRhs() {
+	public void setLhs(Node node) {
+		this.base = node;
+	}
+
+	@Override
+	public Node getRhs() {
 		return power;
+	}
+
+	@Override
+	public void setRhs(Node node) {
+		this.power = node;
 	}
 }

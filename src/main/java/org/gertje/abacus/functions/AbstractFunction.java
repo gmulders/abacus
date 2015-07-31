@@ -1,16 +1,21 @@
 package org.gertje.abacus.functions;
 
+import org.gertje.abacus.types.Type;
+
 import java.util.List;
 
-abstract class AbstractFunction implements Function {
+/**
+ * Abstract class with some sensible default implementations for some of the methods of {@link Function}.
+ */
+abstract public class AbstractFunction implements Function {
 
-	private List<Class<?>> allowedTypes;
+	private List<Type> allowedTypes;
 	private boolean canLastTypeRepeat;
 
 	/**
 	 * Constructor
 	 */
-	public AbstractFunction(List<Class<?>> allowedTypes, boolean canLastTypeRepeat) {
+	public AbstractFunction(List<Type> allowedTypes, boolean canLastTypeRepeat) {
 		this.allowedTypes = allowedTypes;
 		this.canLastTypeRepeat = canLastTypeRepeat;
 	}
@@ -18,13 +23,14 @@ abstract class AbstractFunction implements Function {
 	/**
 	 * Bepaalt of de functie de parameters accepteert.
 	 */
-	public boolean acceptsParameters(List<Class<?>> types) {
+	public boolean acceptsParameters(List<Type> types) {
 		// Bepaal of de types overeenkomen.
 		return determineTypesMatch(types);
 	}
 
 	/**
 	 * Geeft terug of beide functies hetzelfde zijn, dit is het geval wanneer:
+	 *
 	 * - de functies dezelfde parameters accepteren.
 	 */
 	public boolean equals(Function function) {
@@ -35,7 +41,7 @@ abstract class AbstractFunction implements Function {
 	/**
 	 * Bepaalt of de meegegeven types matchen met de toegestane types.
 	 */
-	private boolean determineTypesMatch(List<Class<?>> types) {
+	protected boolean determineTypesMatch(List<Type> types) {
 		// Wanneer beide null zijn of lengte 0 hebben komen de types overeen.
 		if ((types == null || types.size() == 0) && (allowedTypes == null || allowedTypes.size() == 0)) {
 			return true;
@@ -59,7 +65,7 @@ abstract class AbstractFunction implements Function {
 		}
 
 		// Variabele die we in de loop gebruiken die het huidige toegestane type aangeeft.
-		Class<?> currentType = null;
+		Type currentType = null;
 
 		// Loop over alle argumenten heen en controleer of ze het juiste type hebben.
 		for (int i = 0; i < types.size(); i++) {
@@ -68,7 +74,7 @@ abstract class AbstractFunction implements Function {
 			currentType = i < allowedTypes.size() ? allowedTypes.get(i) : currentType;
 
 			// Wanneer de types niet overeenkomen geven we false terug.
-			if (!currentType.equals(types.get(i))) {
+			if (currentType != types.get(i)) {
 				return false;
 			}
 		}

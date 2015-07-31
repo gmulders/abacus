@@ -1,21 +1,22 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
+/**
+ * Node that represents an addition.
+ */
 public class AddNode extends AbstractNode implements BinaryOperationNode {
 
-	private AbstractNode lhs;
-	private AbstractNode rhs;
+	private Node lhs;
+	private Node rhs;
 
 	/**
 	 * Constructor
 	 */
-	public AddNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public AddNode(Node lhs, Node rhs, Token token) {
 		super (5, token);
 
 		this.lhs = lhs;
@@ -23,14 +24,20 @@ public class AddNode extends AbstractNode implements BinaryOperationNode {
 	}
 
 	@Override
-	public Class<?> getType() {
-		if (lhs.getType().equals(String.class)) {
-			return String.class;
+	public Type getType() {
+		if (lhs.getType() == rhs.getType()) {
+			return lhs.getType();
 		}
-		if (lhs.getType().equals(BigDecimal.class) || rhs.getType().equals(BigDecimal.class)) {
-			return BigDecimal.class;
+
+		if (Type.isNumber(lhs.getType()) && Type.isNumber(rhs.getType())) {
+			return Type.DECIMAL;
 		}
-		return BigInteger.class;
+
+		if (lhs.getType() == null) {
+			return rhs.getType();
+		}
+
+		return lhs.getType();
 	}
 
 	@Override
@@ -43,19 +50,19 @@ public class AddNode extends AbstractNode implements BinaryOperationNode {
 		return visitor.visit(this);
 	}
 
-	public AbstractNode getLhs() {
+	public Node getLhs() {
 		return lhs;
 	}
 
-	public void setLhs(AbstractNode lhs) {
+	public void setLhs(Node lhs) {
 		this.lhs = lhs;
 	}
 
-	public AbstractNode getRhs() {
+	public Node getRhs() {
 		return rhs;
 	}
 
-	public void setRhs(AbstractNode rhs) {
+	public void setRhs(Node rhs) {
 		this.rhs = rhs;
 	}
 }

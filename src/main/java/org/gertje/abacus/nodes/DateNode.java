@@ -1,11 +1,15 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
 import java.sql.Date;
 
+/**
+ * Node that represents a date.
+ */
 public class DateNode extends AbstractNode {
 
 	private Date value;
@@ -20,8 +24,8 @@ public class DateNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return Date.class;
+	public Type getType() {
+		return Type.DATE;
 	}
 
 	@Override

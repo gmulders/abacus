@@ -1,6 +1,7 @@
 package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,7 +12,7 @@ import java.util.ListIterator;
 /**
  * Abstracte klasse die een lijst van Nodes voorstelt.
  */
-public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode implements List<T> {
+public abstract class NodeListNode<T extends Node> extends AbstractNode implements List<T> {
 
 	List<T> nodeList;
 
@@ -28,7 +29,7 @@ public abstract class NodeListNode<T extends AbstractNode> extends AbstractNode 
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		// We geven het resultaat van de laatste geevalueerde node terug, dus we moeten ook het type van deze node terug
 		// geven.
 		return nodeList.get(nodeList.size() - 1).getType();

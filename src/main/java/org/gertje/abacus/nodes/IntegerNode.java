@@ -3,9 +3,13 @@ package org.gertje.abacus.nodes;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.types.Type;
 
 import java.math.BigInteger;
 
+/**
+ * Node that represents an integer.
+ */
 public class IntegerNode extends AbstractNode {
 
 	private BigInteger value;
@@ -20,8 +24,8 @@ public class IntegerNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return BigInteger.class;
+	public Type getType() {
+		return Type.INTEGER;
 	}
 
 	@Override

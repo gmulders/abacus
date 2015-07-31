@@ -1,8 +1,9 @@
 package org.gertje.abacus.symboltable;
 
-import java.util.List;
+import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.types.Type;
 
-import org.gertje.abacus.nodes.AbstractNode;
+import java.util.List;
 
 
 public interface SymbolTable {
@@ -12,28 +13,28 @@ public interface SymbolTable {
 	 * @param identifier
 	 * @return <code>true</code> wanneer de variabele bestaat, anders <code>false</code>.
 	 */
-	public boolean getExistsVariable(String identifier);
+	boolean getExistsVariable(String identifier);
 
 	/**
 	 * Zet de waarde van de variabele met de meegegeven identifier op de meegegeven waarde.
 	 * @param identifier
 	 * @param value
 	 */
-	public void setVariableValue(String identifier, Object value);
+	void setVariableValue(String identifier, Type type, Object value) throws IllegalTypeException;
 
 	/**
 	 * Geeft de waarde van de variabele met de meegegeven identifier terug.
 	 * @param identifier
 	 * @return de waarde van de variabele.
 	 */
-	public Object getVariableValue(String identifier) throws NoSuchVariableException;
+	Object getVariableValue(String identifier) throws NoSuchVariableException;
 
 	/**
 	 * Geeft het type van de variabele met de meegegeven identifier terug.
 	 * @param identifier
 	 * @return het type van de variabele.
 	 */
-	public Class<?> getVariableType(String identifier) throws NoSuchVariableException;
+	Type getVariableType(String identifier) throws NoSuchVariableException;
 
 	/**
 	 * Bepaalt of de variabele met de meegegeven identifier een waarde van het meegegeven type kan bevatten.
@@ -41,7 +42,8 @@ public interface SymbolTable {
 	 * @param type
 	 * @return <code>true</code> wanneer de variabele van het meegegeven type is, anders <code>false</code>.
 	 */
-	public boolean getIsVariableTypeAllowed(String identifier, Class<?> type);
+	// TODO GM: Weg of houden?
+//	boolean getIsVariableTypeAllowed(String identifier, Class<?> type);
 
 	/**
 	 * Bepaalt of de functie bestaat voor de meegegeven identifier met de meegegeven parameters.
@@ -49,7 +51,7 @@ public interface SymbolTable {
 	 * @param types
 	 * @return <code>true</code> wanneer de functie bestaat, anders <code>false</code>.
 	 */
-	public boolean getExistsFunction(String identifier, List<Class<?>> types);
+	boolean getExistsFunction(String identifier, List<Type> types);
 
 	/**
 	 * Evalueert de functie met de meegegeven identifier met de meegegeven parameters.
@@ -57,7 +59,7 @@ public interface SymbolTable {
 	 * @param params
 	 * @return de returnwaarde van de functie.
 	 */
-	public Object getFunctionReturnValue(String identifier, List<Object> params, List<Class<?>> types)
+	Object getFunctionReturnValue(String identifier, List<Object> params, List<Type> types)
 			throws NoSuchFunctionException;
 
 	/**
@@ -66,5 +68,5 @@ public interface SymbolTable {
 	 * @param params
 	 * @return het return type van de functie.
 	 */
-	public Class<?> getFunctionReturnType(String identifier, List<AbstractNode> params) throws NoSuchFunctionException;
+	Type getFunctionReturnType(String identifier, List<Node> params) throws NoSuchFunctionException;
 }

@@ -7,20 +7,23 @@ import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
+/**
+ * Default implementation of {@link NodeFactory}.
+ */
 public class AbacusNodeFactory implements NodeFactory {
 
 	@Override
-	public AddNode createAddNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public AddNode createAddNode(Node lhs, Node rhs, Token token) {
 		return new AddNode(lhs, rhs, token);
 	}
 
 	@Override
-	public AndNode createAndNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public AndNode createAndNode(Node lhs, Node rhs, Token token) {
 		return new AndNode(lhs, rhs, token);
 	}
 
 	@Override
-	public AssignmentNode createAssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public AssignmentNode createAssignmentNode(Node lhs, Node rhs, Token token) {
 		return new AssignmentNode(lhs, rhs, token);
 	}
 
@@ -35,78 +38,43 @@ public class AbacusNodeFactory implements NodeFactory {
 	}
 
 	@Override
-	public DivideNode createDivideNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public DecimalNode createDecimalNode(BigDecimal value, Token token) {
+		return new DecimalNode(value, token);
+	}
+
+	@Override
+	public DivideNode createDivideNode(Node lhs, Node rhs, Token token) {
 		return new DivideNode(lhs, rhs, token);
 	}
 
 	@Override
-	public EqNode createEqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public EqNode createEqNode(Node lhs, Node rhs, Token token) {
 		return new EqNode(lhs, rhs, token);
 	}
 
 	@Override
-	public FactorNode createFactorNode(AbstractNode argument, Token token) {
+	public FactorNode createFactorNode(Node argument, Token token) {
 		return new FactorNode(argument, token);
 	}
 
 	@Override
-	public FunctionNode createFunctionNode(String identifier, List<AbstractNode> parameters, Token token) {
+	public FunctionNode createFunctionNode(String identifier, List<Node> parameters, Token token) {
 		return new FunctionNode(identifier, parameters, token);
 	}
 
 	@Override
-	public GeqNode createGeqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public GeqNode createGeqNode(Node lhs, Node rhs, Token token) {
 		return new GeqNode(lhs, rhs, token);
 	}
 
 	@Override
-	public GtNode createGtNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public GtNode createGtNode(Node lhs, Node rhs, Token token) {
 		return new GtNode(lhs, rhs, token);
 	}
 
 	@Override
-	public IfNode createIfNode(AbstractNode condition, AbstractNode ifbody, AbstractNode elsebody, Token token) {
+	public IfNode createIfNode(Node condition, Node ifbody, Node elsebody, Token token) {
 		return new IfNode(condition, ifbody, elsebody, token);
-	}
-
-	@Override
-	public LeqNode createLeqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		return new LeqNode(lhs, rhs, token);
-	}
-
-	@Override
-	public LtNode createLtNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		return new LtNode(lhs, rhs, token);
-	}
-
-	@Override
-	public ModuloNode createModuloNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		return new ModuloNode(lhs, rhs, token);
-	}
-
-	@Override
-	public MultiplyNode createMultiplyNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		return new MultiplyNode(lhs, rhs, token);
-	}
-	
-	@Override
-	public NegativeNode createNegativeNode(AbstractNode argument, Token token) {
-		return new NegativeNode(argument, token);
-	}
-
-	@Override
-	public NeqNode createNeqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
-		return new NeqNode(lhs, rhs, token);
-	}
-
-	@Override
-	public NotNode createNotNode(AbstractNode argument, Token token) {
-		return new NotNode(argument, token);
-	}
-
-	@Override
-	public FloatNode createFloatNode(BigDecimal value, Token token) {
-		return new FloatNode(value, token);
 	}
 
 	@Override
@@ -115,17 +83,57 @@ public class AbacusNodeFactory implements NodeFactory {
 	}
 
 	@Override
-	public OrNode createOrNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public LeqNode createLeqNode(Node lhs, Node rhs, Token token) {
+		return new LeqNode(lhs, rhs, token);
+	}
+
+	@Override
+	public LtNode createLtNode(Node lhs, Node rhs, Token token) {
+		return new LtNode(lhs, rhs, token);
+	}
+
+	@Override
+	public ModuloNode createModuloNode(Node lhs, Node rhs, Token token) {
+		return new ModuloNode(lhs, rhs, token);
+	}
+
+	@Override
+	public MultiplyNode createMultiplyNode(Node lhs, Node rhs, Token token) {
+		return new MultiplyNode(lhs, rhs, token);
+	}
+	
+	@Override
+	public NegativeNode createNegativeNode(Node argument, Token token) {
+		return new NegativeNode(argument, token);
+	}
+
+	@Override
+	public NeqNode createNeqNode(Node lhs, Node rhs, Token token) {
+		return new NeqNode(lhs, rhs, token);
+	}
+
+	@Override
+	public NotNode createNotNode(Node argument, Token token) {
+		return new NotNode(argument, token);
+	}
+
+	@Override
+	public NullNode createNullNode(Token token) {
+		return new NullNode(token);
+	}
+
+	@Override
+	public OrNode createOrNode(Node lhs, Node rhs, Token token) {
 		return new OrNode(lhs, rhs, token);
 	}
 
 	@Override
-	public PositiveNode createPositiveNode(AbstractNode argument, Token token) {
+	public PositiveNode createPositiveNode(Node argument, Token token) {
 		return new PositiveNode(argument, token);
 	}
 
 	@Override
-	public PowerNode createPowerNode(AbstractNode base, AbstractNode power, Token token) {
+	public PowerNode createPowerNode(Node base, Node power, Token token) {
 		return new PowerNode(base, power, token);
 	}
 
@@ -140,7 +148,7 @@ public class AbacusNodeFactory implements NodeFactory {
 	}
 
 	@Override
-	public SubstractNode createSubstractNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public SubstractNode createSubstractNode(Node lhs, Node rhs, Token token) {
 		return new SubstractNode(lhs, rhs, token);
 	}
 
@@ -148,10 +156,4 @@ public class AbacusNodeFactory implements NodeFactory {
 	public VariableNode createVariableNode(String identifier, Token token) {
 		return new VariableNode(identifier, token);
 	}
-
-	@Override
-	public NullNode createNullNode(Token token) {
-		return new NullNode(token);
-	}
-
 }

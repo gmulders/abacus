@@ -4,12 +4,15 @@ import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
+/**
+ * Node that represents a greater comparison.
+ */
 public class GtNode extends AbstractComparisonNode {
 
 	/**
 	 * Constructor
 	 */
-	public GtNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public GtNode(Node lhs, Node rhs, Token token) {
 		super(lhs, rhs, token, 6);
 	}
 
