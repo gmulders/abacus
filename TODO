@@ -1,3 +1,0 @@
-- Parser omschrijven zodat deze aan de Lexer vraagt of er nog meer tokens zijn, ipv controle op TokenType.END_OF_INPUT.
-  Maak de methode Lexer.hasNext() en hernoem getNextToken() naar next(). Mogelijk is het handig om Lexer (de interface)
-  Iterable te laten extenden.
