@@ -1,16 +1,15 @@
 package org.gertje.abacus.translator.javascript.nodevisitors;
 
-import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.DateNode;
+import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
 import org.gertje.abacus.nodes.FactorNode;
-import org.gertje.abacus.nodes.FloatNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
 import org.gertje.abacus.nodes.GtNode;
@@ -22,6 +21,7 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
@@ -33,6 +33,8 @@ import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.nodevisitors.AbstractNodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
 import java.util.Stack;
 
@@ -63,7 +65,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		declarationStack = new Stack<String>();
 	}
 
-	public String translate(AbstractNode node) throws VisitingException {
+	public String translate(Node node) throws VisitingException {
 		
 		ExpressionTranslator expressionTranslator = new ExpressionTranslator(node);
 
@@ -88,7 +90,37 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(AndNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "&&");
+		ExpressionTranslator lhsExpression = new ExpressionTranslator(node.getLhs());
+		ExpressionTranslator rhsExpression = new ExpressionTranslator(node.getRhs());
+
+		// Bouw javascript op die
+		StringBuilder translation = new StringBuilder();
+		translation
+				.append("var _").append(variableStack.size()).append("=(function(){")
+					.append("var _l=(function(){")
+						.append(lhsExpression.getDeclarations())
+						.append(lhsExpression.getNullableCheck())
+						.append("return ").append(lhsExpression.getExpression())
+					.append("})();")
+
+					.append("if(_l===false)return false;")
+
+					.append("var _r=(function(){")
+						.append(rhsExpression.getDeclarations())
+						.append(rhsExpression.getNullableCheck())
+						.append("return ").append(rhsExpression.getExpression())
+					.append("})();")
+
+					.append("if(_r===false)return false;")
+					.append("if(_l==null||_r==null)return null;")
+
+					.append("return true;")
+				.append("})()");
+
+		declarationStack.push(translation.toString());
+		String variable = "_" + variableStack.size();
+		partStack.push(variable);
+		variableStack.push(variable);
 		return null;
 	}
 
@@ -98,23 +130,34 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		// Pop tussendoor even de assignee van de variabelestack om te voorkomen dat we controleren of de assignee niet
 		// null is. Anders zou je zoiets krijgen: a = 3 --> (function(){if(a==null)return null;return a = 3;})()
 		variableStack.pop();
-		
+
 		node.getRhs().accept(this);
-		
+
 		String rhsScript = partStack.pop();
 		String lhsScript = partStack.pop();
-		
-		String script = parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), lhsScript) 
+
+		// Cast the rhs if neccesary.
+		if (node.getLhs().getType() == Type.INTEGER && node.getRhs().getType() == Type.DECIMAL) {
+			// Use de double tilde to do the casting. Single tilde is the NOT operator. JavaScript bitwise operators
+			// cast their operands to signed 32-bits integer values.
+			rhsScript = "~~" + rhsScript;
+		}
+
+		String script = parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), lhsScript)
 				+ "="
 				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), rhsScript);
-		
+
 		partStack.push(script);
 		return null;
 	}
 
 	@Override
 	public Void visit(BooleanNode node) throws VisitingException {
-		partStack.push(node.getValue().booleanValue() ? "true" : "false");
+		if (node.getValue() == null) {
+			partStack.push("null");
+		} else {
+			partStack.push(node.getValue().booleanValue() ? "true" : "false");
+		}
 		return null;
 	}
 
@@ -145,15 +188,19 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 	}
 
 	@Override
-	public Void visit(FloatNode node) throws VisitingException {
-		partStack.push(node.getValue().toString());
+	public Void visit(DecimalNode node) throws VisitingException {
+		if (node.getValue() == null) {
+			partStack.push("null");
+		} else {
+			partStack.push(node.getValue().toString());
+		}
 		return null;
 	}
 
 	@Override
 	public Void visit(FunctionNode node) throws VisitingException {
 		// Loop eerst over alle parameters heen, om de stack op te bouwen.
-		for (AbstractNode childNode : node.getParameters()) {
+		for (Node childNode : node.getParameters()) {
 			childNode.accept(this);
 		}
 		
@@ -212,7 +259,11 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(IntegerNode node) throws VisitingException {
-		partStack.push(node.getValue().toString());
+		if (node.getValue() == null) {
+			partStack.push("null");
+		} else {
+			partStack.push(node.getValue().toString());
+		}
 		return null;
 	}
 
@@ -270,7 +321,37 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(OrNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "||");
+		ExpressionTranslator lhsExpression = new ExpressionTranslator(node.getLhs());
+		ExpressionTranslator rhsExpression = new ExpressionTranslator(node.getRhs());
+
+		// Bouw javascript op die
+		StringBuilder translation = new StringBuilder();
+		translation
+				.append("var _").append(variableStack.size()).append("=(function(){")
+					.append("var _l=(function(){")
+						.append(lhsExpression.getDeclarations())
+						.append(lhsExpression.getNullableCheck())
+						.append("return ").append(lhsExpression.getExpression())
+					.append("})();")
+
+					.append("if(_l===true)return true;")
+
+					.append("var _r=(function(){")
+						.append(rhsExpression.getDeclarations())
+						.append(rhsExpression.getNullableCheck())
+						.append("return ").append(rhsExpression.getExpression())
+					.append("})();")
+
+					.append("if(_r===true)return true;")
+					.append("if(_l==null||_r==null)return null;")
+
+					.append("return false;")
+				.append("})()");
+
+		declarationStack.push(translation.toString());
+		String variable = "_" + variableStack.size();
+		partStack.push(variable);
+		variableStack.push(variable);
 		return null;
 	}
 
@@ -332,7 +413,11 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(StringNode node) throws VisitingException {
-		partStack.push("'" + node.getValue() + "'");
+		if (node.getValue() == null) {
+			partStack.push("null");
+		} else {
+			partStack.push("'" + node.getValue() + "'");
+		}
 		return null;
 	}
 
@@ -390,7 +475,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 	
 	/**
 	 * Inner klasse om een expressie te kunnen vertalen. (Let op: met expressie bedoel ik hier een onderdeel van een 
-	 * if-statement, zie ook Parser.expression().)
+	 * if-statement, zie ook {@link org.gertje.abacus.parser.Parser#expression(Token)} .)
 	 */
 	private class ExpressionTranslator {
 		/** StringBuilder om de declaraties in op te bouwen. */
@@ -404,7 +489,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		 * Maakt een nieuwe instantie aan. Vertaal de expressie en bouw nodige gedeelten op.
 		 * @throws VisitingException 
 		 */
-		private ExpressionTranslator(AbstractNode node) throws VisitingException {
+		private ExpressionTranslator(Node node) throws VisitingException {
 			declarations = new StringBuilder();
 			nullableCheck = new StringBuilder();
 			
