@@ -1,0 +1,73 @@
+[
+	{
+		"expression": "!('World!')",
+		"failsWithException": true
+	},
+	{
+		"expression": "!(8)",
+		"failsWithException": true
+	},
+	{
+		"expression": "!(5.2)",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "!(true)",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		}
+	},
+	{
+		"expression": "!a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+
+	{
+		"expression": "!(null)",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "!a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": null
+			}
+		]
+	}
+
+]

@@ -1,0 +1,259 @@
+[
+	{
+		"expression": "'Hello ' % 'World!'",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' % 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' % 10.4",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' % true",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' % null",
+		"failsWithException": true
+	},
+	{
+		"expression": "678 % 'Hello World!'",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "100 % 100",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		}
+	},
+	{
+		"expression": "100 % a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		]
+	},
+	{
+		"expression": "a % 100",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		]
+	},
+
+	{
+		"expression": "100 % 100.0",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		}
+	},
+	{
+		"expression": "100 % a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "100.0"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "100.0"
+			}
+		]
+	},
+	{
+		"expression": "a % 100.0",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		]
+	},
+
+	{
+		"expression": "12 % true",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "100 % null",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		}
+	},
+	{
+		"expression": "100 % a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a % null",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		]
+	},
+	{
+		"expression": "100.0 % ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "7.12213 % 3",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "1"
+		}
+	},
+	{
+		"expression": "7.6 % 2.4",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "1"
+		}
+	},
+	{
+		"expression": "102.9 % true",
+		"failsWithException": true
+	},
+	{
+		"expression": "2.4 % null",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		}
+	},
+	{
+		"expression": "true % ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "false % 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "false % 6.7",
+		"failsWithException": true
+	},
+	{
+		"expression": "false % true",
+		"failsWithException": true
+	},
+	{
+		"expression": "true % null",
+		"failsWithException": true
+	},
+	{
+		"expression": "null % ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "null % 10",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		}
+	},
+	{
+		"expression": "null % 6.7",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		}
+	},
+	{
+		"expression": "null % true",
+		"failsWithException": true
+	},
+	{
+		"expression": "null % null",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		}
+	}
+]

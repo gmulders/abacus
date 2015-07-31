@@ -1,0 +1,76 @@
+[
+	{
+		"expression": "-('World!')",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "-(8)",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "-8"
+		}
+	},
+	{
+		"expression": "-a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "-8"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "8"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "8"
+			}
+		]
+	},
+
+	{
+		"expression": "-(5.2)",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "-5.2"
+		}
+	},
+	{
+		"expression": "-a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "-5.2"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "5.2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "5.2"
+			}
+		]
+	},
+
+	{
+		"expression": "-(true)",
+		"failsWithException": true
+	},
+	{
+		"expression": "-(null)",
+		"returnValue": {
+			"type": null,
+			"value": null
+		}
+	}
+]
