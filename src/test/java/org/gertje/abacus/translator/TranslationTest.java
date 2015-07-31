@@ -1,46 +1,12 @@
 package org.gertje.abacus.translator;
 
-import org.gertje.abacus.translator.java.runtime.F;
+import org.gertje.abacus.AbacusTest;
 import org.junit.Test;
 
-public class TranslationTest {
+public class TranslationTest extends AbacusTest {
 
 	@Test
-	public void testTranslation() {
-
-		(new F<Boolean>() {
-			public Boolean f() {
-				Boolean left = (new F<Boolean>() {
-					public Boolean f() {
-						Boolean left = Boolean.TRUE;
-
-						if (!Boolean.FALSE.equals(left))
-							return left;
-
-
-						return Boolean.TRUE;
-					}
-				}).f();
-
-
-				if (!Boolean.FALSE.equals(left))
-					return left;
-
-
-				return 		(new F<Boolean>() {
-					public Boolean f() {
-						Boolean left = Boolean.TRUE;
-
-						if (!Boolean.FALSE.equals(left))
-							return left;
-
-
-						return Boolean.TRUE;
-					}
-				}).f();
-			}
-		}).f();
-
+	public void testTranslation() throws Exception {
+		runTestCaseRunner(new TranslatorTestCaseRunner());
 	}
-
 }
