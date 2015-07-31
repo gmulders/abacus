@@ -1,27 +1,31 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
 import java.math.BigDecimal;
 
-public class FloatNode extends AbstractNode {
+/**
+ * Node that represents a decimal.
+ */
+public class DecimalNode extends AbstractNode {
 
 	private BigDecimal value;
 
 	/**
 	 * Constructor
 	 */
-	public FloatNode(BigDecimal value, Token token) {
+	public DecimalNode(BigDecimal value, Token token) {
 		super(1, token);
 
 		this.value = value;
 	}
 
 	@Override
-	public Class<?> getType() {
-		return BigDecimal.class;
+	public Type getType() {
+		return Type.DECIMAL;
 	}
 
 	@Override

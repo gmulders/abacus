@@ -1,13 +1,17 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents a variable.
+ */
 public class VariableNode extends AbstractNode {
 
 	private String identifier;
-	private Class<?> type;
+	private Type type;
 
 	/**
 	 * Constructor
@@ -19,7 +23,7 @@ public class VariableNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		return type;
 	}
 
@@ -33,7 +37,7 @@ public class VariableNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public void setType(Class<?> type) {
+	public void setType(Type type) {
 		this.type = type;
 	}
 

@@ -3,7 +3,11 @@ package org.gertje.abacus.nodes;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents a boolean.
+ */
 public class BooleanNode extends AbstractNode {
 
 	private Boolean value;
@@ -18,8 +22,8 @@ public class BooleanNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return Boolean.class;
+	public Type getType() {
+		return Type.BOOLEAN;
 	}
 
 	@Override

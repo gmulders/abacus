@@ -1,0 +1,478 @@
+[
+	{
+		"expression": "'Hello ' ^ 'World!'",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' ^ 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' ^ 10.4",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' ^ true",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' ^ null",
+		"failsWithException": true
+	},
+	{
+		"expression": "678 ^ 'Hello World!'",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "6 ^ 8",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "1679616"
+		}
+	},
+	{
+		"expression": "6 ^ a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "1679616"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "8"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "8"
+			}
+		]
+	},
+	{
+		"expression": "a ^ 8",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "1679616"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "6"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "6"
+			}
+		]
+	},
+
+	{
+		"expression": "3 ^ 5.2",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "302.71261832657075"
+		}
+	},
+	{
+		"expression": "3 ^ 5.2",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "302.71261832657075"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "5.2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "5.2"
+			}
+		]
+	},
+	{
+		"expression": "3 ^ 5.2",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "302.71261832657075"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		]
+	},
+
+	{
+		"expression": "12 ^ true",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "100 ^ null",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		}
+	},
+	{
+		"expression": "100 ^ a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a ^ null",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		]
+	},
+
+	{
+		"expression": "100.0 ^ ' '",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "7.12213 ^ 3",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "361.2681621338476"
+		}
+	},
+	{
+		"expression": "7.12213 ^ a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "361.2681621338476"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		]
+	},
+	{
+		"expression": "a ^ 3",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "361.2681621338476"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "7.12213"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "7.12213"
+			}
+		]
+	},
+
+	{
+		"expression": "7.6 ^ 2.4",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "130.00277462557668"
+		}
+	},
+	{
+		"expression": "7.6 ^ a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "130.00277462557668"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		]
+	},
+	{
+		"expression": "a ^ 2.4",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "130.00277462557668"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "7.6"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "7.6"
+			}
+		]
+	},
+
+	{
+		"expression": "102.9 ^ true",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "2.4 ^ null",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		}
+	},
+	{
+		"expression": "2.4 ^ a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a ^ null",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		]
+	},
+
+	{
+		"expression": "true ^ ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "false ^ 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "false ^ 6.7",
+		"failsWithException": true
+	},
+	{
+		"expression": "false ^ true",
+		"failsWithException": true
+	},
+	{
+		"expression": "true ^ null",
+		"failsWithException": true
+	},
+	{
+		"expression": "null ^ ' '",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "null ^ 10",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		}
+	},
+	{
+		"expression": "null ^ a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "10"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "10"
+			}
+		]
+	},
+	{
+		"expression": "a ^ 10",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "null ^ 6.7",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		}
+	},
+	{
+		"expression": "null ^ a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "6.7"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "6.7"
+			}
+		]
+	},
+	{
+		"expression": "a ^ 6.7",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "null ^ true",
+		"failsWithException": true
+	},
+	{
+		"expression": "null ^ null",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		}
+	}
+]

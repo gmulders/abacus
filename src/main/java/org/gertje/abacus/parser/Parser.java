@@ -1,12 +1,13 @@
 package org.gertje.abacus.parser;
 
-import org.gertje.abacus.token.Token;
-import org.gertje.abacus.token.TokenType;
 import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.lexer.LexerException;
 import org.gertje.abacus.nodes.AbstractNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodes.StatementListNode;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.token.TokenType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -344,7 +345,7 @@ public class Parser {
 			} catch (NumberFormatException nfe) {
 				throw new ParserException("Illegal number format; " + nfe.getMessage(), nextToken);
 			}
-			return nodeFactory.createFloatNode(number, nextToken);
+			return nodeFactory.createDecimalNode(number, nextToken);
 
 		// Wanneer het token een geheel getal is geven we een IntegerNode terug.
 		} else if (nextToken.getType() == TokenType.INTEGER) {
@@ -397,7 +398,7 @@ public class Parser {
 			// Als het token een function is geven we een FunctionNode terug.
 			if (determineIsFunction(nextToken)) {
 				// We moeten nu een lijst opbouwen met parameters.
-				List<AbstractNode> params = buildParameters();
+				List<Node> params = buildParameters();
 
 				return nodeFactory.createFunctionNode(nextToken.getValue(), params, nextToken);
 			}
@@ -407,11 +408,11 @@ public class Parser {
 				+ "', value: '" + nextToken.getValue() + "'.", nextToken);
 	}
 
-	private List<AbstractNode> buildParameters() throws ParserException {
+	private List<Node> buildParameters() throws ParserException {
 		// Haal het linkerhaakje van de stack.
 		determineNextToken();
 		// Maak een variabele met de parameters aan.
-		List<AbstractNode> params = new ArrayList<>();
+		List<Node> params = new ArrayList<>();
 		// Wanneer het volgende token een rechterhaakje is heeft de functie geen parameters.
 		if (peekNextToken().getType() == TokenType.RIGHT_PARENTHESIS) {
 			// Haal het token van de stack en geef de lege array terug.

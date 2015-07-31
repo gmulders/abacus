@@ -8,7 +8,7 @@ public class AbacusException extends Exception {
 		this(message, lineNumber, columnNumber, null);
 	}
 
-	public AbacusException(String message, int lineNumber, int columnNumber, Exception cause) {
+	public AbacusException(String message, int lineNumber, int columnNumber, Throwable cause) {
 		super(message + " at line: " + lineNumber + " column: " + columnNumber, cause);
 
 		this.lineNumber = lineNumber;

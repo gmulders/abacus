@@ -17,9 +17,7 @@ public class ParserException extends CompilerException {
 	}
 
 	public ParserException(String message, LexerException lexerException) {
-		super(message, lexerException.getLineNumber(), lexerException.getColumnNumber());
-
-		this.initCause(lexerException);
+		super(message, lexerException.getLineNumber(), lexerException.getColumnNumber(), lexerException);
 	}
 
 	public Token getToken() {

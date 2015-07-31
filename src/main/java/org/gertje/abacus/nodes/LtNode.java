@@ -4,12 +4,15 @@ import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
+/**
+ * Node that represents a less comparison.
+ */
 public class LtNode extends AbstractComparisonNode {
 
 	/**
 	 * Constructor
 	 */
-	public LtNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public LtNode(Node lhs, Node rhs, Token token) {
 		super(lhs, rhs, token, 6);
 	}
 

@@ -1,8 +1,9 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
 /**
  * Stelt een AST Node voor.
@@ -10,8 +11,11 @@ import org.gertje.abacus.nodevisitors.VisitingException;
 public interface Node {
 	/**
 	 * Geeft het type van de node terug.
+	 *
+	 * Voordat deze methode aangeroepen kan worden moet eerst de node of de kinderen van de node bezocht zijn om het
+	 * type te bepalen.
 	 */
-	Class<?> getType();
+	Type getType();
 
 	/**
 	 * Geeft terug of de node constant is, dit is het geval wanneer:
@@ -20,7 +24,7 @@ public interface Node {
 	 *
 	 * Voorbeelden van constante nodes zijn (niet uitputtend):
 	 * - StringNode
-	 * - NumberNode
+	 * - DecimalNode
 	 * - BooleanNode
 	 * - DateNode
 	 */

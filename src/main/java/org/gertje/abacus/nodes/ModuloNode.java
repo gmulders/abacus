@@ -1,23 +1,25 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
-import java.math.BigInteger;
-
+/**
+ * Node that represents modulo.
+ */
 public class ModuloNode extends AbstractTermNode {
 
 	/**
 	 * Constructor
 	 */
-	public ModuloNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public ModuloNode(Node lhs, Node rhs, Token token) {
 		super(lhs, rhs, token, 4);
 	}
 
 	@Override
-	public Class<?> getType() {
-		return BigInteger.class;
+	public Type getType() {
+		return Type.INTEGER;
 	}
 
 	@Override

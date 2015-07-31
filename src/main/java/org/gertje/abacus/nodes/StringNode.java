@@ -3,7 +3,11 @@ package org.gertje.abacus.nodes;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents a string.
+ */
 public class StringNode extends AbstractNode {
 
 	private String value;
@@ -18,8 +22,8 @@ public class StringNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return String.class;
+	public Type getType() {
+		return Type.STRING;
 	}
 
 	@Override

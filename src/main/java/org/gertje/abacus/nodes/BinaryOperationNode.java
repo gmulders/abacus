@@ -1,9 +1,11 @@
 package org.gertje.abacus.nodes;
 
 /**
- * Stelt een node voor een binaire operatie voor.
+ * Node that represents a binary operation.
  */
 public interface BinaryOperationNode extends Node {
-	AbstractNode getLhs();
-	AbstractNode getRhs();
+	Node getLhs();
+	void setLhs(Node node);
+	Node getRhs();
+	void setRhs(Node node);
 }

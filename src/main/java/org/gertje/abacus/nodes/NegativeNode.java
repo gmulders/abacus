@@ -1,17 +1,21 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents an unary negation.
+ */
 public class NegativeNode extends AbstractNode {
 
-	AbstractNode argument;
+	private Node argument;
 
 	/**
 	 * Constructor
 	 */
-	public NegativeNode(AbstractNode argument, Token token) {
+	public NegativeNode(Node argument, Token token) {
 		super(2, token);
 
 		this.argument = argument;
@@ -23,7 +27,7 @@ public class NegativeNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		return argument.getType();
 	}
 
@@ -32,11 +36,11 @@ public class NegativeNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public AbstractNode getArgument() {
+	public Node getArgument() {
 		return argument;
 	}
 
-	public void setArgument(AbstractNode argument) {
+	public void setArgument(Node argument) {
 		this.argument = argument;
 	}
 }

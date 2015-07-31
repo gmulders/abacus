@@ -1,0 +1,737 @@
+[
+	{
+		"expression": "3-3-3",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "-3"
+		}
+	},
+	{
+		"expression": "a = 3;",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "3"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "0"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		]
+	},
+	{
+		"expression": "3*3+a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "11"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		]
+	},
+	{
+		"expression": "3*(3+a)",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "15"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		]
+	},
+	{
+		"expression": "s3*3+a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "15"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"failsWithException": true
+	},
+	{
+		"expression": "3s*3+a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "15"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"failsWithException": true
+	},
+	{
+		"expression": "3==3",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "2 == 3 ? 'aap' : 'geen aap'",
+		"returnValue": {
+			"type": "STRING",
+			"value": "geen aap"
+		}
+	},
+	{
+		"expression": "a = 3",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "3"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		]
+	},
+	{
+		"expression": "a = b = a + 3",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "5"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "5"
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": "5"
+			}
+		]
+	},
+	{
+		"expression": "5 + 3; 3 - 3;",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		}
+	},
+	{
+		"expression": "a + 3; 3 - 3;(a < 2 ? 3 : 2)",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "2"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		]
+	},
+	{
+		"expression": "2^3;",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "8"
+		}
+	},
+	{
+		"expression": "8/3",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "2"
+		}
+	},
+	{
+		"expression": "3*3+2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "11"
+		}
+	},
+	{
+		"expression": "3+3*2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "9"
+		}
+	},
+	{
+		"expression": "(3+3)*2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "12"
+		}
+	},
+	{
+		"expression": "3*3-2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "7"
+		}
+	},
+	{
+		"expression": "3-3*2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "-3"
+		}
+	},
+	{
+		"expression": "(3-3)*2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		}
+	},
+	{
+		"expression": "3/3+2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "3"
+		}
+	},
+	{
+		"expression": "3+3/2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "4"
+		}
+	},
+	{
+		"expression": "(3+3)/2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "3"
+		}
+	},
+	{
+		"expression": "3/3-2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "-1"
+		}
+	},
+	{
+		"expression": "3-3/2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "2"
+		}
+	},
+	{
+		"expression": "(3-3)/2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		}
+	},
+	{
+		"expression": "3^3/2",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "13.5"
+		}
+	},
+	{
+		"expression": "3^(4/2)",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "9"
+		}
+	},
+	{
+		"expression": "(9/2)^2",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "16"
+		}
+	},
+	{
+		"expression": "9/2^2",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "2.25"
+		}
+	},
+	{
+		"expression": "3/3%2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "1"
+		}
+	},
+	{
+		"expression": "3/(3%2)",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "3"
+		}
+	},
+	{
+		"expression": "5%3/2",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "1"
+		}
+	},
+	{
+		"expression": "5%(3/2)",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "0"
+		}
+	},
+	{
+		"expression": "3+2 == 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "3+3 == 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "3+4 == 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "3+2 < 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "3+3 < 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "3+4 < 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "3+2 > 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "3+3 > 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "3+4 > 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "3+2 >= 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "3+3 >= 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "3+4 >= 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "3+2 <= 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "3+3 <= 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "3+4 <= 6",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "true||true",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "true||false",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "false||true",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "false||false",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		}
+	},
+	{
+		"expression": "a || false",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": false
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": false
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": false
+			}
+		]
+	},
+	{
+		"expression": "3*null",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "null"
+		}
+	},
+	{
+		"expression": "true ? null : null",
+		"returnValue": {
+			"type": "null",
+			"value": "null"
+		}
+	},
+	{
+		"expression": "true ? true : null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "null ? true : false",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "null",
+			"hasDeviantTypeInInterpreter": true,
+			"typeInInterpreter": null
+		}
+	},
+	{
+		"expression": "4 > 3 : 5 ? 6",
+		"returnValue": {
+			"type": "null",
+			"value": "null"
+		},
+		"failsWithException": true
+	},
+	{
+		"expression": "4 > 3 ? 5 : 6.4",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "5",
+			"hasDeviantTypeInInterpreter": true,
+			"typeInInterpreter": "INTEGER"
+		}
+	},
+	{
+		"expression": "4 > 3 ? true : null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "3 * (4 < a ? 5 : null)",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "null"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "1"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "1"
+			}
+		]
+	},
+	{
+		"expression": "3 * rand() < 4",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": true
+		}
+	},
+	{
+		"expression": "-3 + 4",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "1"
+		}
+	},
+	{
+		"expression": "-3.14 + 4",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "0.86"
+		}
+	},
+	{
+		"expression": "(a < 2 ? 3 : 2) * a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "4"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		]	},
+	{
+		"expression": "gaap;(3 * a < b ? true : false) ? c : d",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "2"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "c",
+				"type": "INTEGER",
+				"value": "1"
+			},
+			{
+				"name": "d",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "gaap",
+				"type": "INTEGER",
+				"value": "1"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "c",
+				"type": "INTEGER",
+				"value": "1"
+			},
+			{
+				"name": "d",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "gaap",
+				"type": "INTEGER",
+				"value": "1"
+			}
+		]
+	},
+	{
+		"expression": "a * b",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "4"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "2"
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": "2"
+			}
+		]
+	},
+	{
+		"expression": "678 <= a'",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "678"
+			}
+		]
+	}
+]

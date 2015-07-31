@@ -7,7 +7,7 @@ import org.gertje.abacus.nodevisitors.VisitingException;
 /**
  * Klasse die een lijst van expressies voorstelt.
  */
-public class StatementListNode extends NodeListNode<AbstractNode> {
+public class StatementListNode extends NodeListNode<Node> {
 
 	/**
 	 * Constructor

@@ -1,21 +1,25 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
 import java.util.List;
 
+/**
+ * Node that represents a function.
+ */
 public class FunctionNode extends AbstractNode {
 
 	private String identifier;
-	private List<AbstractNode> parameters;
-	private Class<?> returnType;
+	private List<Node> parameters;
+	private Type returnType;
 
 	/**
 	 * Constructor
 	 */
-	public FunctionNode(String identifier, List<AbstractNode> parameters, Token token) {
+	public FunctionNode(String identifier, List<Node> parameters, Token token) {
 		super(1, token);
 
 		this.identifier = identifier;
@@ -23,7 +27,7 @@ public class FunctionNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		return returnType;
 	}
 
@@ -45,19 +49,19 @@ public class FunctionNode extends AbstractNode {
 		this.identifier = identifier;
 	}
 
-	public List<AbstractNode> getParameters() {
+	public List<Node> getParameters() {
 		return parameters;
 	}
 
-	public void setParameters(List<AbstractNode> parameters) {
+	public void setParameters(List<Node> parameters) {
 		this.parameters = parameters;
 	}
 
-	public Class<?> getReturnType() {
+	public Type getReturnType() {
 		return returnType;
 	}
 
-	public void setReturnType(Class<?> returnType) {
+	public void setReturnType(Type returnType) {
 		this.returnType = returnType;
 	}
 }

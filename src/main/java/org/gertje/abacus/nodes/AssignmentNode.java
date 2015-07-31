@@ -1,15 +1,19 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents an assignment.
+ */
 public class AssignmentNode extends AbstractNode {
 
-	AbstractNode lhs;
-	AbstractNode rhs;
+	protected Node lhs;
+	protected Node rhs;
 
-	public AssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public AssignmentNode(Node lhs, Node rhs, Token token) {
 		super(1, token);
 
 		this.lhs = lhs;
@@ -22,8 +26,8 @@ public class AssignmentNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return rhs.getType();
+	public Type getType() {
+		return lhs.getType();
 	}
 
 	@Override
@@ -31,19 +35,19 @@ public class AssignmentNode extends AbstractNode {
 		return visitor.visit(this);		
 	}
 
-	public AbstractNode getLhs() {
+	public Node getLhs() {
 		return lhs;
 	}
 
-	public void setLhs(AbstractNode lhs) {
+	public void setLhs(Node lhs) {
 		this.lhs = lhs;
 	}
 
-	public AbstractNode getRhs() {
+	public Node getRhs() {
 		return rhs;
 	}
 
-	public void setRhs(AbstractNode rhs) {
+	public void setRhs(Node rhs) {
 		this.rhs = rhs;
 	}
 }

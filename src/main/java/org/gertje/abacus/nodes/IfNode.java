@@ -1,20 +1,24 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents an if.
+ */
 public class IfNode extends AbstractNode {
 
-	private AbstractNode condition;
-	private AbstractNode ifBody;
-	private AbstractNode elseBody;
-	private Class<?> type;
+	private Node condition;
+	private Node ifBody;
+	private Node elseBody;
+	private Type type;
 
 	/**
 	 * Constructor
 	 */
-	public IfNode(AbstractNode condition, AbstractNode ifBody, AbstractNode elseBody, Token token) {
+	public IfNode(Node condition, Node ifBody, Node elseBody, Token token) {
 		super(10, token);
 
 		this.condition = condition;
@@ -23,7 +27,7 @@ public class IfNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Type getType() {
 		return type;
 	}
 
@@ -37,31 +41,31 @@ public class IfNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public AbstractNode getCondition() {
+	public Node getCondition() {
 		return condition;
 	}
 
-	public void setCondition(AbstractNode condition) {
+	public void setCondition(Node condition) {
 		this.condition = condition;
 	}
 
-	public AbstractNode getIfBody() {
+	public Node getIfBody() {
 		return ifBody;
 	}
 
-	public void setIfBody(AbstractNode ifBody) {
+	public void setIfBody(Node ifBody) {
 		this.ifBody = ifBody;
 	}
 
-	public AbstractNode getElseBody() {
+	public Node getElseBody() {
 		return elseBody;
 	}
 
-	public void setElseBody(AbstractNode elseBody) {
+	public void setElseBody(Node elseBody) {
 		this.elseBody = elseBody;
 	}
 
-	public void setType(Class<?> type) {
+	public void setType(Type type) {
 		this.type = type;
 	}
 }

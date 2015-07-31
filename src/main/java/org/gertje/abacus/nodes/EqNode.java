@@ -4,12 +4,15 @@ import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
+/**
+ * Node that represents an equals comparison.
+ */
 public class EqNode extends AbstractComparisonNode {
 
 	/**
 	 * Constructor
 	 */
-	public EqNode(AbstractNode lhs, AbstractNode rhs, Token token) {
+	public EqNode(Node lhs, Node rhs, Token token) {
 		super(lhs, rhs, token, 7);
 	}
 

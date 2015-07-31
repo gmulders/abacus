@@ -1,15 +1,14 @@
 package org.gertje.abacus.nodevisitors;
 
-import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.DateNode;
+import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
 import org.gertje.abacus.nodes.FactorNode;
-import org.gertje.abacus.nodes.FloatNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
 import org.gertje.abacus.nodes.GtNode;
@@ -21,6 +20,7 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
@@ -33,10 +33,9 @@ import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SymbolTable;
+import org.gertje.abacus.types.Type;
+import org.gertje.abacus.util.SemanticsHelper;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,26 +53,22 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 		this.symbolTable = symbolTable;
 	}
 
-	public Void check(AbstractNode node) throws SemanticsCheckException {
+	public void check(Node node) throws SemanticsCheckException {
 		node.accept(this);
-
-		return null;
 	}
 
 	@Override
 	public Void visit(AddNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Wanneer niet beide zijden van het type 'String' of 'Number' zijn moeten we een exceptie gooien.
-		if (!(lhs.getType().equals(String.class) && rhs.getType().equals(String.class))
-				&& !(isNumber(lhs.getType()) && isNumber(rhs.getType()))) {
-			throw new SemanticsCheckException(
-					"Expected two parameters of type 'Number' or type 'String' to ADD-expression.",
-					node);
+		if (!(Type.isStringOrUnknown(lhs.getType()) && Type.isStringOrUnknown(rhs.getType()))
+				&& !(Type.isNumberOrUnknown(lhs.getType()) && Type.isNumberOrUnknown(rhs.getType()))) {
+			throw new SemanticsCheckException(SemanticsHelper.ADD_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -81,15 +76,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(AndNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Beide zijden moeten van het type Boolean zijn.
-		if (!lhs.getType().equals(Boolean.class) || !rhs.getType().equals(Boolean.class)) {
-			throw new SemanticsCheckException("Expected two boolean parameters to AND-expression.", node);
+		// Beide zijden moeten van het type Boolean of onbekend zijn.
+		if (!Type.isBooleanOrUnknown(lhs.getType()) || !Type.isBooleanOrUnknown(rhs.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.AND_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -97,23 +92,22 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(AssignmentNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Als de linkerkant geen VariabeleNode is EN de linkerkant is geen AssignmentNode met aan de rechterkant een
 		// VariableNode, dan gooien we een exceptie.
-		if (!(lhs instanceof VariableNode) 
+		if (!(lhs instanceof VariableNode)
 				&& !((lhs instanceof AssignmentNode) && (((AssignmentNode)lhs).getRhs() instanceof VariableNode))) {
-			throw new SemanticsCheckException("Left side of assignment should be a variable or an assignment.",
-					node);
+			throw new SemanticsCheckException(SemanticsHelper.ASSIGNMENT_ILLEGAL_LEFT_OPERAND, node);
 		}
 
 		// Controleer of de types van de linker en de rechterkant overeenkomen.
-		if (lhs.getType() != rhs.getType()) {
-			throw new SemanticsCheckException("Expected expression of the same type as the variable.", node);
+		if (!SemanticsHelper.checkAssignmentType(lhs.getType(), rhs.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.ASSIGNMENT_ILLEGAL_RIGHT_OPERAND, node);
 		}
 
 		return null;
@@ -130,17 +124,21 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 	}
 
 	@Override
+	public Void visit(DecimalNode node) throws SemanticsCheckException {
+		return null;
+	}
+
+	@Override
 	public Void visit(DivideNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Beide zijden moeten van het type 'number' zijn.
-		if (!isNumber(lhs.getType()) || !isNumber(rhs.getType())) {
-			throw new SemanticsCheckException("Expected two parameters of type 'number' to divide-expression.",
-					node);
+		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
+		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.DIVIDE_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -148,23 +146,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(EqNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Een == vergelijking kan booleans, getallen, strings en datums vergelijken.
-		List<Class<?>> allowedTypes = new ArrayList<Class<?>>();
-		allowedTypes.add(Boolean.class);
-		allowedTypes.add(BigDecimal.class);
-		allowedTypes.add(String.class);
-		allowedTypes.add(Date.class);
-
 		// Controleer of de types voorkomen in de lijst.
-		if (!checkComparisonTypes(lhs.getType(), rhs.getType(), allowedTypes)) {
-			throw new SemanticsCheckException("Expected two parameters of the same type to comparison-expression.",
-					node);
+		if (!SemanticsHelper.checkComparisonTypes(lhs.getType(), rhs.getType(), SemanticsHelper.ALLOWED_TYPES_EQ_NEQ)) {
+			throw new SemanticsCheckException(SemanticsHelper.EQ_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -172,7 +162,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(FactorNode node) throws SemanticsCheckException {
-		AbstractNode argument = node.getArgument();
+		Node argument = node.getArgument();
 
 		argument.accept(this);
 
@@ -182,20 +172,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 	}
 
 	@Override
-	public Void visit(FloatNode node) throws SemanticsCheckException {
-		return null;
-	}
-
-	@Override
 	public Void visit(FunctionNode node) throws SemanticsCheckException {
-		List<AbstractNode> parameters = node.getParameters();
+		List<Node> parameters = node.getParameters();
 		String identifier = node.getIdentifier();
 
 		// Maak een lijst van Objecten aan waarin we de parameters gaan evalueren.
-		List<Class<?>> types = new ArrayList<Class<?>>();
+		List<Type> types = new ArrayList<>();
 
 		// Loop over alle nodes heen.
-		for (AbstractNode parameter : parameters) {
+		for (Node parameter : parameters) {
 			parameter.accept(this);
 			// Voeg het type van de node toe aan de lijst.
 			types.add(parameter.getType());
@@ -219,22 +204,16 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(GeqNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Een >= vergelijking kan getallen, strings en datums vergelijken.
-		List<Class<?>> allowedTypes = new ArrayList<Class<?>>();
-		allowedTypes.add(BigDecimal.class);
-		allowedTypes.add(String.class);
-		allowedTypes.add(Date.class);
-
-        // Controleer of de types voorkomen in de lijst.
-		if (!checkComparisonTypes(lhs.getType(), rhs.getType(), allowedTypes)) {
-			throw new SemanticsCheckException("Expected two parameters of the same type to comparison-expression.",
-					node);
+		// Controleer of de types voorkomen in de lijst.
+		if (!SemanticsHelper.checkComparisonTypes(lhs.getType(), rhs.getType(),
+				SemanticsHelper.ALLOWED_TYPES_GEQ_GT_LEQ_LT)) {
+			throw new SemanticsCheckException(SemanticsHelper.GEQ_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -242,22 +221,16 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(GtNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Een > vergelijking kan getallen, strings en datums vergelijken.
-		List<Class<?>> allowedTypes = new ArrayList<Class<?>>();
-		allowedTypes.add(BigDecimal.class);
-		allowedTypes.add(String.class);
-		allowedTypes.add(Date.class);
-
 		// Controleer of de types voorkomen in de lijst.
-		if (!checkComparisonTypes(lhs.getType(), rhs.getType(), allowedTypes)) {
-			throw new SemanticsCheckException("Expected two parameters of the same type to comparison-expression.",
-					node);
+		if (!SemanticsHelper.checkComparisonTypes(lhs.getType(), rhs.getType(),
+				SemanticsHelper.ALLOWED_TYPES_GEQ_GT_LEQ_LT)) {
+			throw new SemanticsCheckException(SemanticsHelper.GT_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -265,37 +238,42 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(IfNode node) throws SemanticsCheckException {
-		AbstractNode condition = node.getCondition();
-		AbstractNode ifbody = node.getIfBody();
-		AbstractNode elsebody = node.getElseBody();
+		Node condition = node.getCondition();
+		Node ifbody = node.getIfBody();
+		Node elsebody = node.getElseBody();
 
 		condition.accept(this);
 		ifbody.accept(this);
 		elsebody.accept(this);
 
 		// De waarde van de conditie moet van het type 'boolean' zijn.
- 		if (!condition.getType().equals(Boolean.class)) {
-			throw new SemanticsCheckException("Expected boolean parameter to IF-expression.", node);
+ 		if (!Type.isBooleanOrUnknown(condition.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.IF_ILLEGAL_CONDITION_TYPE, node);
 		}
 
 		// De waardes van beide bodies moeten van het zelfde type zijn of een van beide mag null zijn.
-		if (ifbody.getType() != elsebody.getType()
-				&& !ifbody.getType().equals(Object.class)
-				&& !elsebody.getType().equals(Object.class)) {
-			throw new SemanticsCheckException("IF-body and ELSE-body should have the same type.", node);
+		if (!SemanticsHelper.checkTypeCompatibility(ifbody.getType(), elsebody.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.IF_ILLEGAL_BODY_TYPES, node);
 		}
 
-		// De waardes van de bodies mogen niet allebei null zijn.
-		if (ifbody.getType().equals(Object.class) && elsebody.getType().equals(Object.class)) {
-			throw new SemanticsCheckException("IF-body and ELSE-body should not be both null.", node);
-		}
+		// Determine the type of the node.
+		Type type = null;
 
-		// Het type van deze node is het type van de body die niet null is.
-		if (!ifbody.getType().equals(Object.class)) {
-			node.setType(ifbody.getType());
+		// Find the first non-null type.
+		if (ifbody.getType() != null) {
+			type = ifbody.getType();
 		} else {
-			node.setType(elsebody.getType());
+			type = elsebody.getType();
 		}
+
+		// If the found type is of type Integer, check if the elsebody is of type Decimal. If so, widen the type to
+		// Decimal.
+		if (type == Type.INTEGER && elsebody.getType() == Type.DECIMAL) {
+			type = Type.DECIMAL;
+		}
+
+		// Set the type of the node.
+		node.setType(type);
 
 		return null;
 	}
@@ -307,23 +285,16 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(LeqNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Een <= vergelijking kan getallen, strings en datums vergelijken.
-		List<Class<?>> allowedTypes = new ArrayList<Class<?>>();
-		allowedTypes.add(BigDecimal.class);
-		allowedTypes.add(String.class);
-		allowedTypes.add(Date.class);
-
 		// Controleer of de types voorkomen in de lijst.
-		if (!checkComparisonTypes(lhs.getType(), rhs.getType(), allowedTypes)) {
-			throw new SemanticsCheckException(
-					"Expected two parameters of the same type to less-then-equals-expression.",
-					node);
+		if (!SemanticsHelper.checkComparisonTypes(lhs.getType(), rhs.getType(),
+				SemanticsHelper.ALLOWED_TYPES_GEQ_GT_LEQ_LT)) {
+			throw new SemanticsCheckException(SemanticsHelper.LEQ_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -331,22 +302,16 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(LtNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Een > vergelijking kan getallen, strings en datums vergelijken.
-		List<Class<?>> allowedTypes = new ArrayList<Class<?>>();
-		allowedTypes.add(BigDecimal.class);
-		allowedTypes.add(String.class);
-		allowedTypes.add(Date.class);
-
 		// Controleer of de types voorkomen in de lijst.
-		if (!checkComparisonTypes(lhs.getType(), rhs.getType(), allowedTypes)) {
-			throw new SemanticsCheckException("Expected two parameters of the same type to less-then-expression.",
-					node);
+		if (!SemanticsHelper.checkComparisonTypes(lhs.getType(), rhs.getType(),
+				SemanticsHelper.ALLOWED_TYPES_GEQ_GT_LEQ_LT)) {
+			throw new SemanticsCheckException(SemanticsHelper.LT_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -354,15 +319,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(ModuloNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Beide zijden moeten van het type 'number' zijn.
- 		if (!isNumber(lhs.getType()) || !isNumber(rhs.getType())) {
-			throw new SemanticsCheckException("Expected two parameters of type 'number' to modulo-expression.", node);
+		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
+		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.MODULO_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -370,16 +335,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(MultiplyNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Beide zijden moeten van het type 'number' zijn.
- 		if (!isNumber(lhs.getType()) || !isNumber(rhs.getType())) {
-			throw new SemanticsCheckException("Expected two parameters of type 'number' to multiply-expression.",
-					node);
+		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
+		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.MULTIPLY_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -387,13 +351,13 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NegativeNode node) throws SemanticsCheckException {
-		AbstractNode argument = node.getArgument();
+		Node argument = node.getArgument();
 
 		argument.accept(this);
 
-		// Het argument moet een getal zijn.
-		if (!isNumber(argument.getType())) {
-			throw new SemanticsCheckException("Expected a number expression in NegativeNode.", node);
+		// Het argument moet een getal of onbekend zijn.
+		if (!Type.isNumberOrUnknown(argument.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.NEGATIVE_ILLEGAL_OPERAND_TYPE, node);
 		}
 
 		return null;
@@ -401,23 +365,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NeqNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Een == vergelijking kan booleans, getallen, strings en datums vergelijken.
-		List<Class<?>> allowedTypes = new ArrayList<Class<?>>();
-		allowedTypes.add(Boolean.class);
-		allowedTypes.add(BigDecimal.class);
-		allowedTypes.add(String.class);
-		allowedTypes.add(Date.class);
-
 		// Controleer of de types voorkomen in de lijst.
-		if (!checkComparisonTypes(lhs.getType(), rhs.getType(), allowedTypes)) {
-			throw new SemanticsCheckException("Expected two parameters of the same type to not-equals-expression.",
-					node);
+		if (!SemanticsHelper.checkComparisonTypes(lhs.getType(), rhs.getType(), SemanticsHelper.ALLOWED_TYPES_EQ_NEQ)) {
+			throw new SemanticsCheckException(SemanticsHelper.NEQ_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -425,13 +381,13 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NotNode node) throws SemanticsCheckException {
-		AbstractNode argument = node.getArgument();
+		Node argument = node.getArgument();
 
 		argument.accept(this);
 
 		// Het argument moet een boolean zijn.
-		if (argument.getType().equals(Boolean.class)) {
-			throw new SemanticsCheckException("Expected a boolean expression in NotNode.", node);
+		if (!Type.isBooleanOrUnknown(argument.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.NOT_ILLEGAL_OPERAND_TYPE, node);
 		}
 
 		return null;
@@ -444,15 +400,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(OrNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Beide zijden moeten van het type Boolean zijn.
-		if (!lhs.getType().equals(Boolean.class) || !rhs.getType().equals(Boolean.class)) {
-			throw new SemanticsCheckException("Expected two boolean parameters to OR-expression.", node);
+		// Beide zijden moeten van het type Boolean of onbekend zijn.
+		if (!Type.isBooleanOrUnknown(lhs.getType()) || !Type.isBooleanOrUnknown(rhs.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.OR_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -460,13 +416,13 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(PositiveNode node) throws SemanticsCheckException {
-		AbstractNode argument = node.getArgument();
+		Node argument = node.getArgument();
 
         argument.accept(this);
 
-		// Het argument moet een float of een integer zijn.
-		if (!argument.getType().equals(BigDecimal.class) && !argument.getType().equals(BigInteger.class)) {
-			throw new SemanticsCheckException("Expected a number expression in PositiveNode.", node);
+		// Het argument moet een 'number' of onbekend zijn.
+		if (!Type.isNumberOrUnknown(argument.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.POSITIVE_ILLEGAL_OPERAND_TYPE, node);
 		}
 
 		return null;
@@ -474,15 +430,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(PowerNode node) throws SemanticsCheckException {
-		AbstractNode base = node.getBase();
-		AbstractNode power = node.getPower();
+		Node base = node.getBase();
+		Node power = node.getPower();
 
 		base.accept(this);
 		power.accept(this);
-		
-		// Beide zijden moeten van het type 'number' zijn.
-		if (!isNumber(base.getType()) || !isNumber(power.getType())) {
-			throw new SemanticsCheckException("Expected two parameters of type 'number' to POWER-expression.", node);
+
+		// Beide zijden moeten van het type 'number' of onbekend zijn.
+		if (!Type.isNumberOrUnknown(base.getType()) || !Type.isNumberOrUnknown(power.getType())) {
+			throw new SemanticsCheckException(SemanticsHelper.POWER_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -491,7 +447,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 	@Override
 	public Void visit(StatementListNode node) throws SemanticsCheckException {
 		// Accepteer voor alle nodes.
-		for (AbstractNode subNode : node) {
+		for (Node subNode : node) {
 			subNode.accept(this);
 		}
 
@@ -505,15 +461,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(SubstractNode node) throws SemanticsCheckException {
-		AbstractNode lhs = node.getLhs();
-		AbstractNode rhs = node.getRhs();
+		Node lhs = node.getLhs();
+		Node rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Beide zijden moeten van het type 'number' zijn.
-		if (!isNumber(rhs.getType()) || !isNumber(lhs.getType())) {
-			throw new SemanticsCheckException("Expected two parameters of number type to SUBSTRACT-expression.", node);
+		// Beide zijden moeten van het type 'number' of onbekend zijn.
+		if (!Type.isNumberOrUnknown(rhs.getType()) || !Type.isNumberOrUnknown(lhs.getType())) {
+				throw new SemanticsCheckException(SemanticsHelper.SUBSTRACT_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
@@ -537,38 +493,6 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 		}
 
 		return null;
-	}
-
-    /**
-	 * Bepaalt of het meegegeven type een nummer is.
-	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
-	 * @return <code>true</code> wanneer het meegegeven type een nummer is, anders <code>false</code>.
-	 */
-	protected boolean isNumber(Class<?> type) {
-		return BigDecimal.class.equals(type) || BigInteger.class.equals(type);
-	}
-
-    /**
-	 * Controleert de typen van de lhs en de rhs, wanneer beiden niet van het zelfde type zijn of ze komen niet voor in
-	 * de lijst met toegestane typen geeft de methode false terug.
-	 * @return <code>true</code> wanneer de typen goed zijn, anders <code>false</code>.
-	 */
-	protected boolean checkComparisonTypes(Class<?> lhsType, Class<?> rhsType, List<Class<?>> allowedTypes) {
-		// We casten de BigInteger's naar BigDecimal's, omdat dit makkelijk te vergelijken is.
-		if (lhsType.equals(BigInteger.class)) {
-			lhsType = BigDecimal.class;
-		}
-		// We casten de BigInteger's naar BigDecimal's, omdat dit makkelijk te vergelijken is.
-		if (rhsType.equals(BigInteger.class)) {
-			rhsType = BigDecimal.class;
-		}
-
-		for(Class<?> type : allowedTypes) {		
-			if (lhsType.equals(type) && rhsType.equals(type)) {
-				return true;
-			}
-		}
-		return false;
 	}
 }
 
