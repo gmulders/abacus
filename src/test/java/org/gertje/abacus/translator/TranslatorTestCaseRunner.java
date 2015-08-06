@@ -207,7 +207,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		// Create a compilation task.
 		JavaCompiler.CompilationTask compilationTask = javaCompiler.getTask(additionalOutputWriter, javaFileManager,
-				diagnosticCollector, Collections.emptyList(), null, Collections.singletonList(javaFileObject));
+				diagnosticCollector, Collections.<String>emptyList(), null, Collections.singletonList(javaFileObject));
 
 		// Try to compile the sources, if it fails throw an exception.
 		if (!compilationTask.call()) {
