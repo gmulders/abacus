@@ -6,6 +6,8 @@ import org.gertje.abacus.symboltable.SimpleSymbolTable;
 import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.types.Type;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -183,8 +185,16 @@ public abstract class AbstractTestCaseRunner {
 	 * @return The message with extra information.
 	 */
 	protected String createMessage(String message, Exception e) {
+		String exceptionStackTrace = null;
+		if (e != null) {
+			StringWriter stringWriter = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(stringWriter);
+			e.printStackTrace(printWriter);
+			exceptionStackTrace = stringWriter.toString();
+		}
+
 		return "Test file: '" + abacusTestCase.getFilename() + " Expression: '" + abacusTestCase.expression + "' - "
-				+ message + (e == null ? "" : " " + e.getMessage());
+				+ message + (exceptionStackTrace == null ? "" : "\n" + exceptionStackTrace);
 	}
 
 	public void setAbacusTestCase(AbacusTestCase abacusTestCase) {
