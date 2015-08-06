@@ -52,7 +52,7 @@ public class EvaluationHelper {
 	 * @param mathContext The {@code MathContext} used when one of the numbers is a BigDecimal.
 	 * @return The result of the division.
 	 */
-	public static Number divide(Number left, Type leftType, Number right, Type rightType, MathContext mathContext) {
+	public static Number divide(Number left, Type leftType, Number right, Type rightType, final MathContext mathContext) {
 		return term(left, leftType, right, rightType, new TermEvaluator() {
 			@Override
 			public BigDecimal term(BigDecimal left, BigDecimal right) {
