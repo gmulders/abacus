@@ -1,18 +1,22 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents a logical not.
+ */
 public class NotNode extends AbstractNode {
 
-	AbstractNode argument;
+	private Node argument;
 
 	/**
 	 * Constructor
 	 */
-	public NotNode(AbstractNode argument, Token token, NodeFactory nodeFactory) {
-		super(2, token, nodeFactory);
+	public NotNode(Node argument, Token token) {
+		super(2, token);
 
 		this.argument = argument;
 	}
@@ -23,8 +27,8 @@ public class NotNode extends AbstractNode {
 	}
 
 	@Override
-	public Class<?> getType() {
-		return Boolean.class;
+	public Type getType() {
+		return Type.BOOLEAN;
 	}
 
 	@Override
@@ -32,11 +36,11 @@ public class NotNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public AbstractNode getArgument() {
+	public Node getArgument() {
 		return argument;
 	}
 
-	public void setArgument(AbstractNode argument) {
+	public void setArgument(Node argument) {
 		this.argument = argument;
 	}
 }

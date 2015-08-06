@@ -1,44 +1,44 @@
 package org.gertje.abacus.nodes;
 
+import org.gertje.abacus.token.Token;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
-
-import org.gertje.abacus.Token;
 
 /**
  * Deze interface definieert methodes voor alle nodes die de parser aan kan maken.
  */
 public interface NodeFactory {
 
-	public AddNode createAddNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public AndNode createAndNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public AssignmentNode createAssignmentNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public BooleanNode createBooleanNode(Boolean value, Token token);
-	public DateNode createDateNode(Date value, Token token);
-	public DivideNode createDivideNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public EqNode createEqNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public FactorNode createFactorNode(AbstractNode argument, Token token);
-	public FunctionNode createFunctionNode(String identifier, List<AbstractNode> parameters, Token token);
-	public GeqNode createGeqNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public GtNode createGtNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public IfNode createIfNode(AbstractNode condition, AbstractNode ifbody, AbstractNode elsebody, Token token);
-	public LeqNode createLeqNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public LtNode createLtNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public ModuloNode createModuloNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public MultiplyNode createMultiplyNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public NegativeNode createNegativeNode(AbstractNode argument, Token token);
-	public NeqNode createNeqNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public NotNode createNotNode(AbstractNode argument, Token token);
-	public FloatNode createFloatNode(BigDecimal value, Token token);
-	public IntegerNode createIntegerNode(BigInteger value, Token token);
-	public OrNode createOrNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public PositiveNode createPositiveNode(AbstractNode argument, Token token);
-	public PowerNode createPowerNode(AbstractNode base, AbstractNode power, Token token);
-	public StatementListNode createStatementListNode(Token token);
-	public StringNode createStringNode(String value, Token token);
-	public SubstractNode createSubstractNode(AbstractNode lhs, AbstractNode rhs, Token token);
-	public VariableNode createVariableNode(String identifier, Token token);
-	public NullNode createNullNode(Token token);
+	AddNode createAddNode(Node lhs, Node rhs, Token token);
+	AndNode createAndNode(Node lhs, Node rhs, Token token);
+	AssignmentNode createAssignmentNode(Node lhs, Node rhs, Token token);
+	BooleanNode createBooleanNode(Boolean value, Token token);
+	DateNode createDateNode(Date value, Token token);
+	DecimalNode createDecimalNode(BigDecimal value, Token token);
+	DivideNode createDivideNode(Node lhs, Node rhs, Token token);
+	EqNode createEqNode(Node lhs, Node rhs, Token token);
+	FactorNode createFactorNode(Node argument, Token token);
+	FunctionNode createFunctionNode(String identifier, List<Node> parameters, Token token);
+	GeqNode createGeqNode(Node lhs, Node rhs, Token token);
+	GtNode createGtNode(Node lhs, Node rhs, Token token);
+	IfNode createIfNode(Node condition, Node ifbody, Node elsebody, Token token);
+	IntegerNode createIntegerNode(BigInteger value, Token token);
+	LeqNode createLeqNode(Node lhs, Node rhs, Token token);
+	LtNode createLtNode(Node lhs, Node rhs, Token token);
+	ModuloNode createModuloNode(Node lhs, Node rhs, Token token);
+	MultiplyNode createMultiplyNode(Node lhs, Node rhs, Token token);
+	NegativeNode createNegativeNode(Node argument, Token token);
+	NeqNode createNeqNode(Node lhs, Node rhs, Token token);
+	NotNode createNotNode(Node argument, Token token);
+	NullNode createNullNode(Token token);
+	OrNode createOrNode(Node lhs, Node rhs, Token token);
+	PositiveNode createPositiveNode(Node argument, Token token);
+	PowerNode createPowerNode(Node base, Node power, Token token);
+	StatementListNode createStatementListNode(Token token);
+	StringNode createStringNode(String value, Token token);
+	SubstractNode createSubstractNode(Node lhs, Node rhs, Token token);
+	VariableNode createVariableNode(String identifier, Token token);
 }

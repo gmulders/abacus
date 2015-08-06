@@ -1,16 +1,19 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.Token;
+import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
+/**
+ * Node that represents a greater or equals comparison.
+ */
 public class GeqNode extends AbstractComparisonNode {
 
 	/**
 	 * Constructor
 	 */
-	public GeqNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(lhs, rhs, token, 6, nodeFactory);
+	public GeqNode(Node lhs, Node rhs, Token token) {
+		super(lhs, rhs, token, 6);
 	}
 
 	@Override

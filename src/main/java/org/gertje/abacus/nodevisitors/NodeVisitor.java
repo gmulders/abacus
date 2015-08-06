@@ -9,7 +9,7 @@ import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
 import org.gertje.abacus.nodes.FactorNode;
-import org.gertje.abacus.nodes.FloatNode;
+import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
 import org.gertje.abacus.nodes.GtNode;
@@ -41,7 +41,7 @@ public interface NodeVisitor<R, X extends VisitingException> {
 	R visit(DivideNode node) throws X;
 	R visit(EqNode node) throws X;
 	R visit(FactorNode node) throws X;
-	R visit(FloatNode node) throws X;
+	R visit(DecimalNode node) throws X;
 	R visit(FunctionNode node) throws X;
 	R visit(GeqNode node) throws X;
 	R visit(GtNode node) throws X;

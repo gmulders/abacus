@@ -1,0 +1,183 @@
+[
+	{
+		"expression": "'Hello ' > 'World!'",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		}
+	},
+	{
+		"expression": "'Hello ' > a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "World!"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "World!"
+			}
+		]
+	},
+
+	{
+		"expression": "'Hello ' > 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' > 10.4",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' > true",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "'Hello ' > null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "'Hello ' > a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "678 > 'Hello World!'",
+		"failsWithException": true
+	},
+	{
+		"expression": "6 > 8",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		}
+	},
+	{
+		"expression": "3 > 5.2",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		}
+	},
+	{
+		"expression": "12 > true",
+		"failsWithException": true
+	},
+	{
+		"expression": "100 > null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "100.0 > ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "7.12213 > 3",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		}
+	},
+	{
+		"expression": "7.6 > 2.4",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		}
+	},
+	{
+		"expression": "102.9 > true",
+		"failsWithException": true
+	},
+	{
+		"expression": "2.4 > null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "true > ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "false > 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "false > 6.7",
+		"failsWithException": true
+	},
+	{
+		"expression": "false > true",
+		"failsWithException": true
+	},
+	{
+		"expression": "true > null",
+		"failsWithException": true
+	},
+	{
+		"expression": "null > ' '",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "null > 10",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "null > 6.7",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "null > true",
+		"failsWithException": true
+	},
+	{
+		"expression": "null > null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	}
+]

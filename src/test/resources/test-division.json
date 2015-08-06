@@ -1,0 +1,263 @@
+[
+	{
+		"expression": "'Hello ' / 'World!'",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' / a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "World!"
+			}
+		]
+	},
+
+	{
+		"expression": "'Hello ' / 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' / 10.4",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' / true",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' / null",
+		"failsWithException": true
+	},
+	{
+		"expression": "678 / 'Hello World!'",
+		"failsWithException": true
+	},
+	{
+		"expression": "678 / a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "World!"
+			}
+		]
+	},
+
+	{
+		"expression": "100 / 100",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "1"
+		}
+	},
+	{
+		"expression": "100 / a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": "1"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		]
+	},
+	{
+		"expression": "100 / 100.0",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "1"
+		}
+	},
+	{
+		"expression": "100 / a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "1"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "100.0"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "100.0"
+			}
+		]
+	},
+
+	{
+		"expression": "12 / true",
+		"failsWithException": true
+	},
+	{
+		"expression": "100 / null",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		}
+	},
+	{
+		"expression": "100.0 / ' '",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "3.1415 / 7",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "0.4487857142857142857142857142857143"
+		}
+	},
+	{
+		"expression": "3.1415 / a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "0.4487857142857142857142857142857143"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "7"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "7"
+			}
+		]
+	},
+
+	{
+		"expression": "2.4 / 7.6",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": "0.3157894736842105263157894736842105"
+		}
+	},
+	{
+		"expression": "102.9 / true",
+		"failsWithException": true
+	},
+	{
+		"expression": "2.4 / null",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		}
+	},
+	{
+		"expression": "true / ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "false / 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "false / 6.7",
+		"failsWithException": true
+	},
+	{
+		"expression": "false / true",
+		"failsWithException": true
+	},
+	{
+		"expression": "true / null",
+		"failsWithException": true
+	},
+	{
+		"expression": "null / ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "null / 10",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		}
+	},
+
+	{
+		"expression": "null / 6.7",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		}
+	},
+	{
+		"expression": "null / a",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "6.7"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "6.7"
+			}
+		]
+	},
+	{
+		"expression": "a / 6.7",
+		"returnValue": {
+			"type": "DECIMAL",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "null / true",
+		"failsWithException": true
+	},
+	{
+		"expression": "null / null",
+		"returnValue": {
+			"type": null,
+			"value": null
+		}
+	}
+]

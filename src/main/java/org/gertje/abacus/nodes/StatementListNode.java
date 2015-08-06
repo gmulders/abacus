@@ -1,16 +1,19 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.Token;
+import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 
 /**
  * Klasse die een lijst van expressies voorstelt.
  */
-public class StatementListNode extends NodeListNode<AbstractNode> {
+public class StatementListNode extends NodeListNode<Node> {
 
-	public StatementListNode(Token token, NodeFactory nodeFactory) {
-		super(token, nodeFactory);
+	/**
+	 * Constructor
+	 */
+	public StatementListNode(Token token) {
+		super(token);
 	}
 
 	@Override

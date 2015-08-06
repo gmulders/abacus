@@ -1,9 +1,13 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.Token;
+import org.gertje.abacus.token.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents a boolean.
+ */
 public class BooleanNode extends AbstractNode {
 
 	private Boolean value;
@@ -11,15 +15,15 @@ public class BooleanNode extends AbstractNode {
 	/**
 	 * Constructor
 	 */
-	public BooleanNode(Boolean value, Token token, NodeFactory nodeFactory) {
-		super(1, token, nodeFactory);
+	public BooleanNode(Boolean value, Token token) {
+		super(1, token);
 
 		this.value = value;
 	}
 
 	@Override
-	public Class<?> getType() {
-		return Boolean.class;
+	public Type getType() {
+		return Type.BOOLEAN;
 	}
 
 	@Override

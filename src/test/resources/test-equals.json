@@ -1,0 +1,986 @@
+[
+	{
+		"expression": "'Hello ' == 'Hello '",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		}
+	},
+	{
+		"expression": "'Hello ' == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		]
+	},
+	{
+		"expression": "a == 'Hello '",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		]
+	},
+
+	{
+		"expression": "'Hello ' == 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "10"
+			}
+		]
+	},
+	{
+		"expression": "a == 10",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		]
+	},
+
+	{
+		"expression": "'Hello ' == 10.4",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "10.4"
+			}
+		]
+	},
+	{
+		"expression": "a == 10.4",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		]
+	},
+
+	{
+		"expression": "'Hello ' == true",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+	{
+		"expression": "a == true",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "7"
+			}
+		]
+	},
+
+	{
+		"expression": "'Hello ' == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "'Hello ' == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		]
+	},
+
+	{
+		"expression": "678 == 'Hello World!'",
+		"failsWithException": true
+	},
+	{
+		"expression": "678 == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello World!"
+			}
+		]
+	},
+	{
+		"expression": "a == 'Hello World!'",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "678"
+			}
+		]
+	},
+
+	{
+		"expression": "6 == 8",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		}
+	},
+	{
+		"expression": "6 == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "8"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "8"
+			}
+		]
+	},
+	{
+		"expression": "a == 8",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "6"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "6"
+			}
+		]
+	},
+
+	{
+		"expression": "3 == 5.2",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		}
+	},
+	{
+		"expression": "3 == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "5.2"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "5.2"
+			}
+		]
+	},
+	{
+		"expression": "a == 5.2",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		]
+	},
+
+	{
+		"expression": "12 == true",
+		"failsWithException": true
+	},
+	{
+		"expression": "12 == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+	{
+		"expression": "a == true",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "12"
+			}
+		]
+	},
+
+	{
+		"expression": "100 == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "100 == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "100"
+			}
+		]
+	},
+
+	{
+		"expression": "100.0 == ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "100.0 == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": " "
+			}
+		]
+	},
+	{
+		"expression": "a == ' '",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "100.0"
+			}
+		]
+	},
+
+	{
+		"expression": "3.0 == 3",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		}
+	},
+	{
+		"expression": "3.0 == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		]
+	},
+	{
+		"expression": "a == 3",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "3.0"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "3.0"
+			}
+		]
+	},
+
+	{
+		"expression": "2.4 == 2.4",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		}
+	},
+	{
+		"expression": "2.4 == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		]
+	},
+	{
+		"expression": "a == 2.4",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		]
+	},
+
+	{
+		"expression": "102.9 == true",
+		"failsWithException": true
+	},
+	{
+		"expression": "102.9 == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+	{
+		"expression": "a == true",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "102.9"
+			}
+		]
+	},
+
+	{
+		"expression": "2.4 == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "2.4 == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "2.4"
+			}
+		]
+	},
+
+	{
+		"expression": "true == ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "true == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": " "
+			}
+		]
+	},
+	{
+		"expression": "a == ' '",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+
+	{
+		"expression": "false == a",
+		"failsWithException": true
+	},
+	{
+		"expression": "false == 10",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "10"
+			}
+		]
+	},
+	{
+		"expression": "false == 10",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "false"
+			}
+		]
+	},
+
+	{
+		"expression": "false == 6.7",
+		"failsWithException": true
+	},
+	{
+		"expression": "false == a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "6.7"
+			}
+		]
+	},
+	{
+		"expression": "a == 6.7",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+
+	{
+		"expression": "false == true",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		}
+	},
+	{
+		"expression": "false == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+	{
+		"expression": "a == true",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "false"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "false"
+			}
+		]
+	},
+
+	{
+		"expression": "true == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "true == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+
+	{
+		"expression": "null == ' '",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "null == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": " "
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": " "
+			}
+		]
+	},
+	{
+		"expression": "a == ' '",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "null == 10",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "null == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "10"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "10"
+			}
+		]
+	},
+	{
+		"expression": "a == 10",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "null == 6.7",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "null == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "6.7"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "6.7"
+			}
+		]
+	},
+	{
+		"expression": "a == 6.7",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "null == true",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "null == a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+	{
+		"expression": "a == true",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "null == null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	}
+]

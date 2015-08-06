@@ -1,26 +1,30 @@
 package org.gertje.abacus.nodes;
 
-import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
-public class OrNode extends AbstractNode {
+/**
+ * Node that represents a logical or.
+ */
+public class OrNode extends AbstractNode implements BinaryOperationNode {
 
-	private AbstractNode lhs;
-	private AbstractNode rhs;
+	private Node lhs;
+	private Node rhs;
 
 	/**
 	 * Constructor
 	 */
-	public OrNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(8, token, nodeFactory);
+	public OrNode(Node lhs, Node rhs, Token token) {
+		super(8, token);
 
 		this.lhs = lhs;
 		this.rhs = rhs;
 	}
 	@Override
-	public Class<?> getType() {
-		return Boolean.class;
+	public Type getType() {
+		return Type.BOOLEAN;
 	}
 
 	@Override
@@ -33,19 +37,19 @@ public class OrNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public AbstractNode getLhs() {
+	public Node getLhs() {
 		return lhs;
 	}
 
-	public void setLhs(AbstractNode lhs) {
+	public void setLhs(Node lhs) {
 		this.lhs = lhs;
 	}
 
-	public AbstractNode getRhs() {
+	public Node getRhs() {
 		return rhs;
 	}
 
-	public void setRhs(AbstractNode rhs) {
+	public void setRhs(Node rhs) {
 		this.rhs = rhs;
 	}
 }

@@ -1,26 +1,37 @@
 package org.gertje.abacus.nodes;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import org.gertje.abacus.Token;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
+import org.gertje.abacus.token.Token;
+import org.gertje.abacus.types.Type;
 
+/**
+ * Node that represents a multiplication.
+ */
 public class MultiplyNode extends AbstractTermNode {
 
 	/**
 	 * Constructor
 	 */
-	public MultiplyNode(AbstractNode lhs, AbstractNode rhs, Token token, NodeFactory nodeFactory) {
-		super(lhs, rhs, token, 4, nodeFactory);
+	public MultiplyNode(Node lhs, Node rhs, Token token) {
+		super(lhs, rhs, token, 4);
 	}
 
 	@Override
-	public Class<?> getType() {
-		return lhs.getType().equals(BigDecimal.class) || rhs.getType().equals(BigDecimal.class) 
-				? BigDecimal.class
-				: BigInteger.class;
+	public Type getType() {
+		if (lhs.getType() == rhs.getType()) {
+			return lhs.getType();
+		}
+
+		if (Type.isNumber(lhs.getType()) && Type.isNumber(rhs.getType())) {
+			return Type.DECIMAL;
+		}
+
+		if (lhs.getType() == null) {
+			return rhs.getType();
+		}
+
+		return lhs.getType();
 	}
 
 	@Override
