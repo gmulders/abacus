@@ -9,7 +9,6 @@ Abacus translator-javascript
 TODO
 ----
 - Write this readme.
-- Make all classnames absolute, so no includes are necessary.
 
 Copyright
 ---------
