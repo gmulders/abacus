@@ -143,7 +143,10 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(DateNode node) throws TranslationException {
-		return "new Date(\"" + node.getValue().getTime() + "\")";
+		if (node.getValue() == null) {
+			return "null";
+		}
+		return "new java.sql.Date(" + node.getValue().getTime() + "L)";
 	}
 
 	@Override
