@@ -103,6 +103,17 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "a = D'2015-08-17'",
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": null
+			}
+		],
+		"failsWithException": true
+	},
+	{
 		"expression": "a = null",
 		"returnValue": {
 			"type": "STRING",
@@ -178,6 +189,17 @@
 	},
 	{
 		"expression": "a = true",
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"failsWithException": true
+	},
+	{
+		"expression": "a = D'2015-08-17'",
 		"variableListBefore": [
 			{
 				"name": "a",
@@ -273,6 +295,17 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "a = D'2015-08-17'",
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": null
+			}
+		],
+		"failsWithException": true
+	},
+	{
 		"expression": "a = null",
 		"returnValue": {
 			"type": "DECIMAL",
@@ -348,6 +381,17 @@
 		]
 	},
 	{
+		"expression": "a = D'2015-08-17'",
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": null
+			}
+		],
+		"failsWithException": true
+	},
+	{
 		"expression": "a = null",
 		"returnValue": {
 			"type": "BOOLEAN",
@@ -367,6 +411,92 @@
 				"value": null
 			}
 		]
-	}
+	},
 
+	{
+		"expression": "a = 'Hello World!'",
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		],
+		"failsWithException": true
+	},
+	{
+		"expression": "a = 10",
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		],
+		"failsWithException": true
+	},
+	{
+		"expression": "a = 10.1",
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		],
+		"failsWithException": true
+	},
+	{
+		"expression": "a = true",
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		],
+		"failsWithException": true
+	},
+	{
+		"expression": "a = D'2015-08-17'",
+		"returnValue": {
+			"type": "DATE",
+			"value": "2015-08-17"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+	{
+		"expression": "a = null",
+		"returnValue": {
+			"type": "DATE",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		]
+	}
 ]

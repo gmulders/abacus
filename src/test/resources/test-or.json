@@ -53,6 +53,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "'Hello ' || D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "'Hello ' || null",
 		"failsWithException": true
 	},
@@ -73,6 +77,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "12 || D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "100 || null",
 		"failsWithException": true
 	},
@@ -90,6 +98,10 @@
 	},
 	{
 		"expression": "102.9 || true",
+		"failsWithException": true
+	},
+	{
+		"expression": "102.9 || D'2015-08-17'",
 		"failsWithException": true
 	},
 	{
@@ -188,6 +200,12 @@
 			}
 		]
 	},
+
+	{
+		"expression": "false || D'2015-08-17'",
+		"failsWithException": true
+	},
+
 	{
 		"expression": "true || null",
 		"returnValue": {
@@ -286,6 +304,31 @@
 				"value": "false"
 			}
 		]
+	},
+
+	{
+		"expression": "D'2015-08-17' || ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || 3",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || 2.4",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || true",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || null",
+		"failsWithException": true
 	},
 
 	{
@@ -399,6 +442,11 @@
 				"value": null
 			}
 		]
+	},
+
+	{
+		"expression": "null || D'2015-08-17'",
+		"failsWithException": true
 	},
 
 	{

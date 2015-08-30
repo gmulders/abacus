@@ -11,6 +11,7 @@ import org.gertje.abacus.token.TokenType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -358,6 +359,16 @@ public class Parser {
 				}
 				return nodeFactory.createIntegerNode(number, nextToken);
 
+		// If the token represents a Date, return a Date node.
+		} else if (nextToken.getType() == TokenType.DATE) {
+			Date date;
+			// Try to cast the string to a date.
+			try {
+				date = Date.valueOf(nextToken.getValue());
+			} catch (IllegalArgumentException e) {
+				throw new ParserException("Illegal date format.", nextToken);
+			}
+			return nodeFactory.createDateNode(date, nextToken);
 
 		// Wanneer het token een string is geven we een StringNode terug.
 		} else if (nextToken.getType() == TokenType.STRING) {

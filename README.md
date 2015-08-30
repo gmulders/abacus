@@ -68,7 +68,7 @@ The following types are supported:
 - Integer
 - Decimal
 - Boolean
-- Date (TODO)
+- Date
 
 ###Operations
 The following operations are defined:
@@ -209,7 +209,7 @@ are a couple of situation where the behaviour is slightly different.
   For example: `true ? 'Hello World!' : (false ? 2.0 : 3.0)`.
 
 #### assignment `=`
-- Operands: left a variable, right any type
+- Operands: left a variable, right a value of the same type as the variable or any type if the variable does not exists.
 - Precedence: 1
 - Return type: the same type as the right operand
 

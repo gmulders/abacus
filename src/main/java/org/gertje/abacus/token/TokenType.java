@@ -23,6 +23,7 @@ public class TokenType {
 	public static final TokenType STRING = new TokenType("STRING");
 	public static final TokenType FLOAT = new TokenType("FLOAT");
 	public static final TokenType INTEGER = new TokenType("INTEGER");
+	public static final TokenType DATE = new TokenType("DATE");
 	public static final TokenType BOOLEAN_AND = new TokenType("BOOLEAN_AND");
 	public static final TokenType BOOLEAN_OR = new TokenType("BOOLEAN_OR");
 	public static final TokenType PLUS = new TokenType("PLUS");
@@ -83,6 +84,7 @@ public enum TokenType {
 	STRING,
 	FLOAT,
 	INTEGER,
+	DATE,
 	BOOLEAN_AND,
 	BOOLEAN_OR,
 	PLUS,

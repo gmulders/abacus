@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,7 @@ public abstract class AbstractTestCaseRunner {
 			case DECIMAL: return new BigDecimal(value);
 			case INTEGER: return new BigInteger(value);
 			case BOOLEAN: return Boolean.valueOf(value);
+			case DATE: return Date.valueOf(value);
 			case STRING: return value;
 		}
 

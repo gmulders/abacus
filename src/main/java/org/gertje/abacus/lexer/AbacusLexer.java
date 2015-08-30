@@ -80,6 +80,12 @@ public class AbacusLexer extends AbstractLexer {
 			}
 			token.setType(TokenType.NEW_LINE);
 
+		// Date
+		} else if (c == 'D' && !isEndOfInput() && peekChar() == '\'') {
+			nextChar();
+			token.setType(TokenType.DATE);
+			token.setValue(buildString());
+
 		// identifier
 		} else if (isAlphaOrUnderscore(c)) {
 			token.setType(TokenType.IDENTIFIER);

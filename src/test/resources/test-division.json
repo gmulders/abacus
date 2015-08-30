@@ -28,6 +28,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "'Hello ' / D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "'Hello ' / null",
 		"failsWithException": true
 	},
@@ -109,6 +113,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "12 / D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "100 / null",
 		"returnValue": {
 			"type": "INTEGER",
@@ -161,6 +169,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "102.9 / D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "2.4 / null",
 		"returnValue": {
 			"type": "DECIMAL",
@@ -184,9 +196,39 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "false / D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "true / null",
 		"failsWithException": true
 	},
+
+	{
+		"expression": "D'2015-08-17' / ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' / 10",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' / 6.7",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' / true",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' / D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' / null",
+		"failsWithException": true
+	},
+
 	{
 		"expression": "null / ' '",
 		"failsWithException": true
@@ -251,6 +293,10 @@
 
 	{
 		"expression": "null / true",
+		"failsWithException": true
+	},
+	{
+		"expression": "null / D'2015-08-17'",
 		"failsWithException": true
 	},
 	{
