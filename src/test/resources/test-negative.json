@@ -67,6 +67,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "-(D'2015-08-17')",
+		"failsWithException": true
+	},
+	{
 		"expression": "-(null)",
 		"returnValue": {
 			"type": null,

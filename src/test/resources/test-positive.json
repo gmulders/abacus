@@ -86,6 +86,29 @@
 	},
 
 	{
+		"expression": "+(D'2015-08-17')",
+		"failsWithException": true
+	},
+	{
+		"expression": "+a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+
+	{
 		"expression": "+(null)",
 		"returnValue": {
 			"type": null,
