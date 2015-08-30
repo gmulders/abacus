@@ -108,7 +108,8 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 				"\n" +
 				"var returnValue = " + expression + ";\n" +
 				"\n" +
-				"if (returnValue !== " + formatValueForJavaScript(abacusTestCase.returnValue.value, abacusTestCase.returnValue.type) + ") {\n" +
+				"if (" + determineUnequalsCheck("returnValue", abacusTestCase.returnValue.value,
+						abacusTestCase.returnValue.type) + ") {\n" +
 				"\terror = true;\n" +
 				"\tmessage = 'Incorrect return value; ' + returnValue;\n" +
 				"}\n" +
@@ -150,8 +151,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		StringBuilder builder = new StringBuilder();
 
 		for (AbacusTestCase.Value value : abacusTestCase.variableListAfter) {
-			builder.append("if (").append(value.name).append(" !== ")
-						.append(formatValueForJavaScript(value.value, value.type)).append(") {\n")
+			builder.append("if (").append(determineUnequalsCheck(value.name, value.value, value.type)).append(") {\n")
 					.append("\terror = true;\n")
 					.append("\tmessage = 'Incorrect value for ").append(value.name).append(":' + ").append(value.name)
 						.append(";\n")
@@ -159,6 +159,17 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		}
 
 		return builder.toString();
+	}
+
+	private String determineUnequalsCheck(String name, String value, Type type) {
+		String javaScriptValue = formatValueForJavaScript(value, type);
+
+		if (type == Type.DATE) {
+			return "(" + name + " == null ? null : " + name + ".valueOf())"
+					+ " !== "
+					+ "(" + javaScriptValue + " == null ? null : " + javaScriptValue + ".valueOf()) ";
+		}
+		return name + " !== " + javaScriptValue;
 	}
 
 	/**
@@ -170,6 +181,10 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 	private String formatValueForJavaScript(String value, Type type) {
 		if (type == Type.STRING && value != null) {
 			return "'" + value + "'";
+		}
+
+		if (type == Type.DATE && value != null) {
+			return "new Date('" + value + "')";
 		}
 		return value;
 	}

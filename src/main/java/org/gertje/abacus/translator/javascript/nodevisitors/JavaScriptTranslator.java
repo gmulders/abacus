@@ -60,26 +60,24 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 	 * Constructor.
 	 */
 	public JavaScriptTranslator() {
-		partStack = new Stack<String>();
-		variableStack = new Stack<String>();
-		declarationStack = new Stack<String>();
+		partStack = new Stack<>();
+		variableStack = new Stack<>();
+		declarationStack = new Stack<>();
 	}
 
 	public String translate(Node node) throws VisitingException {
 		
 		ExpressionTranslator expressionTranslator = new ExpressionTranslator(node);
 
-		StringBuilder translation = new StringBuilder();
-		
 		// Wrap de expressie in een closure. Wanneer er geen declaraties zijn en er zijn geen controles op null en de
 		// node is een NodeList, dan is deze closure onnodig. Voorlopig laat ik dit wel zo.
-		translation.append("(function(){")
-			.append(expressionTranslator.getDeclarations())
-			.append(expressionTranslator.getNullableCheck())
-			.append("return ").append(expressionTranslator.getExpression()).append(";")
-		.append("})()");
 
-		return translation.toString();
+		return
+				"(function(){"
+					+ expressionTranslator.getDeclarations()
+					+ expressionTranslator.getNullableCheck()
+					+ "return " + expressionTranslator.getExpression() + ";"
+				+ "})()";
 	}
 	
 	@Override
@@ -94,30 +92,25 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		ExpressionTranslator rhsExpression = new ExpressionTranslator(node.getRhs());
 
 		// Bouw javascript op die
-		StringBuilder translation = new StringBuilder();
-		translation
-				.append("var _").append(variableStack.size()).append("=(function(){")
-					.append("var _l=(function(){")
-						.append(lhsExpression.getDeclarations())
-						.append(lhsExpression.getNullableCheck())
-						.append("return ").append(lhsExpression.getExpression())
-					.append("})();")
+		String translation =
+				"var _" + variableStack.size() + "=(function(){"
+					+ "var _l=(function(){"
+						+ lhsExpression.getDeclarations()
+						+ lhsExpression.getNullableCheck()
+						+ "return " + lhsExpression.getExpression()
+					+ "})();"
+					+ "if(_l===false)return false;"
+					+ "var _r=(function(){"
+						+ rhsExpression.getDeclarations()
+						+ rhsExpression.getNullableCheck()
+						+ "return " + rhsExpression.getExpression()
+					+ "})();"
+					+ "if(_r===false)return false;"
+					+ "if(_l==null||_r==null)return null;"
+					+ "return true;"
+				+ "})()";
 
-					.append("if(_l===false)return false;")
-
-					.append("var _r=(function(){")
-						.append(rhsExpression.getDeclarations())
-						.append(rhsExpression.getNullableCheck())
-						.append("return ").append(rhsExpression.getExpression())
-					.append("})();")
-
-					.append("if(_r===false)return false;")
-					.append("if(_l==null||_r==null)return null;")
-
-					.append("return true;")
-				.append("})()");
-
-		declarationStack.push(translation.toString());
+		declarationStack.push(translation);
 		String variable = "_" + variableStack.size();
 		partStack.push(variable);
 		variableStack.push(variable);
@@ -163,8 +156,11 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(DateNode node) throws VisitingException {
-		// TODO: data (meervoud van datum) kunnen we nog niet parsen...
-		partStack.push("new Date('TODO')");
+		if (node.getValue() == null) {
+			partStack.push("null");
+		} else {
+			partStack.push("new Date('" + node.getValue() + "')");
+		}
 		return null;
 	}
 
@@ -234,23 +230,22 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		ExpressionTranslator elseBodyTranslator = new ExpressionTranslator(node.getElseBody());
 		
 		// Bouw javascript op die
-		StringBuilder ifExpression = new StringBuilder();
-		ifExpression
-			.append("var _").append(variableStack.size()).append(" = (function(){")
-				.append(conditionTranslator.getDeclarations())
-				.append(conditionTranslator.getNullableCheck())
-				.append("if(").append(conditionTranslator.getExpression()).append("){")
-					.append(ifBodyTranslator.getDeclarations())
-					.append(ifBodyTranslator.getNullableCheck())
-					.append("return ").append(ifBodyTranslator.getExpression()).append(";")
-				.append("}else{")
-					.append(elseBodyTranslator.getDeclarations())
-					.append(elseBodyTranslator.getNullableCheck())
-					.append("return ").append(elseBodyTranslator.getExpression()).append(";")
-				.append("}")
-			.append("})()");
-		
-		declarationStack.push(ifExpression.toString());
+		String ifExpression =
+				"var _" + variableStack.size() + " = (function(){"
+					+ conditionTranslator.getDeclarations()
+					+ conditionTranslator.getNullableCheck()
+					+ "if(" + conditionTranslator.getExpression() + "){"
+						+ ifBodyTranslator.getDeclarations()
+						+ ifBodyTranslator.getNullableCheck()
+						+ "return " + ifBodyTranslator.getExpression() + ";"
+					+ "}else{"
+						+ elseBodyTranslator.getDeclarations()
+						+ elseBodyTranslator.getNullableCheck() + "return "
+						+ elseBodyTranslator.getExpression() + ";"
+					+ "}"
+				+ "})()";
+
+		declarationStack.push(ifExpression);
 		String variable = "_" + variableStack.size();
 		partStack.push(variable);
 		variableStack.push(variable);
@@ -325,30 +320,25 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		ExpressionTranslator rhsExpression = new ExpressionTranslator(node.getRhs());
 
 		// Bouw javascript op die
-		StringBuilder translation = new StringBuilder();
-		translation
-				.append("var _").append(variableStack.size()).append("=(function(){")
-					.append("var _l=(function(){")
-						.append(lhsExpression.getDeclarations())
-						.append(lhsExpression.getNullableCheck())
-						.append("return ").append(lhsExpression.getExpression())
-					.append("})();")
+		String translation =
+				"var _" + variableStack.size() + "=(function(){"
+					+ "var _l=(function(){"
+						+ lhsExpression.getDeclarations()
+						+ lhsExpression.getNullableCheck()
+						+ "return " + lhsExpression.getExpression()
+					+ "})();"
+					+ "if(_l===true)return true;"
+					+ "var _r=(function(){"
+						+ rhsExpression.getDeclarations()
+						+ rhsExpression.getNullableCheck()
+						+ "return " + rhsExpression.getExpression()
+					+ "})();"
+					+ "if(_r===true)return true;"
+					+ "if(_l==null||_r==null)return null;"
+					+ "return false;"
+				+ "})()";
 
-					.append("if(_l===true)return true;")
-
-					.append("var _r=(function(){")
-						.append(rhsExpression.getDeclarations())
-						.append(rhsExpression.getNullableCheck())
-						.append("return ").append(rhsExpression.getExpression())
-					.append("})();")
-
-					.append("if(_r===true)return true;")
-					.append("if(_l==null||_r==null)return null;")
-
-					.append("return false;")
-				.append("})()");
-
-		declarationStack.push(translation.toString());
+		declarationStack.push(translation);
 		String variable = "_" + variableStack.size();
 		partStack.push(variable);
 		variableStack.push(variable);
@@ -465,7 +455,15 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		
 		String rhsScript = partStack.pop();
 		String lhsScript = partStack.pop();
-		
+
+		if (node.getLhs().getType() == Type.DATE) {
+			lhsScript = "(function(){var _=" + lhsScript + "; return _==null?null:_.valueOf()})()";
+		}
+
+		if (node.getRhs().getType() == Type.DATE) {
+			rhsScript = "(function(){var _=" + rhsScript + "; return _==null?null:_.valueOf()})()";
+		}
+
 		String script = parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), lhsScript)
 				+ operator 
 				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), rhsScript);
