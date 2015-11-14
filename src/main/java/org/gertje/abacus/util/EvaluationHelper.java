@@ -85,6 +85,12 @@ public class EvaluationHelper {
 	 * @return The result of the comparison.
 	 */
 	public static Boolean eq(Object left, Type leftType, Object right, Type rightType) {
+		if (left == null && right == null) {
+			return Boolean.TRUE;
+		}
+		if (left == null || right == null) {
+			return Boolean.FALSE;
+		}
 		return comparison(left, leftType, right, rightType, new ComparisonEvaluator() {
 				@Override
 				public <T extends Comparable<? super T>> boolean compare(T left, T right) {
@@ -257,6 +263,12 @@ public class EvaluationHelper {
 	 * @return The result of the comparison.
 	 */
 	public static Boolean neq(Object left, Type leftType, Object right, Type rightType) {
+		if (left == null && right == null) {
+			return Boolean.FALSE;
+		}
+		if (left == null || right == null) {
+			return Boolean.TRUE;
+		}
 		return comparison(left, leftType, right, rightType, new ComparisonEvaluator() {
 			@Override
 			public <T extends Comparable<? super T>> boolean compare(T left, T right) {

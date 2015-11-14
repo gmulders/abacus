@@ -175,14 +175,14 @@
 		"expression": "'Hello ' == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "'Hello ' == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -203,7 +203,7 @@
 		"expression": "a == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -406,14 +406,14 @@
 		"expression": "100 == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "100 == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -434,7 +434,7 @@
 		"expression": "a == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -637,14 +637,14 @@
 		"expression": "2.4 == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "2.4 == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -665,7 +665,7 @@
 		"expression": "a == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -845,14 +845,14 @@
 		"expression": "true == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "true == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -873,7 +873,7 @@
 		"expression": "a == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1053,14 +1053,14 @@
 		"expression": "D'2015-08-17' == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "D'2015-08-17' == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1081,7 +1081,7 @@
 		"expression": "a == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1103,14 +1103,14 @@
 		"expression": "null == ' '",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "null == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1131,7 +1131,7 @@
 		"expression": "a == ' '",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1153,14 +1153,14 @@
 		"expression": "null == 10",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "null == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1181,7 +1181,7 @@
 		"expression": "a == 10",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1203,14 +1203,14 @@
 		"expression": "null == 6.7",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "null == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1231,7 +1231,7 @@
 		"expression": "a == 6.7",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1253,14 +1253,14 @@
 		"expression": "null == true",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "null == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1281,7 +1281,7 @@
 		"expression": "a == true",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1303,14 +1303,14 @@
 		"expression": "null == D'2015-08-17'",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		}
 	},
 	{
 		"expression": "null == a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1331,7 +1331,7 @@
 		"expression": "a == D'2015-08-17'",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "false"
 		},
 		"variableListBefore": [
 			{
@@ -1353,7 +1353,7 @@
 		"expression": "null == null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null
+			"value": "true"
 		}
 	}
 ]

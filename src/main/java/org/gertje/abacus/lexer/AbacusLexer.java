@@ -108,7 +108,7 @@ public class AbacusLexer extends AbstractLexer {
 		} else if (isNumeric(c)) {
 			String number = buildNumber(c);
 			if (number.indexOf('.') >= 0) {
-				token.setType(TokenType.FLOAT);
+				token.setType(TokenType.DECIMAL);
 			} else {
 				token.setType(TokenType.INTEGER);
 			}

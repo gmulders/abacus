@@ -74,7 +74,7 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 
 	@Override
 	public Node visit(AddNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
@@ -165,12 +165,12 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 
 	@Override
 	public Node visit(DivideNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
 	public Node visit(EqNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, false);
 	}
 
 	@Override
@@ -190,12 +190,12 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 
 	@Override
 	public Node visit(GeqNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
 	public Node visit(GtNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
@@ -233,22 +233,22 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 
 	@Override
 	public Node visit(LeqNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
 	public Node visit(LtNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
 	public Node visit(ModuloNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
 	public Node visit(MultiplyNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
@@ -271,7 +271,7 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 
 	@Override
 	public Node visit(NeqNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, false);
 	}
 
 	@Override
@@ -365,7 +365,7 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 
 	@Override
 	public Node visit(PowerNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
@@ -389,7 +389,7 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 
 	@Override
 	public Node visit(SubstractNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node);
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
@@ -397,7 +397,8 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 		return node;
 	}
 
-	protected Node simplifyBinaryOperation(BinaryOperationNode node) throws SimplificationException {
+	protected Node simplifyBinaryOperation(BinaryOperationNode node, boolean simplifyToNull)
+			throws SimplificationException {
 		Node lhs = node.getLhs();
 		Node rhs = node.getRhs();
 
@@ -414,6 +415,11 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 		}
 
 		// Wanneer we hier komen is tenminste een van beide zijden niet constant.
+
+		// If we shan't simplify to null we're done.
+		if (!simplifyToNull) {
+			return node;
+		}
 
 		// Wanneer een van de zijden constant is EN null, geven we een node met de waarde null terug.
 		if ((lhs.getIsConstant() && evaluateConstantNode(lhs) == null)
