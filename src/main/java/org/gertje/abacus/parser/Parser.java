@@ -338,7 +338,7 @@ public class Parser {
 	 */
 	private AbstractNode factor(Token nextToken) throws ParserException {
 		// Wanneer het token een decimaal getal is geven we een FloatNode terug.
-		if (nextToken.getType() == TokenType.FLOAT) {
+		if (nextToken.getType() == TokenType.DECIMAL) {
 			BigDecimal number;
 			// Probeer de string naar een BigDecimal te casten.
 			try {
