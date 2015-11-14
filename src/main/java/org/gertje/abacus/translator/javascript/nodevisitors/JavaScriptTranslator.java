@@ -172,7 +172,32 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(EqNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "==");
+		ExpressionTranslator lhsExpression = new ExpressionTranslator(node.getLhs());
+		ExpressionTranslator rhsExpression = new ExpressionTranslator(node.getRhs());
+
+		String lhsJavaScript = "(function(){"
+			+ lhsExpression.getDeclarations()
+			+ lhsExpression.getNullableCheck()
+			+ "return " + lhsExpression.getExpression()
+		+ "})();";
+
+		String rhsJavaScript = "(function(){"
+			+ rhsExpression.getDeclarations()
+			+ rhsExpression.getNullableCheck()
+			+ "return " + rhsExpression.getExpression()
+		+ "})();";
+
+		String translation =
+				"var _" + variableStack.size() + "=(function(){"
+					+ "var _l=" + convertDateForComparison(node.getLhs().getType(), lhsJavaScript) + ";"
+					+ "var _r=" + convertDateForComparison(node.getRhs().getType(), rhsJavaScript) + ";"
+					+ "return _l == _r;"
+				+ "})()";
+
+		declarationStack.push(translation);
+		String variable = "_" + variableStack.size();
+		partStack.push(variable);
+		variableStack.push(variable);
 		return null;
 	}
 
@@ -296,7 +321,32 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 	@Override
 	public Void visit(NeqNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "!=");
+		ExpressionTranslator lhsExpression = new ExpressionTranslator(node.getLhs());
+		ExpressionTranslator rhsExpression = new ExpressionTranslator(node.getRhs());
+
+		String lhsJavaScript = "(function(){"
+			+ lhsExpression.getDeclarations()
+			+ lhsExpression.getNullableCheck()
+			+ "return " + lhsExpression.getExpression()
+		+ "})();";
+
+		String rhsJavaScript = "(function(){"
+			+ rhsExpression.getDeclarations()
+			+ rhsExpression.getNullableCheck()
+			+ "return " + rhsExpression.getExpression()
+		+ "})();";
+
+		String translation =
+				"var _" + variableStack.size() + "=(function(){"
+					+ "var _l=" + convertDateForComparison(node.getLhs().getType(), lhsJavaScript) + ";"
+					+ "var _r=" + convertDateForComparison(node.getRhs().getType(), rhsJavaScript) + ";"
+					+ "return _l != _r;"
+				+ "})()";
+
+		declarationStack.push(translation);
+		String variable = "_" + variableStack.size();
+		partStack.push(variable);
+		variableStack.push(variable);
 		return null;
 	}
 
@@ -452,25 +502,33 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 			throws VisitingException {
 		node.getLhs().accept(this);
 		node.getRhs().accept(this);
-		
+
 		String rhsScript = partStack.pop();
 		String lhsScript = partStack.pop();
 
-		if (node.getLhs().getType() == Type.DATE) {
-			lhsScript = "(function(){var _=" + lhsScript + "; return _==null?null:_.valueOf()})()";
-		}
-
-		if (node.getRhs().getType() == Type.DATE) {
-			rhsScript = "(function(){var _=" + rhsScript + "; return _==null?null:_.valueOf()})()";
-		}
+		lhsScript = convertDateForComparison(node.getLhs().getType(), lhsScript);
+		rhsScript = convertDateForComparison(node.getRhs().getType(), rhsScript);
 
 		String script = parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), lhsScript)
 				+ operator 
 				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), rhsScript);
-		
+
 		partStack.push(script);
 	}
-	
+
+	/**
+	 * Converts the given date for comparison.
+	 * @param date the date to convert.
+	 * @return the converted date
+	 */
+	private String convertDateForComparison(Type type, String date) {
+		if (type == Type.DATE) {
+			return "(function(){var _=" + date + "; return _==null?null:_.valueOf()})()";
+		}
+
+		return date;
+	}
+
 	/**
 	 * Inner klasse om een expressie te kunnen vertalen. (Let op: met expressie bedoel ik hier een onderdeel van een 
 	 * if-statement, zie ook {@link org.gertje.abacus.parser.Parser#expression(Token)} .)
