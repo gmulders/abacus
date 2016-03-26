@@ -22,16 +22,18 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
-import org.gertje.abacus.nodevisitors.AbstractExpressionNodeVisitor;
+import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.translator.java.util.JavaEscaper;
 import org.gertje.abacus.types.Type;
@@ -44,7 +46,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class Translator extends AbstractExpressionNodeVisitor<String, TranslationException> {
+/**
+ * Translator to translate an AST into Java.
+ */
+public class Translator implements NodeVisitor<String, TranslationException> {
 
 	/**
 	 * De context waarbinnen de interpreter werkt.
@@ -64,7 +69,7 @@ public class Translator extends AbstractExpressionNodeVisitor<String, Translatio
 		this.symbolTable = abacusContext.getSymbolTable();
 	}
 
-	public String translate(ExpressionNode node) throws TranslationException {
+	public String translate(Node node) throws TranslationException {
 		return node.accept(this);
 	}
 
@@ -401,14 +406,19 @@ public class Translator extends AbstractExpressionNodeVisitor<String, Translatio
 	}
 
 	@Override
+	public String visit(RootNode node) throws TranslationException {
+		return node.getStatementListNode().accept(this);
+	}
+
+	@Override
 	public String visit(StatementListNode node) throws TranslationException {
 		// Evalueer alle AbstractNodes en geef het resultaat van de laatste node terug.
 		StringBuilder buffer = new StringBuilder();
 
 		// Get an iterator over the child nodes.
-		Iterator<ExpressionNode> it = node.iterator();
+		Iterator<Node> it = node.iterator();
 		while (it.hasNext()) {
-			ExpressionNode subNode = it.next();
+			Node subNode = it.next();
 			String subNodeJava = subNode.accept(this);
 			// If this is not the last node in the list, we need to wrap it in a functor to create a statement of it.
 			if (it.hasNext()) {

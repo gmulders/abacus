@@ -7,10 +7,11 @@ import org.gertje.abacus.exception.CompilerException;
 import org.gertje.abacus.lexer.AbacusLexer;
 import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
-import org.gertje.abacus.nodes.ExpressionNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
-import org.gertje.abacus.nodevisitors.ExpressionSimplifier;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
+import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.parser.Parser;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -53,9 +54,9 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		Lexer lexer = new AbacusLexer(abacusTestCase.expression);
 		Parser parser = new Parser(lexer, nodeFactory);
 
-		ExpressionNode tree;
+		RootNode rootNode;
 		try {
-			tree = parser.parse();
+			rootNode = parser.parse();
 		} catch (CompilerException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
@@ -65,20 +66,20 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		AbacusContext abacusContext = new SimpleAbacusContext(sym);
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
-		ExpressionSimplifier expressionSimplifier = new ExpressionSimplifier(abacusContext, nodeFactory);
+		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
 		Translator translator = new Translator(abacusContext);
 
 		String expression;
 		try {
-			semanticsChecker.check(tree);
+			semanticsChecker.check(rootNode);
 
-			if (!checkReturnType(tree.getType())) {
+			if (!checkReturnType(rootNode.getType())) {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
-			tree = expressionSimplifier.simplify(tree);
+			Node node = simplifier.simplify(rootNode);
 
-			expression = translator.translate(tree);
+			expression = translator.translate(node);
 		} catch (VisitingException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
@@ -90,7 +91,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 			Assert.fail(createMessage("Expected exception, but none was thrown."));
 		}
 
-		if (!checkReturnType(tree.getType())) {
+		if (!checkReturnType(rootNode.getType())) {
 			Assert.fail(createMessage("Incorrect return type."));
 		}
 
