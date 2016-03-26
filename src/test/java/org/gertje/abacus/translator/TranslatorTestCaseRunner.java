@@ -7,10 +7,10 @@ import org.gertje.abacus.exception.CompilerException;
 import org.gertje.abacus.lexer.AbacusLexer;
 import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
-import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodevisitors.ExpressionSimplifier;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
-import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.parser.Parser;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -53,7 +53,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		Lexer lexer = new AbacusLexer(abacusTestCase.expression);
 		Parser parser = new Parser(lexer, nodeFactory);
 
-		Node tree;
+		ExpressionNode tree;
 		try {
 			tree = parser.parse();
 		} catch (CompilerException e) {
@@ -65,7 +65,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		AbacusContext abacusContext = new SimpleAbacusContext(sym);
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
-		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
+		ExpressionSimplifier expressionSimplifier = new ExpressionSimplifier(abacusContext, nodeFactory);
 		Translator translator = new Translator(abacusContext);
 
 		String expression;
@@ -76,7 +76,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
-			tree = simplifier.simplify(tree);
+			tree = expressionSimplifier.simplify(tree);
 
 			expression = translator.translate(tree);
 		} catch (VisitingException e) {

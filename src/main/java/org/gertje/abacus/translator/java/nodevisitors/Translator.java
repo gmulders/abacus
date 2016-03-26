@@ -9,6 +9,7 @@ import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.FactorNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
@@ -21,7 +22,6 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
-import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
@@ -31,7 +31,7 @@ import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
-import org.gertje.abacus.nodevisitors.AbstractNodeVisitor;
+import org.gertje.abacus.nodevisitors.AbstractExpressionNodeVisitor;
 import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.translator.java.util.JavaEscaper;
 import org.gertje.abacus.types.Type;
@@ -44,7 +44,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-public class Translator extends AbstractNodeVisitor<String, TranslationException> {
+public class Translator extends AbstractExpressionNodeVisitor<String, TranslationException> {
 
 	/**
 	 * De context waarbinnen de interpreter werkt.
@@ -64,14 +64,14 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 		this.symbolTable = abacusContext.getSymbolTable();
 	}
 
-	public String translate(Node node) throws TranslationException {
+	public String translate(ExpressionNode node) throws TranslationException {
 		return node.accept(this);
 	}
 
 	@Override
 	public String visit(AddNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -83,8 +83,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(AndNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -101,8 +101,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(AssignmentNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		// Evalueer de rechterkant van de toekenning.
 		String result = rhs.accept(this);
@@ -159,8 +159,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(DivideNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -172,8 +172,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(EqNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -190,7 +190,7 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 	@Override
 	public String visit(FunctionNode node) throws TranslationException {
 		// TODO: Afmaken.
-		List<Node> parameters = node.getParameters();
+		List<ExpressionNode> parameters = node.getParameters();
 		String identifier = node.getIdentifier();
 
 		// Maak een lijst met alle resultaten van de evaluatie van de parameters.
@@ -204,7 +204,7 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 		// Loop over alle nodes heen en vul de lijsten met de geevaluuerde waarde en het type.
 		for (int i = 0; i < parameters.size(); i++) {
-			Node parameter = parameters.get(i);
+			ExpressionNode parameter = parameters.get(i);
 			String value = parameter.accept(this);
 			if (i != 0) {
 				buffer.append(", ");
@@ -226,8 +226,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(GeqNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -238,8 +238,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(GtNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -250,9 +250,9 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(IfNode node) throws TranslationException {
-		Node condition = node.getCondition();
-		Node ifBody = node.getIfBody();
-		Node elseBody = node.getElseBody();
+		ExpressionNode condition = node.getCondition();
+		ExpressionNode ifBody = node.getIfBody();
+		ExpressionNode elseBody = node.getElseBody();
 
 		// Evalueer de conditie.
 		String cond = condition.accept(this);
@@ -277,8 +277,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(LeqNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -289,8 +289,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(LtNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -301,8 +301,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(ModuloNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -313,8 +313,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(MultiplyNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -326,7 +326,7 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(NegativeNode node) throws TranslationException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		// Bepaal het getal dat we negatief gaan maken.
 		String number = argument.accept(this);
@@ -337,8 +337,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(NeqNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -349,7 +349,7 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(NotNode node) throws TranslationException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		// Bepaal de waarde van de boolean.
 		String bool = argument.accept(this);
@@ -364,8 +364,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(OrNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
@@ -382,7 +382,7 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(PositiveNode node) throws TranslationException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 		String pos = argument.accept(this);
 
 		return pos;
@@ -390,8 +390,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(PowerNode node) throws TranslationException {
-		Node base = node.getBase();
-		Node power = node.getPower();
+		ExpressionNode base = node.getBase();
+		ExpressionNode power = node.getPower();
 
 		String baseValue = base.accept(this);
 		String powerValue = power.accept(this);
@@ -406,9 +406,9 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 		StringBuilder buffer = new StringBuilder();
 
 		// Get an iterator over the child nodes.
-		Iterator<Node> it = node.iterator();
+		Iterator<ExpressionNode> it = node.iterator();
 		while (it.hasNext()) {
-			Node subNode = it.next();
+			ExpressionNode subNode = it.next();
 			String subNodeJava = subNode.accept(this);
 			// If this is not the last node in the list, we need to wrap it in a functor to create a statement of it.
 			if (it.hasNext()) {
@@ -430,8 +430,8 @@ public class Translator extends AbstractNodeVisitor<String, TranslationException
 
 	@Override
 	public String visit(SubstractNode node) throws TranslationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		String left = lhs.accept(this);
 		String right = rhs.accept(this);
