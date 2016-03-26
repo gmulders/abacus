@@ -37,6 +37,7 @@ public interface NodeFactory {
 	OrNode createOrNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	PositiveNode createPositiveNode(ExpressionNode argument, Token token);
 	PowerNode createPowerNode(ExpressionNode base, ExpressionNode power, Token token);
+	RootNode createRootNode(StatementListNode node, Token token);
 	StatementListNode createStatementListNode(Token token);
 	StringNode createStringNode(String value, Token token);
 	SubstractNode createSubstractNode(ExpressionNode lhs, ExpressionNode rhs, Token token);

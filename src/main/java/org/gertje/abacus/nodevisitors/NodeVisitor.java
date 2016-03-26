@@ -25,6 +25,7 @@ import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
@@ -56,6 +57,7 @@ public interface NodeVisitor<R, X extends VisitingException> {
 	R visit(OrNode node) throws X;
 	R visit(PositiveNode node) throws X;
 	R visit(PowerNode node) throws X;
+	R visit(RootNode node) throws X;
 	R visit(StatementListNode node) throws X;
 	R visit(StringNode node) throws X;
 	R visit(SubstractNode node) throws X;

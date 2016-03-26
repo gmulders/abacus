@@ -22,11 +22,13 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
@@ -41,12 +43,12 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 
 	/**
 	 * Prints the given AST.
-	 * @param tree The AST to print.
-	 * @return A String representing the tree.
+	 * @param node The AST to print.
+	 * @return A String representing the node.
 	 * @throws VisitingException
 	 */
-	public static String print(ExpressionNode tree) throws VisitingException {
-		return tree.accept(new PrettyPrinter());
+	public static String print(Node node) throws VisitingException {
+		return node.accept(new PrettyPrinter());
 	}
 
 	@Override
@@ -185,10 +187,15 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 	}
 
 	@Override
+	public String visit(RootNode node) throws VisitingException {
+		return node.getStatementListNode().accept(this);
+	}
+
+	@Override
 	public String visit(StatementListNode node) throws VisitingException {
 		StringBuilder statementList = new StringBuilder();
 
-		for (ExpressionNode child : node) {
+		for (Node child : node) {
 			statementList.append(child.accept(this)).append("; ");
 		}
 		

@@ -29,7 +29,6 @@ import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
-import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
@@ -40,6 +39,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
 
+/**
+ * Simplifier for an AST of {@link ExpressionNode}s.
+ */
 public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<ExpressionNode, SimplificationException> {
 
 	/**
@@ -366,20 +368,6 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 	@Override
 	public ExpressionNode visit(PowerNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
-	}
-
-	@Override
-	public ExpressionNode visit(StatementListNode node) throws SimplificationException {
-		// Loop over de lijst heen om alle nodes in de lijst te analyseren.
-		for (int i = 0; i < node.size(); i++) {
-			// LET OP! De nodeList kan alleen objecten bevatten van het type T of een type dat T extends. Dit betekent
-			// dat we ervoor moeten zorgen dat wanneer we een node van het type T analyseren ook weer een node van dit
-			// type terug krijgen.
-			node.set(i, node.get(i).accept(this));
-		}
-
-		// Geef altijd de huidige node terug.
-		return node;
 	}
 
 	@Override

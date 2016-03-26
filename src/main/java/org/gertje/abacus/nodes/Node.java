@@ -4,20 +4,28 @@ import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.token.Token;
 
+/**
+ * Represents a node in the AST.
+ */
 public interface Node {
+
 	/**
-	 * Registreert een visitor bij de node.
+	 * Accepts the visitor.
 	 *
-	 * De bedoeling is dat een node deze methode ook aanroept bij zijn child-nodes.
-	 *
-	 * @param visitor De visitor.
+	 * @param visitor The visitor.
 	 * @throws X
 	 */
 	<R, X extends VisitingException> R accept(NodeVisitor<R, X> visitor) throws X;
 
 	/**
-	 * Geeft het token terug.
-	 * @return het token.
+	 * Returns the token.
+	 * @return the token.
 	 */
 	Token getToken();
+
+	/**
+	 * Returns the type of the node.
+	 * @return the type of the node.
+	 */
+	NodeType getNodeType();
 }

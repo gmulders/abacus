@@ -5,6 +5,7 @@ import org.gertje.abacus.lexer.LexerException;
 import org.gertje.abacus.nodes.AbstractExpressionNode;
 import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.token.TokenType;
@@ -70,10 +71,11 @@ public class Parser {
 	}
 	
 	/**
-	 * Bouwt een AST op van de expressie.
+	 * Builds an AST from the expression.
 	 */
-	public AbstractExpressionNode parse() throws ParserException {
-		return statementList(determineNextToken());
+	public RootNode parse() throws ParserException {
+		Token token = determineNextToken();
+		return nodeFactory.createRootNode(statementList(token), token);
 	}
 
 	private StatementListNode statementList(Token nextToken) throws ParserException {

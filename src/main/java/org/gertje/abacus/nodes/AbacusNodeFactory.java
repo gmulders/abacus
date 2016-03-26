@@ -138,6 +138,11 @@ public class AbacusNodeFactory implements NodeFactory {
 	}
 
 	@Override
+	public RootNode createRootNode(StatementListNode node, Token token) {
+		return new RootNode(node, token);
+	}
+
+	@Override
 	public StatementListNode createStatementListNode(Token token) {
 		return new StatementListNode(token);
 	}

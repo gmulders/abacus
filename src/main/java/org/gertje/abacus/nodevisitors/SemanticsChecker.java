@@ -21,11 +21,13 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
@@ -39,6 +41,9 @@ import org.gertje.abacus.util.SemanticsHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Semantics checker for an AST.
+ */
 public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckException> {
 
 	/**
@@ -53,7 +58,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		this.symbolTable = symbolTable;
 	}
 
-	public void check(ExpressionNode node) throws SemanticsCheckException {
+	public void check(Node node) throws SemanticsCheckException {
 		node.accept(this);
 	}
 
@@ -257,7 +262,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		}
 
 		// Determine the type of the node.
-		Type type = null;
+		Type type;
 
 		// Find the first non-null type.
 		if (ifbody.getType() != null) {
@@ -445,9 +450,14 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 	}
 
 	@Override
+	public Void visit(RootNode node) throws SemanticsCheckException {
+		return node.getStatementListNode().accept(this);
+	}
+
+	@Override
 	public Void visit(StatementListNode node) throws SemanticsCheckException {
 		// Accepteer voor alle nodes.
-		for (ExpressionNode subNode : node) {
+		for (Node subNode : node) {
 			subNode.accept(this);
 		}
 

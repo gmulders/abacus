@@ -5,17 +5,12 @@ import org.gertje.abacus.token.Token;
 /**
  * Deze klasse stelt een node in een AbstractSyntaxTree voor.
  */
-abstract public class AbstractExpressionNode implements ExpressionNode {
+abstract public class AbstractExpressionNode extends AbstractNode implements ExpressionNode {
 
 	/**
 	 * Getal wat de volgorde van uitvoering van operatoren aangeeft. Voor het geval operatoren niet commuteren.
 	 */
 	protected int precedence;
-
-	/**
-	 * Bevat het token waaruit deze node is ontstaan.
-	 */
-	protected Token token;
 
 	/**
 	 * Contructor.
@@ -25,8 +20,8 @@ abstract public class AbstractExpressionNode implements ExpressionNode {
 	 * @param token Bevat het token waaruit deze node is ontstaan.
 	 */
 	public AbstractExpressionNode(int precedence, Token token) {
+		super(token);
 		this.precedence = precedence;
-		this.token = token;
 	}
 
 	@Override
@@ -35,7 +30,7 @@ abstract public class AbstractExpressionNode implements ExpressionNode {
 	}
 
 	@Override
-	public Token getToken() {
-		return token;
+	public NodeType getNodeType() {
+		return NodeType.EXPRESSION;
 	}
 }

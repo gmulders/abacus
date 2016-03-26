@@ -19,8 +19,9 @@ Quick start
 For those who can't wait to see it running, try copy pasting the following code:
 
 	SimpleSymbolTable sym = new SimpleSymbolTable();
+	AbacusContext abacusContext = new SimpleAbacusContext(sym);
 
-	AbstractNode tree;
+	Node tree;
 	try {
 		NodeFactory nodeFactory = new AbacusNodeFactory();
 		Lexer lexer = new AbacusLexer(expression);
@@ -31,7 +32,7 @@ For those who can't wait to see it running, try copy pasting the following code:
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
 		semanticsChecker.check(tree);
 
-		ExpressionSimplifier simplifier = new Simplifier(sym, nodeFactory);
+		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
 		tree = simplifier.simplify(tree);
 
 	} catch (CompilerException | SemanticsCheckException | SimplificationException e) {
@@ -40,7 +41,7 @@ For those who can't wait to see it running, try copy pasting the following code:
 
 	Object value;
 	try {
-		ExpressionEvaluator evaluator = new Evaluator(sym);
+		Evaluator evaluator = new Evaluator(abacusContext);
 		value = evaluator.evaluate(tree);
 	} catch (EvaluationException e) {
 		// Handle exception.

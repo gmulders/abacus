@@ -27,7 +27,6 @@ import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
-import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
@@ -42,6 +41,9 @@ import org.gertje.abacus.util.EvaluationHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Evaluator for an AST of {@link ExpressionNode}s.
+ */
 public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, EvaluationException> {
 
 	/**
@@ -375,17 +377,6 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		Number powerValue = (Number)power.accept(this);
 
 		return EvaluationHelper.power(baseValue, base.getType(), powerValue, power.getType());
-	}
-
-	@Override
-	public Object visit(StatementListNode node) throws EvaluationException {
-		// Evalueer alle AbstractNodes en geef het resultaat van de laatste node terug.
-		Object result = null;
-		for (ExpressionNode subNode : node) {
-			result = subNode.accept(this);
-		}
-
-		return result;
 	}
 
 	@Override
