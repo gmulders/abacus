@@ -198,16 +198,6 @@ The following operations are defined:
 | **Date**    | -       | -       | -       | Date    | Date    |
 | **Unknown** | String  | Integer | Decimal | Date    | Unknown |
 
-Note: The interpreter does not do a complete check of the AST before evaluating it. Because of this it _may_ be possible
-that the type of the non-applicable branch (if the condition evaluated to false the if-branch otherwise the else-branch)
-is unknown while it could have been known otherwise. In this case we also infer the type using the above table. There
-are a couple of situation where the behaviour is slightly different.
-
-- The applicable branch has type Integer, while the non applicable brach has type Decimal. The inferred type when using
-  the interpreter is Integer, otherwise it would have been Decimal. For example: `true ? 1 : (false ? 2.0 : 3.0)`.
-- When both branches have non compatible types, i.e. String and Integer, the interpreter does not throw an exception.
-  For example: `true ? 'Hello World!' : (false ? 2.0 : 3.0)`.
-
 #### assignment `=`
 - Operands: left a variable, right a value of the same type as the variable or any type if the variable does not exists.
 - Precedence: 1
@@ -275,12 +265,6 @@ The lexer recognises the following tokens:
 TODO
 ----
 - Parse dates. Probably using the following syntax; `D'yyyy-MM-dd'`.
-- Apply typechecking on the rhs of an `OrNode`, on the rhs of an `AndNode` and on the rhs of an `IfNode` in the
-  `Interperter`. For instance, the `Interpreter` will evaluate the expression `true || 9.6` to true, while the
-  `Evaluator` will throw an exception beacuse the rhs is of type Decimal. In this case the checking can be done easilly.
-  In contrast; in the case `true || (a * b)` we cannot infer the type of the rhs (without interpreting), but we _do_
-  know that the type of the rhs cannot ever become `Boolean`. So (without interpreting the rhs) we should be able to
-  deduct that an exception should be thrown. For the `IfNode` this also means that the type cannot always be inferred.
 - Translate comments in code to English.
 
 Copyright
