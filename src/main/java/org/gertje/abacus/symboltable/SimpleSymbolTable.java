@@ -1,7 +1,7 @@
 package org.gertje.abacus.symboltable;
 
 import org.gertje.abacus.functions.Function;
-import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.types.Type;
 import org.gertje.abacus.util.CastHelper;
 import org.gertje.abacus.util.SemanticsHelper;
@@ -160,7 +160,7 @@ public class SimpleSymbolTable implements SymbolTable {
 	}
 
 	@Override
-	public Type getFunctionReturnType(String identifier, List<Node> params) {
+	public Type getFunctionReturnType(String identifier, List<ExpressionNode> params) {
 		// Bepaal het return type.
 		return functions.get(identifier).getReturnType();
 	}

@@ -12,7 +12,7 @@ import java.util.ListIterator;
 /**
  * Abstracte klasse die een lijst van Nodes voorstelt.
  */
-public abstract class NodeListNode<T extends Node> extends AbstractNode implements List<T> {
+public abstract class NodeListNode<T extends ExpressionNode> extends AbstractExpressionNode implements List<T> {
 
 	List<T> nodeList;
 

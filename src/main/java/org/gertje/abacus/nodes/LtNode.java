@@ -12,7 +12,7 @@ public class LtNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public LtNode(Node lhs, Node rhs, Token token) {
+	public LtNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
 		super(lhs, rhs, token, 6);
 	}
 

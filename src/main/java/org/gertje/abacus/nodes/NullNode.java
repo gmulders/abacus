@@ -8,7 +8,7 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents null.
  */
-public class NullNode extends AbstractNode {
+public class NullNode extends AbstractExpressionNode {
 
 	/**
 	 * Constructor

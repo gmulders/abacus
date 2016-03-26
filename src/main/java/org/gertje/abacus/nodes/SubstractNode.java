@@ -8,15 +8,15 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents a substraction.
  */
-public class SubstractNode extends AbstractNode implements BinaryOperationNode {
+public class SubstractNode extends AbstractExpressionNode implements BinaryOperationNode {
 
-	private Node lhs;
-	private Node rhs;
+	private ExpressionNode lhs;
+	private ExpressionNode rhs;
 
 	/**
 	 * Constructor
 	 */
-	public SubstractNode(Node lhs, Node rhs, Token token) {
+	public SubstractNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
 		super(5, token);
 
 		this.lhs = lhs;
@@ -50,19 +50,19 @@ public class SubstractNode extends AbstractNode implements BinaryOperationNode {
 		return visitor.visit(this);
 	}
 
-	public Node getLhs() {
+	public ExpressionNode getLhs() {
 		return lhs;
 	}
 
-	public void setLhs(Node lhs) {
+	public void setLhs(ExpressionNode lhs) {
 		this.lhs = lhs;
 	}
 
-	public Node getRhs() {
+	public ExpressionNode getRhs() {
 		return rhs;
 	}
 
-	public void setRhs(Node rhs) {
+	public void setRhs(ExpressionNode rhs) {
 		this.rhs = rhs;
 	}
 }

@@ -5,7 +5,7 @@ import org.gertje.abacus.token.Token;
 /**
  * Deze klasse stelt een node in een AbstractSyntaxTree voor.
  */
-abstract public class AbstractNode implements Node {
+abstract public class AbstractExpressionNode implements ExpressionNode {
 
 	/**
 	 * Getal wat de volgorde van uitvoering van operatoren aangeeft. Voor het geval operatoren niet commuteren.
@@ -24,7 +24,7 @@ abstract public class AbstractNode implements Node {
 	 * commuteren.
 	 * @param token Bevat het token waaruit deze node is ontstaan.
 	 */
-	public AbstractNode(int precedence, Token token) {
+	public AbstractExpressionNode(int precedence, Token token) {
 		this.precedence = precedence;
 		this.token = token;
 	}

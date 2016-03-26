@@ -4,7 +4,7 @@ import org.gertje.abacus.context.AbacusContext;
 import org.gertje.abacus.lexer.AbacusLexer;
 import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
-import org.gertje.abacus.nodes.AbstractNode;
+import org.gertje.abacus.nodes.AbstractExpressionNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
@@ -13,6 +13,7 @@ import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.FactorNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
@@ -49,7 +50,7 @@ import org.gertje.abacus.util.SemanticsHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Interpreter extends AbstractNodeVisitor<Object, InterpreterException> {
+public class Interpreter extends AbstractExpressionNodeVisitor<Object, InterpreterException> {
 
 	/**
 	 * De context waarbinnen de interpreter werkt.
@@ -80,7 +81,7 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 	 * @return Het resultaat van het interpreteren van de expressie.
 	 * @throws InterpreterException Wanneer er een fout optreedt tijdens het interpreteren van de expressie.
 	 */
-	public Object interpret(Node node) throws InterpreterException {
+	public Object interpret(ExpressionNode node) throws InterpreterException {
 		Object value = node.accept(this);
 		returnType = node.getType();
 
@@ -100,7 +101,7 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 		// Maak een parser die de expressie parst.
 		Parser parser = new Parser(lexer, new AbacusNodeFactory());
 		// Bouw de AST op.
-		AbstractNode tree = parser.parse();
+		AbstractExpressionNode tree = parser.parse();
 
 		// Interpreteer de AST.
 		return interpret(tree);
@@ -108,8 +109,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(AddNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -125,8 +126,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(AndNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 
@@ -164,8 +165,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(AssignmentNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		// Evalueer de rechterkant van de toekenning.
 		Object result = rhs.accept(this);
@@ -218,8 +219,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(DivideNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -234,8 +235,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(EqNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -255,7 +256,7 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(FunctionNode node) throws InterpreterException {
-		List<Node> parameters = node.getParameters();
+		List<ExpressionNode> parameters = node.getParameters();
 		String identifier = node.getIdentifier();
 
 		// Maak een lijst met alle resultaten van de evaluatie van de parameters.
@@ -265,7 +266,7 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 		List<Type> paramTypes = new ArrayList<>();
 
 		// Loop over alle nodes heen en vul de lijsten met de geevaluuerde waarde en het type.
-		for (Node parameter : parameters) {
+		for (ExpressionNode parameter : parameters) {
 			paramResults.add(parameter.accept(this));
 			paramTypes.add(parameter.getType());
 		}
@@ -289,8 +290,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(GeqNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -306,8 +307,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(GtNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -325,9 +326,9 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 	public Object visit(IfNode node) throws InterpreterException {
 		// Deze methode wijkt iets af van de standaard werking. We controleren namelijk niet of de types van de twee
 		// bodies gelijk is.
-		Node condition = node.getCondition();
-		Node ifBody = node.getIfBody();
-		Node elseBody = node.getElseBody();
+		ExpressionNode condition = node.getCondition();
+		ExpressionNode ifBody = node.getIfBody();
+		ExpressionNode elseBody = node.getElseBody();
 
 		// Evauleer de conditie.
 		Object cond = condition.accept(this);
@@ -364,8 +365,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(LeqNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -381,8 +382,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(LtNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -398,8 +399,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(ModuloNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -414,8 +415,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(MultiplyNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -430,7 +431,7 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(NegativeNode node) throws InterpreterException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		// Bepaal het getal dat we negatief gaan maken.
 		Object number = argument.accept(this);
@@ -445,8 +446,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(NeqNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
@@ -461,7 +462,7 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(NotNode node) throws InterpreterException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		// Bepaal de waarde van de boolean.
 		Object bool = argument.accept(this);
@@ -481,8 +482,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(OrNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 
@@ -520,7 +521,7 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(PositiveNode node) throws InterpreterException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 		Object pos = argument.accept(this);
 
 		// Het argument moet een 'number' of onbekend zijn.
@@ -533,8 +534,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(PowerNode node) throws InterpreterException {
-		Node base = node.getBase();
-		Node power = node.getPower();
+		ExpressionNode base = node.getBase();
+		ExpressionNode power = node.getPower();
 
 		Object baseValue = base.accept(this);
 		Object powerValue = power.accept(this);
@@ -565,8 +566,8 @@ public class Interpreter extends AbstractNodeVisitor<Object, InterpreterExceptio
 
 	@Override
 	public Object visit(SubstractNode node) throws InterpreterException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);

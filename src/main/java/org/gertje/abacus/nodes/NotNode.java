@@ -8,14 +8,14 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents a logical not.
  */
-public class NotNode extends AbstractNode {
+public class NotNode extends AbstractExpressionNode {
 
-	private Node argument;
+	private ExpressionNode argument;
 
 	/**
 	 * Constructor
 	 */
-	public NotNode(Node argument, Token token) {
+	public NotNode(ExpressionNode argument, Token token) {
 		super(2, token);
 
 		this.argument = argument;
@@ -36,11 +36,11 @@ public class NotNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public Node getArgument() {
+	public ExpressionNode getArgument() {
 		return argument;
 	}
 
-	public void setArgument(Node argument) {
+	public void setArgument(ExpressionNode argument) {
 		this.argument = argument;
 	}
 }

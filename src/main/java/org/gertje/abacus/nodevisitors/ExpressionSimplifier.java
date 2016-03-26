@@ -10,6 +10,7 @@ import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.FactorNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
@@ -22,7 +23,6 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
-import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
@@ -40,7 +40,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
 
-public class Simplifier extends AbstractNodeVisitor<Node, SimplificationException> {
+public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<ExpressionNode, SimplificationException> {
 
 	/**
 	 * De context.
@@ -55,32 +55,32 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	/**
 	 * De evaluator die we gebruiken om nodes te vereenvoudigen waar mogelijk.
 	 */
-	private Evaluator evaluator;
+	private ExpressionEvaluator evaluator;
 
 	/**
 	 * Constructor.
 	 */
-	public Simplifier(AbacusContext abacusContext, NodeFactory nodeFactory) {
+	public ExpressionSimplifier(AbacusContext abacusContext, NodeFactory nodeFactory) {
 		this.nodeFactory = nodeFactory;
 		this.abacusContext = abacusContext;
 
 		// Maak een evaluator aan om de nodes te vereenvoudigen.
-		evaluator = new Evaluator(abacusContext);
+		evaluator = new ExpressionEvaluator(abacusContext);
 	}
 
-	public Node simplify(Node node) throws SimplificationException {
+	public ExpressionNode simplify(ExpressionNode node) throws SimplificationException {
 		return node.accept(this);
 	}
 
 	@Override
-	public Node visit(AddNode node) throws SimplificationException {
+	public ExpressionNode visit(AddNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(AndNode node) throws SimplificationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+	public ExpressionNode visit(AndNode node) throws SimplificationException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.accept(this); node.setLhs(lhs);
@@ -136,9 +136,9 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(AssignmentNode node) throws SimplificationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+	public ExpressionNode visit(AssignmentNode node) throws SimplificationException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.accept(this); node.setLhs(lhs);
@@ -149,33 +149,33 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(BooleanNode node) throws SimplificationException {
+	public ExpressionNode visit(BooleanNode node) throws SimplificationException {
 		return node;
 	}
 
 	@Override
-	public Node visit(DateNode node) throws SimplificationException {
+	public ExpressionNode visit(DateNode node) throws SimplificationException {
 		return node;
 	}
 
 	@Override
-	public Node visit(DecimalNode node) throws SimplificationException {
+	public ExpressionNode visit(DecimalNode node) throws SimplificationException {
 		return node;
 	}
 
 	@Override
-	public Node visit(DivideNode node) throws SimplificationException {
+	public ExpressionNode visit(DivideNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(EqNode node) throws SimplificationException {
+	public ExpressionNode visit(EqNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, false);
 	}
 
 	@Override
-	public Node visit(FactorNode node) throws SimplificationException {
-		Node argument = node.getArgument();
+	public ExpressionNode visit(FactorNode node) throws SimplificationException {
+		ExpressionNode argument = node.getArgument();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		argument = argument.accept(this); node.setArgument(argument);
@@ -184,25 +184,25 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(FunctionNode node) throws SimplificationException {
+	public ExpressionNode visit(FunctionNode node) throws SimplificationException {
 		return node;
 	}
 
 	@Override
-	public Node visit(GeqNode node) throws SimplificationException {
+	public ExpressionNode visit(GeqNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(GtNode node) throws SimplificationException {
+	public ExpressionNode visit(GtNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(IfNode node) throws SimplificationException {
-		Node condition = node.getCondition();
-		Node ifBody = node.getIfBody();
-		Node elseBody = node.getElseBody();
+	public ExpressionNode visit(IfNode node) throws SimplificationException {
+		ExpressionNode condition = node.getCondition();
+		ExpressionNode ifBody = node.getIfBody();
+		ExpressionNode elseBody = node.getElseBody();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		condition = condition.accept(this); node.setCondition(condition);
@@ -227,33 +227,33 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(IntegerNode node) throws SimplificationException {
+	public ExpressionNode visit(IntegerNode node) throws SimplificationException {
 		return node;
 	}
 
 	@Override
-	public Node visit(LeqNode node) throws SimplificationException {
+	public ExpressionNode visit(LeqNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(LtNode node) throws SimplificationException {
+	public ExpressionNode visit(LtNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(ModuloNode node) throws SimplificationException {
+	public ExpressionNode visit(ModuloNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(MultiplyNode node) throws SimplificationException {
+	public ExpressionNode visit(MultiplyNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(NegativeNode node) throws SimplificationException {
-		Node argument = node.getArgument();
+	public ExpressionNode visit(NegativeNode node) throws SimplificationException {
+		ExpressionNode argument = node.getArgument();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		argument = argument.accept(this); node.setArgument(argument);
@@ -270,13 +270,13 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(NeqNode node) throws SimplificationException {
+	public ExpressionNode visit(NeqNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, false);
 	}
 
 	@Override
-	public Node visit(NotNode node) throws SimplificationException {
-		Node argument = node.getArgument();
+	public ExpressionNode visit(NotNode node) throws SimplificationException {
+		ExpressionNode argument = node.getArgument();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		argument = argument.accept(this); node.setArgument(argument);
@@ -291,14 +291,14 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(NullNode node) throws SimplificationException {
+	public ExpressionNode visit(NullNode node) throws SimplificationException {
 		return node;
 	}
 
 	@Override
-	public Node visit(OrNode node) throws SimplificationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+	public ExpressionNode visit(OrNode node) throws SimplificationException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.accept(this); node.setLhs(lhs);
@@ -354,8 +354,8 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(PositiveNode node) throws SimplificationException {
-		Node argument = node.getArgument();
+	public ExpressionNode visit(PositiveNode node) throws SimplificationException {
+		ExpressionNode argument = node.getArgument();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		argument = argument.accept(this); node.setArgument(argument);
@@ -364,12 +364,12 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(PowerNode node) throws SimplificationException {
+	public ExpressionNode visit(PowerNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(StatementListNode node) throws SimplificationException {
+	public ExpressionNode visit(StatementListNode node) throws SimplificationException {
 		// Loop over de lijst heen om alle nodes in de lijst te analyseren.
 		for (int i = 0; i < node.size(); i++) {
 			// LET OP! De nodeList kan alleen objecten bevatten van het type T of een type dat T extends. Dit betekent
@@ -383,24 +383,32 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	}
 
 	@Override
-	public Node visit(StringNode node) throws SimplificationException {
+	public ExpressionNode visit(StringNode node) throws SimplificationException {
 		return node;
 	}
 
 	@Override
-	public Node visit(SubstractNode node) throws SimplificationException {
+	public ExpressionNode visit(SubstractNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
-	public Node visit(VariableNode node) throws SimplificationException {
+	public ExpressionNode visit(VariableNode node) throws SimplificationException {
 		return node;
 	}
 
-	protected Node simplifyBinaryOperation(BinaryOperationNode node, boolean simplifyToNull)
+	/**
+	 * Simplifies a binary node.
+	 * @param node A {@link BinaryOperationNode} that needs to be simplified.
+	 * @param simplifyToNullNode Indicates whether a binary operation node where only one side can be simplified and it
+	 * can be simplified to null needs to be simplified to a NullNode.
+	 * @return The new simplified node.
+	 * @throws SimplificationException
+	 */
+	protected ExpressionNode simplifyBinaryOperation(BinaryOperationNode node, boolean simplifyToNullNode)
 			throws SimplificationException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		// Vereenvoudig de nodes indien mogelijk.
 		lhs = lhs.accept(this); node.setLhs(lhs);
@@ -417,7 +425,7 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 		// Wanneer we hier komen is tenminste een van beide zijden niet constant.
 
 		// If we shan't simplify to null we're done.
-		if (!simplifyToNull) {
+		if (!simplifyToNullNode) {
 			return node;
 		}
 
@@ -439,7 +447,7 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	 * @param token The token of the node.
 	 * @return The new node.
 	 */
-	protected Node createNodeForTypeAndValue(Type type, Object value, Token token) {
+	protected ExpressionNode createNodeForTypeAndValue(Type type, Object value, Token token) {
 		if (type == null) {
 			return nodeFactory.createNullNode(token);
 		}
@@ -461,7 +469,7 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	 * @param type The type of the if.
 	 * @return the result node for an if
 	 */
-	protected Node determineResultNodeForIf(Node node, Type type) {
+	protected ExpressionNode determineResultNodeForIf(ExpressionNode node, Type type) {
 		if (node instanceof NullNode && type != null) {
 			return createNodeForTypeAndValue(type, null, node.getToken());
 		}
@@ -478,7 +486,7 @@ public class Simplifier extends AbstractNodeVisitor<Node, SimplificationExceptio
 	 *
 	 * @return
 	 */
-	protected Object evaluateConstantNode(Node node) throws SimplificationException {
+	protected Object evaluateConstantNode(ExpressionNode node) throws SimplificationException {
 		try {
 			return evaluator.evaluate(node);
 		} catch (EvaluationException e) {

@@ -8,14 +8,14 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents a factor.
  */
-public class FactorNode extends AbstractNode {
+public class FactorNode extends AbstractExpressionNode {
 
-	private Node argument;
+	private ExpressionNode argument;
 
 	/**
 	 * Constructor
 	 */
-	public FactorNode(Node argument, Token token) {
+	public FactorNode(ExpressionNode argument, Token token) {
 		super(0, token);
 
 		this.argument = argument;
@@ -34,11 +34,11 @@ public class FactorNode extends AbstractNode {
 		return false;
 	}
 
-	public Node getArgument() {
+	public ExpressionNode getArgument() {
 		return argument;
 	}
 
-	public void setArgument(Node argument) {
+	public void setArgument(ExpressionNode argument) {
 		this.argument = argument;
 	}
 

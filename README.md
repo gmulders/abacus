@@ -31,7 +31,7 @@ For those who can't wait to see it running, try copy pasting the following code:
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
 		semanticsChecker.check(tree);
 
-		Simplifier simplifier = new Simplifier(sym, nodeFactory);
+		ExpressionSimplifier simplifier = new Simplifier(sym, nodeFactory);
 		tree = simplifier.simplify(tree);
 
 	} catch (CompilerException | SemanticsCheckException | SimplificationException e) {
@@ -40,7 +40,7 @@ For those who can't wait to see it running, try copy pasting the following code:
 
 	Object value;
 	try {
-		Evaluator evaluator = new Evaluator(sym);
+		ExpressionEvaluator evaluator = new Evaluator(sym);
 		value = evaluator.evaluate(tree);
 	} catch (EvaluationException e) {
 		// Handle exception.

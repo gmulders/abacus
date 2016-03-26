@@ -2,8 +2,8 @@ package org.gertje.abacus.parser;
 
 import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.lexer.LexerException;
-import org.gertje.abacus.nodes.AbstractNode;
-import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.AbstractExpressionNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.token.Token;
@@ -72,7 +72,7 @@ public class Parser {
 	/**
 	 * Bouwt een AST op van de expressie.
 	 */
-	public AbstractNode parse() throws ParserException {
+	public AbstractExpressionNode parse() throws ParserException {
 		return statementList(determineNextToken());
 	}
 
@@ -87,9 +87,9 @@ public class Parser {
 		return list;
 	}
 
-	private AbstractNode statement(Token nextToken) throws ParserException {
+	private AbstractExpressionNode statement(Token nextToken) throws ParserException {
 		// Een statement is een assignment gevolgd door een 'end of expression' of het 'end of input' token.
-		AbstractNode statement = assignment(nextToken);
+		AbstractExpressionNode statement = assignment(nextToken);
 
 		// We verwachten het 'end of expression' of het 'end of input' token.
 		nextToken = peekNextToken();
@@ -106,8 +106,8 @@ public class Parser {
 		return statement;
 	}
 
-	private AbstractNode assignment(Token nextToken) throws ParserException {
-		AbstractNode lhs = expression(nextToken);
+	private AbstractExpressionNode assignment(Token nextToken) throws ParserException {
+		AbstractExpressionNode lhs = expression(nextToken);
 
 		// Spiek wat het volgende token is.
 		nextToken = peekNextToken();
@@ -117,7 +117,7 @@ public class Parser {
 			// Haal het gespiekte token van de stack.
 			Token assignmentToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = assignment(determineNextToken());
+			AbstractExpressionNode rhs = assignment(determineNextToken());
 
 			// Maak afhankelijk van de operatie de juiste soort ASTNode aan.
 			lhs = nodeFactory.createAssignmentNode(lhs, rhs, assignmentToken);
@@ -126,13 +126,13 @@ public class Parser {
 		return lhs;
 	}
 
-	protected AbstractNode expression(Token nextToken) throws ParserException {
+	protected AbstractExpressionNode expression(Token nextToken) throws ParserException {
 		return conditional(nextToken);
 	}
 
-	private AbstractNode conditional(Token nextToken) throws ParserException {
+	private AbstractExpressionNode conditional(Token nextToken) throws ParserException {
 		// Geef de 
-		AbstractNode condition = booleanOp(nextToken);
+		AbstractExpressionNode condition = booleanOp(nextToken);
 
 		// Spiek wat het volgende token is.
 		nextToken = peekNextToken();
@@ -142,7 +142,7 @@ public class Parser {
 			// Haal het gespiekte token van de stack.
 			Token ifToken = determineNextToken();
 			// Het volgende token kan ook een if-else zijn.
-			AbstractNode ifbody = expression(determineNextToken());
+			AbstractExpressionNode ifbody = expression(determineNextToken());
 
 			// Haal het volgende token op.
 			nextToken = determineNextToken();
@@ -151,7 +151,7 @@ public class Parser {
 				throw new ParserException("Expected COLON token (:).", nextToken);
 			}
 			// De else-body kan ook een if-else zijn.
-			AbstractNode elsebody = expression(determineNextToken());
+			AbstractExpressionNode elsebody = expression(determineNextToken());
 
 			// Maak een nieuwe ASTNode aan met het juiste type en de juiste operanden.
 			condition = nodeFactory.createIfNode(condition, ifbody, elsebody, ifToken);
@@ -163,8 +163,8 @@ public class Parser {
 	/**
 	 * Voert de operatie uit voor boolean operators of geef hem door aan sterkere operators.
 	 */
-	private AbstractNode booleanOp(Token nextToken) throws ParserException {
-		AbstractNode lhs = comparison(nextToken);
+	private AbstractExpressionNode booleanOp(Token nextToken) throws ParserException {
+		AbstractExpressionNode lhs = comparison(nextToken);
 
 		// Spiek wat het volgende token is.
 		nextToken = peekNextToken();
@@ -174,7 +174,7 @@ public class Parser {
 			// Haal het gespiekte token van de stack.
 			Token orOrAndToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = comparison(determineNextToken());
+			AbstractExpressionNode rhs = comparison(determineNextToken());
 
 			// Maak voor elke mogelijke boolean operatie een andere ASTNode aan.
 			if(nextToken.getType() == TokenType.BOOLEAN_AND) {
@@ -193,8 +193,8 @@ public class Parser {
 	/**
 	 * Voert de operatie uit voor conditie operators of geef hem door aan sterkere operators.
 	 */
-	private AbstractNode comparison(Token nextToken) throws ParserException {
-		AbstractNode lhs = addition(nextToken);
+	private AbstractExpressionNode comparison(Token nextToken) throws ParserException {
+		AbstractExpressionNode lhs = addition(nextToken);
 
 		// Spiek wat het volgende token is.
 		nextToken = peekNextToken();
@@ -208,7 +208,7 @@ public class Parser {
 			// Haal het gespiekte token van de stack.
 			Token comparisonToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = addition(determineNextToken());
+			AbstractExpressionNode rhs = addition(determineNextToken());
 
 			// Maak afhankelijk van de vergelijking de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.LT) {
@@ -236,8 +236,8 @@ public class Parser {
 	/**
 	 * Voert de operatie uit voor de plus en min operators of geef hem door aan sterkere operators.
 	 */
-	private AbstractNode addition(Token nextToken) throws ParserException {
-		AbstractNode lhs = term(nextToken);
+	private AbstractExpressionNode addition(Token nextToken) throws ParserException {
+		AbstractExpressionNode lhs = term(nextToken);
 
 		// Spiek wat het volgende token is.
 		nextToken = peekNextToken();
@@ -247,7 +247,7 @@ public class Parser {
 			// Haal het gespiekte token van de stack.
 			Token additionToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = term(determineNextToken());
+			AbstractExpressionNode rhs = term(determineNextToken());
 
 			// Maak afhankelijk van de operatie de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.PLUS) {
@@ -266,8 +266,8 @@ public class Parser {
 	/**
 	 * Voert de operatie uit voor de vermenigvuldig operators of geef hem door aan sterkere operators.
 	 */
-	private AbstractNode term(Token nextToken) throws ParserException {
-		AbstractNode lhs = power(nextToken);
+	private AbstractExpressionNode term(Token nextToken) throws ParserException {
+		AbstractExpressionNode lhs = power(nextToken);
 
 		// Spiek wat het volgende token is.
 		nextToken = peekNextToken();
@@ -278,7 +278,7 @@ public class Parser {
 			// Haal het gespiekte token van de stack.
 			Token termToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = power(determineNextToken());
+			AbstractExpressionNode rhs = power(determineNextToken());
 
 			// Maak afhankelijk van de operatie de juiste soort ASTNode aan.
 			if (nextToken.getType() == TokenType.MULTIPLY) {
@@ -299,8 +299,8 @@ public class Parser {
 	/**
 	 * Voert de operatie uit voor de macht operator of geef hem door aan sterkere operators.
 	 */
-	private AbstractNode power(Token nextToken) throws ParserException {
-		AbstractNode lhs = unary(nextToken);
+	private AbstractExpressionNode power(Token nextToken) throws ParserException {
+		AbstractExpressionNode lhs = unary(nextToken);
 
 		// Spiek wat het volgende token is.
 		nextToken = peekNextToken();
@@ -310,7 +310,7 @@ public class Parser {
 			// Haal het gespiekte token van de stack.
 			Token powerToken = determineNextToken();
 			// Bepaal de rechter AST van de operatie.
-			AbstractNode rhs = power(determineNextToken());
+			AbstractExpressionNode rhs = power(determineNextToken());
 			lhs = nodeFactory.createPowerNode(lhs, rhs, powerToken);
 		}
 		// Geef de lhs terug.
@@ -318,9 +318,9 @@ public class Parser {
 	}
 
 	/**
-	 * Geeft een Node terug specifiek voor de unary methode, of geeft de token door aan een sterkere operator.
+	 * Geeft een ExpressionNode terug specifiek voor de unary methode, of geeft de token door aan een sterkere operator.
 	 */
-	private AbstractNode unary(Token nextToken) throws ParserException {
+	private AbstractExpressionNode unary(Token nextToken) throws ParserException {
 		// Maak afhankelijk van het type van de token de juiste ASTNode aan.
 		if (nextToken.getType() == TokenType.PLUS) {
 			return nodeFactory.createPositiveNode(factor(determineNextToken()), nextToken);
@@ -334,9 +334,9 @@ public class Parser {
 	}
 
 	/**
-	 * Geeft een Node terug specifiek voor een getal, een factor, een variabele of een functie.
+	 * Geeft een ExpressionNode terug specifiek voor een getal, een factor, een variabele of een functie.
 	 */
-	private AbstractNode factor(Token nextToken) throws ParserException {
+	private AbstractExpressionNode factor(Token nextToken) throws ParserException {
 		// Wanneer het token een decimaal getal is geven we een FloatNode terug.
 		if (nextToken.getType() == TokenType.DECIMAL) {
 			BigDecimal number;
@@ -376,7 +376,7 @@ public class Parser {
 
 		// Wanneer het token een linker haakje is geven we een FactorNode terug.
 		} else if (nextToken.getType() == TokenType.LEFT_PARENTHESIS) {
-			AbstractNode factorNode = nodeFactory.createFactorNode(expression(determineNextToken()), nextToken);
+			AbstractExpressionNode factorNode = nodeFactory.createFactorNode(expression(determineNextToken()), nextToken);
 			// We verwachten een rechter haakje.
 			Token token = determineNextToken();
 			if (token.getType() != TokenType.RIGHT_PARENTHESIS) {
@@ -409,7 +409,7 @@ public class Parser {
 			// Als het token een function is geven we een FunctionNode terug.
 			if (determineIsFunction(nextToken)) {
 				// We moeten nu een lijst opbouwen met parameters.
-				List<Node> params = buildParameters();
+				List<ExpressionNode> params = buildParameters();
 
 				return nodeFactory.createFunctionNode(nextToken.getValue(), params, nextToken);
 			}
@@ -419,11 +419,11 @@ public class Parser {
 				+ "', value: '" + nextToken.getValue() + "'.", nextToken);
 	}
 
-	private List<Node> buildParameters() throws ParserException {
+	private List<ExpressionNode> buildParameters() throws ParserException {
 		// Haal het linkerhaakje van de stack.
 		determineNextToken();
 		// Maak een variabele met de parameters aan.
-		List<Node> params = new ArrayList<>();
+		List<ExpressionNode> params = new ArrayList<>();
 		// Wanneer het volgende token een rechterhaakje is heeft de functie geen parameters.
 		if (peekNextToken().getType() == TokenType.RIGHT_PARENTHESIS) {
 			// Haal het token van de stack en geef de lege array terug.

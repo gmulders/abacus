@@ -6,11 +6,11 @@ import org.gertje.abacus.exception.CompilerException;
 import org.gertje.abacus.lexer.AbacusLexer;
 import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
-import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.NodeFactory;
-import org.gertje.abacus.nodevisitors.Evaluator;
+import org.gertje.abacus.nodevisitors.ExpressionEvaluator;
+import org.gertje.abacus.nodevisitors.ExpressionSimplifier;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
-import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.parser.Parser;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -31,7 +31,7 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 		Lexer lexer = new AbacusLexer(abacusTestCase.expression);
 		Parser parser = new Parser(lexer, nodeFactory);
 
-		Node tree;
+		ExpressionNode tree;
 		try {
 			tree = parser.parse();
 		} catch (CompilerException e) {
@@ -43,8 +43,8 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		AbacusContext abacusContext = new SimpleAbacusContext(sym);
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
-		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
-		Evaluator evaluator = new Evaluator(abacusContext);
+		ExpressionSimplifier expressionSimplifier = new ExpressionSimplifier(abacusContext, nodeFactory);
+		ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(abacusContext);
 
 		Object returnValue;
 		try {
@@ -54,9 +54,9 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
-			tree = simplifier.simplify(tree);
+			tree = expressionSimplifier.simplify(tree);
 
-			returnValue = evaluator.evaluate(tree);
+			returnValue = expressionEvaluator.evaluate(tree);
 		} catch (VisitingException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));

@@ -9,6 +9,7 @@ import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.FactorNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
@@ -21,7 +22,6 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
-import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
@@ -37,7 +37,7 @@ import java.util.Iterator;
 /**
  * Prints the expression.
  */
-public class PrettyPrinter extends AbstractNodeVisitor<String, VisitingException> {
+public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 
 	/**
 	 * Prints the given AST.
@@ -45,7 +45,7 @@ public class PrettyPrinter extends AbstractNodeVisitor<String, VisitingException
 	 * @return A String representing the tree.
 	 * @throws VisitingException
 	 */
-	public static String print(Node tree) throws VisitingException {
+	public static String print(ExpressionNode tree) throws VisitingException {
 		return tree.accept(new PrettyPrinter());
 	}
 
@@ -98,7 +98,7 @@ public class PrettyPrinter extends AbstractNodeVisitor<String, VisitingException
 	public String visit(FunctionNode node) throws VisitingException {
 		StringBuilder parameters = new StringBuilder();
 
-		Iterator<Node> it = node.getParameters().iterator();
+		Iterator<ExpressionNode> it = node.getParameters().iterator();
 		while (it.hasNext()) {
 			parameters.append(it.next().accept(this));
 			if (it.hasNext()) {
@@ -188,7 +188,7 @@ public class PrettyPrinter extends AbstractNodeVisitor<String, VisitingException
 	public String visit(StatementListNode node) throws VisitingException {
 		StringBuilder statementList = new StringBuilder();
 
-		for (Node child : node) {
+		for (ExpressionNode child : node) {
 			statementList.append(child.accept(this)).append("; ");
 		}
 		

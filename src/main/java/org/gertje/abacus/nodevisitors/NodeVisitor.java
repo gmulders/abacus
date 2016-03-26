@@ -1,6 +1,5 @@
 package org.gertje.abacus.nodevisitors;
 
-import org.gertje.abacus.nodes.AbstractNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
@@ -32,7 +31,6 @@ import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
 
 public interface NodeVisitor<R, X extends VisitingException> {
-	R visit(AbstractNode node) throws X;
 	R visit(AddNode node) throws X;
 	R visit(AndNode node) throws X;
 	R visit(AssignmentNode node) throws X;
