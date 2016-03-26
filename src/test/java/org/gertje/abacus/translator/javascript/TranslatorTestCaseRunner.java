@@ -8,10 +8,11 @@ import org.gertje.abacus.exception.CompilerException;
 import org.gertje.abacus.lexer.AbacusLexer;
 import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
-import org.gertje.abacus.nodes.ExpressionNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
-import org.gertje.abacus.nodevisitors.ExpressionSimplifier;
+import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.parser.Parser;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -38,7 +39,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		Lexer lexer = new AbacusLexer(abacusTestCase.expression);
 		Parser parser = new Parser(lexer, nodeFactory);
 
-		ExpressionNode tree;
+		RootNode tree;
 		try {
 			tree = parser.parse();
 		} catch (CompilerException e) {
@@ -50,7 +51,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		AbacusContext abacusContext = new SimpleAbacusContext(sym);
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
-		ExpressionSimplifier expressionSimplifier = new ExpressionSimplifier(abacusContext, nodeFactory);
+		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
 		JavaScriptTranslator translator = new JavaScriptTranslator();
 
 		String javascript;
@@ -61,9 +62,9 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
-			tree = expressionSimplifier.simplify(tree);
+			Node node = simplifier.simplify(tree);
 
-			javascript = translator.translate(tree);
+			javascript = translator.translate(node);
 		} catch (VisitingException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));

@@ -22,23 +22,28 @@ import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
 import org.gertje.abacus.nodes.ExpressionNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
-import org.gertje.abacus.nodevisitors.AbstractExpressionNodeVisitor;
+import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.types.Type;
 
 import java.util.Stack;
 
-public class JavaScriptTranslator extends AbstractExpressionNodeVisitor<Void, VisitingException> {
+/**
+ * Translator to translate an AST to JavaScript.
+ */
+public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException> {
 
 	/**
 	 * Deze stack gebruiken we om gedeeltelijke vertalingen in op te slaan.
@@ -65,7 +70,7 @@ public class JavaScriptTranslator extends AbstractExpressionNodeVisitor<Void, Vi
 		declarationStack = new Stack<>();
 	}
 
-	public String translate(ExpressionNode node) throws VisitingException {
+	public String translate(Node node) throws VisitingException {
 		
 		ExpressionTranslator expressionTranslator = new ExpressionTranslator(node);
 
@@ -416,6 +421,11 @@ public class JavaScriptTranslator extends AbstractExpressionNodeVisitor<Void, Vi
 	}
 
 	@Override
+	public Void visit(RootNode node) throws VisitingException {
+		return node.getStatementListNode().accept(this);
+	}
+
+	@Override
 	public Void visit(StatementListNode node) throws VisitingException {
 		// Wanneer er 1 statement in de lijst zit hoeven we dit statement niet te bundelen in een closure.
 		if (node.size() == 1) {
@@ -545,7 +555,7 @@ public class JavaScriptTranslator extends AbstractExpressionNodeVisitor<Void, Vi
 		 * Maakt een nieuwe instantie aan. Vertaal de expressie en bouw nodige gedeelten op.
 		 * @throws VisitingException 
 		 */
-		private ExpressionTranslator(ExpressionNode node) throws VisitingException {
+		private ExpressionTranslator(Node node) throws VisitingException {
 			declarations = new StringBuilder();
 			nullableCheck = new StringBuilder();
 			
