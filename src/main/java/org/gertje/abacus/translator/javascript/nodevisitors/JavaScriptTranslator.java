@@ -21,7 +21,7 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
-import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
@@ -31,14 +31,14 @@ import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
-import org.gertje.abacus.nodevisitors.AbstractNodeVisitor;
+import org.gertje.abacus.nodevisitors.AbstractExpressionNodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.types.Type;
 
 import java.util.Stack;
 
-public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingException> {
+public class JavaScriptTranslator extends AbstractExpressionNodeVisitor<Void, VisitingException> {
 
 	/**
 	 * Deze stack gebruiken we om gedeeltelijke vertalingen in op te slaan.
@@ -65,7 +65,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		declarationStack = new Stack<>();
 	}
 
-	public String translate(Node node) throws VisitingException {
+	public String translate(ExpressionNode node) throws VisitingException {
 		
 		ExpressionTranslator expressionTranslator = new ExpressionTranslator(node);
 
@@ -221,7 +221,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 	@Override
 	public Void visit(FunctionNode node) throws VisitingException {
 		// Loop eerst over alle parameters heen, om de stack op te bouwen.
-		for (Node childNode : node.getParameters()) {
+		for (ExpressionNode childNode : node.getParameters()) {
 			childNode.accept(this);
 		}
 		
@@ -545,7 +545,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 		 * Maakt een nieuwe instantie aan. Vertaal de expressie en bouw nodige gedeelten op.
 		 * @throws VisitingException 
 		 */
-		private ExpressionTranslator(Node node) throws VisitingException {
+		private ExpressionTranslator(ExpressionNode node) throws VisitingException {
 			declarations = new StringBuilder();
 			nullableCheck = new StringBuilder();
 			
