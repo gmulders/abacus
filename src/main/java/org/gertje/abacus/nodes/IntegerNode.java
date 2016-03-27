@@ -10,7 +10,7 @@ import java.math.BigInteger;
 /**
  * Node that represents an integer.
  */
-public class IntegerNode extends AbstractNode {
+public class IntegerNode extends AbstractExpressionNode {
 
 	private BigInteger value;
 

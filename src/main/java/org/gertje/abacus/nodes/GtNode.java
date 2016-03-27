@@ -12,7 +12,7 @@ public class GtNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public GtNode(Node lhs, Node rhs, Token token) {
+	public GtNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
 		super(lhs, rhs, token, 6);
 	}
 

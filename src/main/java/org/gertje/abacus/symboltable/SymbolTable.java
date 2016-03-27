@@ -1,6 +1,6 @@
 package org.gertje.abacus.symboltable;
 
-import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.types.Type;
 
 import java.util.List;
@@ -68,5 +68,5 @@ public interface SymbolTable {
 	 * @param params
 	 * @return het return type van de functie.
 	 */
-	Type getFunctionReturnType(String identifier, List<Node> params) throws NoSuchFunctionException;
+	Type getFunctionReturnType(String identifier, List<ExpressionNode> params) throws NoSuchFunctionException;
 }

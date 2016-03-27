@@ -8,14 +8,14 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents an unary negation.
  */
-public class NegativeNode extends AbstractNode {
+public class NegativeNode extends AbstractExpressionNode {
 
-	private Node argument;
+	private ExpressionNode argument;
 
 	/**
 	 * Constructor
 	 */
-	public NegativeNode(Node argument, Token token) {
+	public NegativeNode(ExpressionNode argument, Token token) {
 		super(2, token);
 
 		this.argument = argument;
@@ -36,11 +36,11 @@ public class NegativeNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public Node getArgument() {
+	public ExpressionNode getArgument() {
 		return argument;
 	}
 
-	public void setArgument(Node argument) {
+	public void setArgument(ExpressionNode argument) {
 		this.argument = argument;
 	}
 }

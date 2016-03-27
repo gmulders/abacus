@@ -3,39 +3,26 @@ package org.gertje.abacus.nodes;
 import org.gertje.abacus.token.Token;
 
 /**
- * Deze klasse stelt een node in een AbstractSyntaxTree voor.
+ * Abstract node.
  */
-abstract public class AbstractNode implements Node {
+public abstract class AbstractNode implements Node {
 
 	/**
-	 * Getal wat de volgorde van uitvoering van operatoren aangeeft. Voor het geval operatoren niet commuteren.
-	 */
-	protected int precedence;
-
-	/**
-	 * Bevat het token waaruit deze node is ontstaan.
+	 * The token from which the node was created.
 	 */
 	protected Token token;
 
-	/**
-	 * Contructor.
-	 * 
-	 * @param precedence Getal wat de volgorde van uitvoering van operatoren aangeeft. Voor het geval operatoren niet 
-	 * commuteren.
-	 * @param token Bevat het token waaruit deze node is ontstaan.
-	 */
-	public AbstractNode(int precedence, Token token) {
-		this.precedence = precedence;
+	public AbstractNode(Token token) {
 		this.token = token;
-	}
-
-	@Override
-	public int getPrecedence() {
-		return precedence;
 	}
 
 	@Override
 	public Token getToken() {
 		return token;
+	}
+
+	@Override
+	public NodeType getNodeType() {
+		return NodeType.STATEMENT;
 	}
 }

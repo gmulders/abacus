@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * Node that represents a decimal.
  */
-public class DecimalNode extends AbstractNode {
+public class DecimalNode extends AbstractExpressionNode {
 
 	private BigDecimal value;
 

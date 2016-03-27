@@ -9,6 +9,7 @@ import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.FactorNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
@@ -27,6 +28,7 @@ import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
@@ -37,16 +39,16 @@ import java.util.Iterator;
 /**
  * Prints the expression.
  */
-public class PrettyPrinter extends AbstractNodeVisitor<String, VisitingException> {
+public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 
 	/**
 	 * Prints the given AST.
-	 * @param tree The AST to print.
-	 * @return A String representing the tree.
+	 * @param node The AST to print.
+	 * @return A String representing the node.
 	 * @throws VisitingException
 	 */
-	public static String print(Node tree) throws VisitingException {
-		return tree.accept(new PrettyPrinter());
+	public static String print(Node node) throws VisitingException {
+		return node.accept(new PrettyPrinter());
 	}
 
 	@Override
@@ -98,7 +100,7 @@ public class PrettyPrinter extends AbstractNodeVisitor<String, VisitingException
 	public String visit(FunctionNode node) throws VisitingException {
 		StringBuilder parameters = new StringBuilder();
 
-		Iterator<Node> it = node.getParameters().iterator();
+		Iterator<ExpressionNode> it = node.getParameters().iterator();
 		while (it.hasNext()) {
 			parameters.append(it.next().accept(this));
 			if (it.hasNext()) {
@@ -182,6 +184,11 @@ public class PrettyPrinter extends AbstractNodeVisitor<String, VisitingException
 	@Override
 	public String visit(PowerNode node) throws VisitingException {
 		return createScriptForBinaryOperationNode(node, "^");
+	}
+
+	@Override
+	public String visit(RootNode node) throws VisitingException {
+		return node.getStatementListNode().accept(this);
 	}
 
 	@Override

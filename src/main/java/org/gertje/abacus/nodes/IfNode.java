@@ -8,17 +8,17 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents an if.
  */
-public class IfNode extends AbstractNode {
+public class IfNode extends AbstractExpressionNode {
 
-	private Node condition;
-	private Node ifBody;
-	private Node elseBody;
+	private ExpressionNode condition;
+	private ExpressionNode ifBody;
+	private ExpressionNode elseBody;
 	private Type type;
 
 	/**
 	 * Constructor
 	 */
-	public IfNode(Node condition, Node ifBody, Node elseBody, Token token) {
+	public IfNode(ExpressionNode condition, ExpressionNode ifBody, ExpressionNode elseBody, Token token) {
 		super(10, token);
 
 		this.condition = condition;
@@ -41,27 +41,27 @@ public class IfNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public Node getCondition() {
+	public ExpressionNode getCondition() {
 		return condition;
 	}
 
-	public void setCondition(Node condition) {
+	public void setCondition(ExpressionNode condition) {
 		this.condition = condition;
 	}
 
-	public Node getIfBody() {
+	public ExpressionNode getIfBody() {
 		return ifBody;
 	}
 
-	public void setIfBody(Node ifBody) {
+	public void setIfBody(ExpressionNode ifBody) {
 		this.ifBody = ifBody;
 	}
 
-	public Node getElseBody() {
+	public ExpressionNode getElseBody() {
 		return elseBody;
 	}
 
-	public void setElseBody(Node elseBody) {
+	public void setElseBody(ExpressionNode elseBody) {
 		this.elseBody = elseBody;
 	}
 

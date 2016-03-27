@@ -8,6 +8,7 @@ import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.FactorNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
@@ -26,6 +27,7 @@ import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
@@ -39,7 +41,10 @@ import org.gertje.abacus.util.SemanticsHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckException> {
+/**
+ * Semantics checker for an AST.
+ */
+public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckException> {
 
 	/**
 	 * De symboltable met de variabelen en de functies.
@@ -59,8 +64,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(AddNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -76,8 +81,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(AndNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -92,8 +97,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(AssignmentNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -130,8 +135,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(DivideNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -146,8 +151,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(EqNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -162,7 +167,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(FactorNode node) throws SemanticsCheckException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		argument.accept(this);
 
@@ -173,14 +178,14 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(FunctionNode node) throws SemanticsCheckException {
-		List<Node> parameters = node.getParameters();
+		List<ExpressionNode> parameters = node.getParameters();
 		String identifier = node.getIdentifier();
 
 		// Maak een lijst van Objecten aan waarin we de parameters gaan evalueren.
 		List<Type> types = new ArrayList<>();
 
 		// Loop over alle nodes heen.
-		for (Node parameter : parameters) {
+		for (ExpressionNode parameter : parameters) {
 			parameter.accept(this);
 			// Voeg het type van de node toe aan de lijst.
 			types.add(parameter.getType());
@@ -204,8 +209,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(GeqNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -221,8 +226,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(GtNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -238,9 +243,9 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(IfNode node) throws SemanticsCheckException {
-		Node condition = node.getCondition();
-		Node ifbody = node.getIfBody();
-		Node elsebody = node.getElseBody();
+		ExpressionNode condition = node.getCondition();
+		ExpressionNode ifbody = node.getIfBody();
+		ExpressionNode elsebody = node.getElseBody();
 
 		condition.accept(this);
 		ifbody.accept(this);
@@ -257,7 +262,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 		}
 
 		// Determine the type of the node.
-		Type type = null;
+		Type type;
 
 		// Find the first non-null type.
 		if (ifbody.getType() != null) {
@@ -285,8 +290,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(LeqNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -302,8 +307,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(LtNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -319,8 +324,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(ModuloNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -335,8 +340,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(MultiplyNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -351,7 +356,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NegativeNode node) throws SemanticsCheckException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		argument.accept(this);
 
@@ -365,8 +370,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NeqNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -381,7 +386,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NotNode node) throws SemanticsCheckException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		argument.accept(this);
 
@@ -400,8 +405,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(OrNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -416,7 +421,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(PositiveNode node) throws SemanticsCheckException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
         argument.accept(this);
 
@@ -430,8 +435,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(PowerNode node) throws SemanticsCheckException {
-		Node base = node.getBase();
-		Node power = node.getPower();
+		ExpressionNode base = node.getBase();
+		ExpressionNode power = node.getPower();
 
 		base.accept(this);
 		power.accept(this);
@@ -442,6 +447,11 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 		}
 
 		return null;
+	}
+
+	@Override
+	public Void visit(RootNode node) throws SemanticsCheckException {
+		return node.getStatementListNode().accept(this);
 	}
 
 	@Override
@@ -461,8 +471,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(SubstractNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);

@@ -99,39 +99,12 @@
 
 	{
 		"expression": "true ? 'Hello ' : 10",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello "
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello "
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "STRING",
-				"value": "Hello "
-			},
-			{
-				"name": "c",
-				"type": "INTEGER",
-				"value": "10"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -152,39 +125,12 @@
 
 	{
 		"expression": "true ? 'Hello ' : 10.4",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello "
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello "
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "STRING",
-				"value": "Hello "
-			},
-			{
-				"name": "c",
-				"type": "DECIMAL",
-				"value": "10.4"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -205,39 +151,12 @@
 
 	{
 		"expression": "true ? 'Hello ' : true",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello "
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello "
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "STRING",
-				"value": "Hello "
-			},
-			{
-				"name": "c",
-				"type": "BOOLEAN",
-				"value": "true"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -258,39 +177,12 @@
 
  	{
 		"expression": "true ? 'Hello ' : D'2015-08-17'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello "
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello "
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "STRING",
-				"value": "Hello "
-			},
-			{
-				"name": "c",
-				"type": "DATE",
-				"value": "2015-08-17"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -362,9 +254,7 @@
 		"expression": "false ? 'Hello ' : null",
 		"returnValue": {
 			"type": "STRING",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -411,39 +301,12 @@
 
 	{
 		"expression": "true ? 678 : 'Hello World!'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "INTEGER",
-			"value": "678"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "INTEGER",
-			"value": "678"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "INTEGER",
-				"value": "678"
-			},
-			{
-				"name": "c",
-				"type": "STRING",
-				"value": "Hello World!"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -464,39 +327,12 @@
 
 	{
 		"expression": "false ? 678 : 'Hello World!'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello World!"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": "Hello World!"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "INTEGER",
-				"value": "678"
-			},
-			{
-				"name": "c",
-				"type": "STRING",
-				"value": "Hello World!"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -617,18 +453,14 @@
 		"expression": "true ? 100 : 200.0",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "100",
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": "INTEGER"
+			"value": "100"
 		}
 	},
 	{
 		"expression": "a ? b : c",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "100",
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": "INTEGER"
+			"value": "100"
 		},
 		"variableListBefore": [
 			{
@@ -717,39 +549,12 @@
 
 	{
 		"expression": "true ? 12 : true",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "INTEGER",
-			"value": "12"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "INTEGER",
-			"value": "12"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "INTEGER",
-				"value": "12"
-			},
-			{
-				"name": "c",
-				"type": "BOOLEAN",
-				"value": "true"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -770,39 +575,12 @@
 
 	{
 		"expression": "false ? 12 : true",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "INTEGER",
-				"value": "12"
-			},
-			{
-				"name": "c",
-				"type": "BOOLEAN",
-				"value": "true"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -823,39 +601,12 @@
 
 	{
 		"expression": "true ? 12 : D'2015-08-17'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "INTEGER",
-			"value": "12"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "INTEGER",
-			"value": "12"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "INTEGER",
-				"value": "12"
-			},
-			{
-				"name": "c",
-				"type": "DATE",
-				"value": "2015-08-17"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -876,39 +627,12 @@
 
 	{
 		"expression": "false ? 12 : D'2015-08-17'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DATE",
-			"value": "2015-08-17"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DATE",
-			"value": "2015-08-17"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "INTEGER",
-				"value": "12"
-			},
-			{
-				"name": "c",
-				"type": "DATE",
-				"value": "2015-08-17"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -980,9 +704,7 @@
 		"expression": "false ? 100 : null",
 		"returnValue": {
 			"type": "INTEGER",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -1029,39 +751,12 @@
 
 	{
 		"expression": "true ? 100.0 : ' '",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DECIMAL",
-			"value": "100"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DECIMAL",
-			"value": "100"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "DECIMAL",
-				"value": "100.0"
-			},
-			{
-				"name": "c",
-				"type": "STRING",
-				"value": " "
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1082,39 +777,12 @@
 
 	{
 		"expression": "false ? 100.0 : ' '",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": " "
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": " "
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "DECIMAL",
-				"value": "100.0"
-			},
-			{
-				"name": "c",
-				"type": "STRING",
-				"value": " "
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1186,18 +854,14 @@
 		"expression": "false ? 3.1415 : 7",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "7",
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": "INTEGER"
+			"value": "7"
 		}
 	},
 	{
 		"expression": "a ? b : c",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "7",
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": "INTEGER"
+			"value": "7"
 		},
 		"variableListBefore": [
 			{
@@ -1335,39 +999,12 @@
 
 	{
 		"expression": "true ? 102.9 : true",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DECIMAL",
-			"value": "102.9"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DECIMAL",
-			"value": "102.9"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "DECIMAL",
-				"value": "102.9"
-			},
-			{
-				"name": "c",
-				"type": "BOOLEAN",
-				"value": "true"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1388,39 +1025,12 @@
 
 	{
 		"expression": "false ? 102.9 : true",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "DECIMAL",
-				"value": "102.9"
-			},
-			{
-				"name": "c",
-				"type": "BOOLEAN",
-				"value": "true"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1441,39 +1051,12 @@
 
 	{
 		"expression": "true ? 102.9 : D'2015-08-17'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DECIMAL",
-			"value": "102.9"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DECIMAL",
-			"value": "102.9"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "DECIMAL",
-				"value": "102.9"
-			},
-			{
-				"name": "c",
-				"type": "DATE",
-				"value": "2015-08-17"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1494,39 +1077,12 @@
 
 	{
 		"expression": "false ? 102.9 : D'2015-08-17'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DATE",
-			"value": "2015-08-17"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DATE",
-			"value": "2015-08-17"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "DECIMAL",
-				"value": "102.9"
-			},
-			{
-				"name": "c",
-				"type": "DATE",
-				"value": "2015-08-17"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1598,9 +1154,7 @@
 		"expression": "false ? 2.4 : null",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -1647,39 +1201,12 @@
 
 	{
 		"expression": "true ? true : ' '",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "c",
-				"type": "STRING",
-				"value": " "
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1700,39 +1227,12 @@
 
 	{
 		"expression": "false ? true : ' '",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": " "
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "STRING",
-			"value": " "
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "c",
-				"type": "STRING",
-				"value": " "
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1753,39 +1253,12 @@
 
 	{
 		"expression": "true ? false : 10",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "false"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "false"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "c",
-				"type": "INTEGER",
-				"value": "10"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1806,39 +1279,12 @@
 
 	{
 		"expression": "false ? false : 10",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "INTEGER",
-			"value": "10"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "INTEGER",
-			"value": "10"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "c",
-				"type": "INTEGER",
-				"value": "10"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1859,39 +1305,12 @@
 
 	{
 		"expression": "true ? false : 6.7",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "false"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "false"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "c",
-				"type": "DECIMAL",
-				"value": "6.7"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -1912,39 +1331,12 @@
 
 	{
 		"expression": "false ? false : 6.7",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DECIMAL",
-			"value": "6.7"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DECIMAL",
-			"value": "6.7"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "c",
-				"type": "DECIMAL",
-				"value": "6.7"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -2063,39 +1455,12 @@
 
 	{
 		"expression": "true ? false : D'2015-08-17'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "false"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "false"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "true"
-			},
-			{
-				"name": "b",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "c",
-				"type": "DATE",
-				"value": "2015-08-17"
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "BOOLEAN",
@@ -2116,21 +1481,11 @@
 
 	{
 		"expression": "false ? false : D'2015-08-17'",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DATE",
-			"value": "2015-08-17"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "a ? b : c",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "DATE",
-			"value": "2015-08-17"
-		},
 		"variableListBefore": [
 			{
 				"name": "a",
@@ -2147,23 +1502,6 @@
 				"type": "DATE",
 				"value": "2015-08-17"
 			}
-		],
-		"variableListAfter": [
-			{
-				"name": "a",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "b",
-				"type": "BOOLEAN",
-				"value": "false"
-			},
-			{
-				"name": "c",
-				"type": "DATE",
-				"value": "2015-08-17"
- 			}
 		]
 	},
 
@@ -2220,9 +1558,7 @@
 		"expression": "false ? true : null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -2271,9 +1607,7 @@
 		"expression": "true ? null : ' '",
 		"returnValue": {
 			"type": "STRING",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -2371,9 +1705,7 @@
 		"expression": "true ? null : 10",
 		"returnValue": {
 			"type": "INTEGER",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -2471,9 +1803,7 @@
 		"expression": "true ? null : 6.7",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -2571,9 +1901,7 @@
 		"expression": "true ? null : true",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -2671,9 +1999,7 @@
 		"expression": "true ? null : D'2015-08-17'",
 		"returnValue": {
 			"type": "DATE",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
@@ -2820,18 +2146,14 @@
 		"expression": "null ? true : false",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		}
 	},
 	{
 		"expression": "a ? b : c",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": null,
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": null
 		},
 		"variableListBefore": [
 			{

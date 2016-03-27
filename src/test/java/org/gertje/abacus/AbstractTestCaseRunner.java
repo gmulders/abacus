@@ -26,11 +26,6 @@ public abstract class AbstractTestCaseRunner {
 	protected AbacusTestCase abacusTestCase;
 
 	/**
-	 * Indicates whether the test case is run by an interpreter.
-	 */
-	protected boolean isForInterpreter;
-
-	/**
 	 * Runs the test case.
 	 */
 	public abstract void runTestCase();
@@ -115,10 +110,6 @@ public abstract class AbstractTestCaseRunner {
 	 * @return De verwachtte waarde.
 	 */
 	protected Object determineExpectedValue() {
-		if (isForInterpreter && abacusTestCase.returnValue.hasDeviantTypeInInterpreter) {
-			return convertToType(abacusTestCase.returnValue.value, abacusTestCase.returnValue.typeInInterpreter);
-		}
-
 		return convertToType(abacusTestCase.returnValue.value, abacusTestCase.returnValue.type);
 	}
 
@@ -128,10 +119,6 @@ public abstract class AbstractTestCaseRunner {
 	 * @return {@code true} wanneer beide types overeenkomen, anders {@code false}.
 	 */
 	protected boolean checkReturnType(Type type) {
-		if (isForInterpreter && abacusTestCase.returnValue.hasDeviantTypeInInterpreter) {
-			return type == abacusTestCase.returnValue.typeInInterpreter;
-		}
-
 		return type == abacusTestCase.returnValue.type;
 	}
 

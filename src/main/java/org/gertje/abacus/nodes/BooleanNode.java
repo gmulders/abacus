@@ -8,7 +8,7 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents a boolean.
  */
-public class BooleanNode extends AbstractNode {
+public class BooleanNode extends AbstractExpressionNode {
 
 	private Boolean value;
 

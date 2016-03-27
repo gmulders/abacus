@@ -5,7 +5,7 @@ import org.gertje.abacus.symboltable.SymbolTable;
 import java.math.MathContext;
 
 /**
- * Context voor de interpreter en evaluator.
+ * Context for an evaluator.
  */
 public interface AbacusContext {
 

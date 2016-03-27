@@ -10,16 +10,16 @@ import java.util.List;
 /**
  * Node that represents a function.
  */
-public class FunctionNode extends AbstractNode {
+public class FunctionNode extends AbstractExpressionNode {
 
 	private String identifier;
-	private List<Node> parameters;
+	private List<ExpressionNode> parameters;
 	private Type returnType;
 
 	/**
 	 * Constructor
 	 */
-	public FunctionNode(String identifier, List<Node> parameters, Token token) {
+	public FunctionNode(String identifier, List<ExpressionNode> parameters, Token token) {
 		super(1, token);
 
 		this.identifier = identifier;
@@ -49,11 +49,11 @@ public class FunctionNode extends AbstractNode {
 		this.identifier = identifier;
 	}
 
-	public List<Node> getParameters() {
+	public List<ExpressionNode> getParameters() {
 		return parameters;
 	}
 
-	public void setParameters(List<Node> parameters) {
+	public void setParameters(List<ExpressionNode> parameters) {
 		this.parameters = parameters;
 	}
 

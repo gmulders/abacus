@@ -43,9 +43,6 @@ public class AbacusTest {
 	@Test
 	public void testAbacus() throws IOException {
 
-		// Create a runner to test the interpreter and run the tests.
-		runTestCaseRunner(new InterpreterTestCaseRunner());
-
 		// Create a runner to test the evaluator and run the tests.
 		runTestCaseRunner(new EvaluatorTestCaseRunner());
 	}
