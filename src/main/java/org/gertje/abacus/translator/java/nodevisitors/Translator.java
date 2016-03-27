@@ -52,7 +52,7 @@ import java.util.List;
 public class Translator implements NodeVisitor<String, TranslationException> {
 
 	/**
-	 * De context waarbinnen de interpreter werkt.
+	 * The context for this evaluator.
 	 */
 	private final AbacusContext abacusContext;
 
