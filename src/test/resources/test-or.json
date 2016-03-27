@@ -111,29 +111,12 @@
 
 	{
 		"expression": "true || ' '",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "true || a",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "STRING",
-				"value": " "
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "STRING",

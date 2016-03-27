@@ -540,9 +540,7 @@
 		"expression": "null ? true : false",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": "null",
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": null
+			"value": "null"
 		}
 	},
 	{
@@ -557,9 +555,7 @@
 		"expression": "4 > 3 ? 5 : 6.4",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "5",
-			"hasDeviantTypeInInterpreter": true,
-			"typeInInterpreter": "INTEGER"
+			"value": "5"
 		}
 	},
 	{

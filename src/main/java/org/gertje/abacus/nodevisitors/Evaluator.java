@@ -65,8 +65,4 @@ public class Evaluator extends AbstractStatementNodeVisitor<Void, EvaluationExce
 
 		return null;
 	}
-
-	public Object getResult() {
-		return result;
-	}
 }

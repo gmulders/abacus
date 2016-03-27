@@ -471,8 +471,10 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 	}
 
 	/**
-	 *
-	 * @return
+	 * Evaluates a node that is constant to its value.
+	 * @param node The node to evaluate.
+	 * @return The value of the node.
+	 * @throws SimplificationException
 	 */
 	protected Object evaluateConstantNode(ExpressionNode node) throws SimplificationException {
 		try {

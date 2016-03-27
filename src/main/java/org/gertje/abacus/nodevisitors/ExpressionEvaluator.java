@@ -47,7 +47,7 @@ import java.util.List;
 public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, EvaluationException> {
 
 	/**
-	 * De context waarbinnen de interpreter werkt.
+	 * The context for this evaluator.
 	 */
 	private final AbacusContext abacusContext;
 
