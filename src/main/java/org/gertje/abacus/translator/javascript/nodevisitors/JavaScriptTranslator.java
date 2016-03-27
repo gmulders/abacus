@@ -21,24 +21,29 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
 import org.gertje.abacus.nodes.VariableNode;
-import org.gertje.abacus.nodevisitors.AbstractNodeVisitor;
+import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.types.Type;
 
 import java.util.Stack;
 
-public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingException> {
+/**
+ * Translator to translate an AST to JavaScript.
+ */
+public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException> {
 
 	/**
 	 * Deze stack gebruiken we om gedeeltelijke vertalingen in op te slaan.
@@ -221,7 +226,7 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 	@Override
 	public Void visit(FunctionNode node) throws VisitingException {
 		// Loop eerst over alle parameters heen, om de stack op te bouwen.
-		for (Node childNode : node.getParameters()) {
+		for (ExpressionNode childNode : node.getParameters()) {
 			childNode.accept(this);
 		}
 		
@@ -413,6 +418,11 @@ public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingExce
 
 		partStack.push("Math.pow(" + base + ", " + power + ")");
 		return null;
+	}
+
+	@Override
+	public Void visit(RootNode node) throws VisitingException {
+		return node.getStatementListNode().accept(this);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
 import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
 import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -38,7 +39,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		Lexer lexer = new AbacusLexer(abacusTestCase.expression);
 		Parser parser = new Parser(lexer, nodeFactory);
 
-		Node tree;
+		RootNode tree;
 		try {
 			tree = parser.parse();
 		} catch (CompilerException e) {
@@ -61,9 +62,9 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
-			tree = simplifier.simplify(tree);
+			Node node = simplifier.simplify(tree);
 
-			javascript = translator.translate(tree);
+			javascript = translator.translate(node);
 		} catch (VisitingException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
@@ -71,7 +72,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 			return;
 		}
 
-		if (abacusTestCase.failsWithException && !abacusTestCase.succeedsInInterpreter) {
+		if (abacusTestCase.failsWithException) {
 			Assert.fail(createMessage("Expected exception, but none was thrown."));
 		}
 
