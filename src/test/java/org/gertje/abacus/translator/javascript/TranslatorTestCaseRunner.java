@@ -72,7 +72,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 			return;
 		}
 
-		if (abacusTestCase.failsWithException && !abacusTestCase.succeedsInInterpreter) {
+		if (abacusTestCase.failsWithException) {
 			Assert.fail(createMessage("Expected exception, but none was thrown."));
 		}
 
