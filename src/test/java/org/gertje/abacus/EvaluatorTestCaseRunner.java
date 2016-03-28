@@ -10,6 +10,7 @@ import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodevisitors.Evaluator;
+import org.gertje.abacus.nodevisitors.GraphVizTranslator;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
 import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -43,6 +44,8 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 			return;
 		}
 
+		//vizualize(rootNode);
+
 		AbacusContext abacusContext = new SimpleAbacusContext(sym);
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
 		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
@@ -52,11 +55,15 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 		try {
 			semanticsChecker.check(rootNode);
 
+			//vizualize(rootNode);
+
 			if (!checkReturnType(rootNode.getType())) {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
 			node = simplifier.simplify(rootNode);
+
+			//vizualize(node);
 
 			returnValue = expressionEvaluator.evaluate(node);
 		} catch (VisitingException e) {
@@ -80,6 +87,19 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		if (!checkSymbolTable(sym)) {
 			Assert.fail(createMessage("Incorrect symbol table."));
+		}
+	}
+
+	/**
+	 * Uses the {@link GraphVizTranslator} to make a GraphViz definition and prints it to System.out.
+	 * @param node The node to visualize.
+	 */
+	private void vizualize(Node node) {
+		try {
+			GraphVizTranslator graphVizTranslator = new GraphVizTranslator();
+			System.out.println(graphVizTranslator.translate(node));
+		} catch (VisitingException e) {
+			Assert.fail(createMessage("Unexpected exception.", e));
 		}
 	}
 }
