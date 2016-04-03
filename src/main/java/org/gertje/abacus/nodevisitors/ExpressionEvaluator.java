@@ -5,6 +5,7 @@ import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
@@ -29,6 +30,7 @@ import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.symboltable.IllegalTypeException;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
@@ -76,7 +78,7 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.add(left, lhs.getType(), right, rhs.getType());
+		return EvaluationHelper.sum(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override
@@ -140,6 +142,17 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 	@Override
 	public Object visit(BooleanNode node) throws EvaluationException {
 		return node.getValue();
+	}
+
+	@Override
+	public Object visit(ConcatStringNode node) throws EvaluationException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		String left = (String)lhs.accept(this);
+		String right = (String)rhs.accept(this);
+
+		return EvaluationHelper.concatString(left, right);
 	}
 
 	@Override
@@ -393,6 +406,17 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		Number right = (Number) rhs.accept(this);
 
 		return EvaluationHelper.substract(left, lhs.getType(), right, rhs.getType());
+	}
+
+	@Override
+	public Object visit(SumNode node) throws EvaluationException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		Number left = (Number) lhs.accept(this);
+		Number right = (Number) rhs.accept(this);
+
+		return EvaluationHelper.sum(left, lhs.getType(), right, rhs.getType());
 	}
 
 	@Override

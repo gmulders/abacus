@@ -3,7 +3,9 @@ package org.gertje.abacus.nodevisitors;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
+import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
@@ -30,6 +32,7 @@ import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 
 /**
@@ -61,17 +64,13 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 
 	@Override
 	public Void visit(AddNode node) throws VisitingException {
-		addNodeDefinition(node, "+");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "+");
 		return null;
 	}
 
 	@Override
 	public Void visit(AndNode node) throws VisitingException {
-		addNodeDefinition(node, "&&");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "&&");
 		return null;
 	}
 
@@ -90,6 +89,12 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 	}
 
 	@Override
+	public Void visit(ConcatStringNode node) throws VisitingException {
+		addBinaryOperationNode(node, "+");
+		return null;
+	}
+
+	@Override
 	public Void visit(DateNode node) throws VisitingException {
 		addNodeDefinition(node, "" + node.getValue());
 		return null;
@@ -97,17 +102,13 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 
 	@Override
 	public Void visit(DivideNode node) throws VisitingException {
-		addNodeDefinition(node, "/");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "/");
 		return null;
 	}
 
 	@Override
 	public Void visit(EqNode node) throws VisitingException {
-		addNodeDefinition(node, "==");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "==");
 		return null;
 	}
 
@@ -135,17 +136,13 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 
 	@Override
 	public Void visit(GeqNode node) throws VisitingException {
-		addNodeDefinition(node, ">=");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, ">=");
 		return null;
 	}
 
 	@Override
 	public Void visit(GtNode node) throws VisitingException {
-		addNodeDefinition(node, ">");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, ">");
 		return null;
 	}
 
@@ -166,33 +163,25 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 
 	@Override
 	public Void visit(LeqNode node) throws VisitingException {
-		addNodeDefinition(node, "<=");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "<=");
 		return null;
 	}
 
 	@Override
 	public Void visit(LtNode node) throws VisitingException {
-		addNodeDefinition(node, "<");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "<");
 		return null;
 	}
 
 	@Override
 	public Void visit(ModuloNode node) throws VisitingException {
-		addNodeDefinition(node, "%");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "%");
 		return null;
 	}
 
 	@Override
 	public Void visit(MultiplyNode node) throws VisitingException {
-		addNodeDefinition(node, "*");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "*");
 		return null;
 	}
 
@@ -205,9 +194,7 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 
 	@Override
 	public Void visit(NeqNode node) throws VisitingException {
-		addNodeDefinition(node, "!=");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "!=");
 		return null;
 	}
 
@@ -226,9 +213,7 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 
 	@Override
 	public Void visit(OrNode node) throws VisitingException {
-		addNodeDefinition(node, "||");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "||");
 		return null;
 	}
 
@@ -241,9 +226,7 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 
 	@Override
 	public Void visit(PowerNode node) throws VisitingException {
-		addNodeDefinition(node, "^");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "^");
 		return null;
 	}
 
@@ -271,9 +254,13 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 
 	@Override
 	public Void visit(SubstractNode node) throws VisitingException {
-		addNodeDefinition(node, "-");
-		addReference(node, node.getLhs());
-		addReference(node, node.getRhs());
+		addBinaryOperationNode(node, "-");
+		return null;
+	}
+
+	@Override
+	public Void visit(SumNode node) throws VisitingException {
+		addBinaryOperationNode(node, "+");
 		return null;
 	}
 
@@ -303,6 +290,18 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 		references.append(determineNodeIdentifier(fromNode)).append(" -> ").append(determineNodeIdentifier(toNode))
 				.append(";\n");
 		toNode.accept(this);
+	}
+
+	/**
+	 * Adds a binary operation node and its references.
+	 * @param node The node to add to the list.
+	 * @param label The label to give the node.
+	 * @throws VisitingException
+	 */
+	private void addBinaryOperationNode(BinaryOperationNode node, String label) throws VisitingException {
+		addNodeDefinition(node, label);
+		addReference(node, node.getLhs());
+		addReference(node, node.getRhs());
 	}
 
 	/**

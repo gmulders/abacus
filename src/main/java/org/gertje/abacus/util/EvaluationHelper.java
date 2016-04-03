@@ -19,28 +19,39 @@ public class EvaluationHelper {
 	 * @param rightType The type of the right side of the addition.
 	 * @return The result of the addition.
 	 */
-	public static Object add(Object left, Type leftType, Object right, Type rightType) {
+	public static Object sum(Object left, Type leftType, Object right, Type rightType) {
 		if (left == null || right == null) {
 			return null;
 		}
 
-		// Map het type naar een compatible type.
+		// Map the objects to the correct type.
 		left = mapTypeToCompatibleType(left, leftType);
 		right = mapTypeToCompatibleType(right, rightType);
 
-		// Wanneer het type een number is moeten we gewoon plus doen, anders gebruiken we een plus om de strings aan
-		// elkaar te plakken.
+		// Add the objects.
 		if (left instanceof BigDecimal && right instanceof BigDecimal) {
 			return ((BigDecimal)left).add((BigDecimal)right);
 		} else if (left instanceof BigDecimal && right instanceof BigInteger) {
 			return ((BigDecimal)left).add(new BigDecimal((BigInteger)right));
 		} else if (left instanceof BigInteger && right instanceof BigDecimal) {
 			return (new BigDecimal((BigInteger)left)).add((BigDecimal)right);
-		} else if (left instanceof BigInteger && right instanceof BigInteger) {
+		} else {
 			return ((BigInteger)left).add((BigInteger)right);
 		}
+	}
 
-		return ((String)left) + right;
+	/**
+	 * Adds two objects and returns the result.
+	 * @param left The left side of the concatenation.
+	 * @param right The right side of the concatenation.
+	 * @return The result of the addition.
+	 */
+	public static Object concatString(String left, String right) {
+		if (left == null || right == null) {
+			return null;
+		}
+
+		return left + right;
 	}
 
 	/**

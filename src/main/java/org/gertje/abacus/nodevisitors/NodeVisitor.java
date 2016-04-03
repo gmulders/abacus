@@ -4,6 +4,7 @@ import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
@@ -29,6 +30,7 @@ import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 
 public interface NodeVisitor<R, X extends VisitingException> {
@@ -36,6 +38,7 @@ public interface NodeVisitor<R, X extends VisitingException> {
 	R visit(AndNode node) throws X;
 	R visit(AssignmentNode node) throws X;
 	R visit(BooleanNode node) throws X;
+	R visit(ConcatStringNode node) throws X;
 	R visit(DateNode node) throws X;
 	R visit(DivideNode node) throws X;
 	R visit(EqNode node) throws X;
@@ -61,5 +64,6 @@ public interface NodeVisitor<R, X extends VisitingException> {
 	R visit(StatementListNode node) throws X;
 	R visit(StringNode node) throws X;
 	R visit(SubstractNode node) throws X;
+	R visit(SumNode node) throws X;
 	R visit(VariableNode node) throws X;
 }

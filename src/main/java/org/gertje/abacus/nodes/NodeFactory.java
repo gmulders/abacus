@@ -16,6 +16,7 @@ public interface NodeFactory {
 	AndNode createAndNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	AssignmentNode createAssignmentNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	BooleanNode createBooleanNode(Boolean value, Token token);
+	ConcatStringNode createConcatStringNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	DateNode createDateNode(Date value, Token token);
 	DecimalNode createDecimalNode(BigDecimal value, Token token);
 	DivideNode createDivideNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
@@ -41,5 +42,6 @@ public interface NodeFactory {
 	StatementListNode createStatementListNode(Token token);
 	StringNode createStringNode(String value, Token token);
 	SubstractNode createSubstractNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
+	SumNode createSumNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	VariableNode createVariableNode(String identifier, Token token);
 }

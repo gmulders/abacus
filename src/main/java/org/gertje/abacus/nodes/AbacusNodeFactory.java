@@ -33,6 +33,11 @@ public class AbacusNodeFactory implements NodeFactory {
 	}
 
 	@Override
+	public ConcatStringNode createConcatStringNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
+		return new ConcatStringNode(lhs, rhs, token);
+	}
+
+	@Override
 	public DateNode createDateNode(Date value, Token token) {
 		return new DateNode(value, token);
 	}
@@ -155,6 +160,11 @@ public class AbacusNodeFactory implements NodeFactory {
 	@Override
 	public SubstractNode createSubstractNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
 		return new SubstractNode(lhs, rhs, token);
+	}
+
+	@Override
+	public SumNode createSumNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
+		return new SumNode(lhs, rhs, token);
 	}
 
 	@Override
