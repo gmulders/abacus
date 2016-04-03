@@ -5,6 +5,7 @@ import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
@@ -32,6 +33,7 @@ import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -87,8 +89,8 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 	
 	@Override
 	public Void visit(AddNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "+");
-		return null;
+		throw new VisitingException(
+				"The Add-node was visited, which means that the node was not properly simplified.", node);
 	}
 
 	@Override
@@ -156,6 +158,12 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 		} else {
 			partStack.push(node.getValue().booleanValue() ? "true" : "false");
 		}
+		return null;
+	}
+
+	@Override
+	public Void visit(ConcatStringNode node) throws VisitingException {
+		createScriptForBinaryOperationNode(node, "+");
 		return null;
 	}
 
@@ -474,6 +482,12 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 	@Override
 	public Void visit(SubstractNode node) throws VisitingException {
 		createScriptForBinaryOperationNode(node, "-");
+		return null;
+	}
+
+	@Override
+	public Void visit(SumNode node) throws VisitingException {
+		createScriptForBinaryOperationNode(node, "+");
 		return null;
 	}
 
