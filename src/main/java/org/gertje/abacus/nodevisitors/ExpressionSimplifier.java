@@ -6,6 +6,7 @@ import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
@@ -31,6 +32,7 @@ import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.types.Type;
@@ -76,7 +78,11 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 
 	@Override
 	public ExpressionNode visit(AddNode node) throws SimplificationException {
-		return simplifyBinaryOperation(node, true);
+		if (node.getType() == Type.STRING) {
+			return nodeFactory.createConcatStringNode(node.getLhs(), node.getRhs(), node.getToken()).accept(this);
+		}
+
+		return nodeFactory.createSumNode(node.getLhs(), node.getRhs(), node.getToken()).accept(this);
 	}
 
 	@Override
@@ -153,6 +159,11 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 	@Override
 	public ExpressionNode visit(BooleanNode node) throws SimplificationException {
 		return node;
+	}
+
+	@Override
+	public ExpressionNode visit(ConcatStringNode node) throws SimplificationException {
+		return simplifyBinaryOperation(node, true);
 	}
 
 	@Override
@@ -377,6 +388,11 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 
 	@Override
 	public ExpressionNode visit(SubstractNode node) throws SimplificationException {
+		return simplifyBinaryOperation(node, true);
+	}
+
+	@Override
+	public ExpressionNode visit(SumNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 

@@ -5,6 +5,7 @@ import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
@@ -32,6 +33,7 @@ import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 
 import java.util.Iterator;
@@ -69,6 +71,11 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 	@Override
 	public String visit(BooleanNode node) throws VisitingException {
 		return node.getValue().toString();
+	}
+
+	@Override
+	public String visit(ConcatStringNode node) throws VisitingException {
+		return createScriptForBinaryOperationNode(node, "+");
 	}
 
 	@Override
@@ -210,6 +217,11 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 	@Override
 	public String visit(SubstractNode node) throws VisitingException {
 		return createScriptForBinaryOperationNode(node, "-");
+	}
+
+	@Override
+	public String visit(SumNode node) throws VisitingException {
+		return createScriptForBinaryOperationNode(node, "+");
 	}
 
 	@Override

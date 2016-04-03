@@ -4,6 +4,7 @@ import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
@@ -31,6 +32,7 @@ import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
@@ -120,6 +122,11 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 
 	@Override
 	public Void visit(BooleanNode node) throws SemanticsCheckException {
+		return null;
+	}
+
+	@Override
+	public Void visit(ConcatStringNode node) throws SemanticsCheckException {
 		return null;
 	}
 
@@ -482,6 +489,11 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 				throw new SemanticsCheckException(SemanticsHelper.SUBSTRACT_ILLEGAL_OPERAND_TYPES, node);
 		}
 
+		return null;
+	}
+
+	@Override
+	public Void visit(SumNode node) throws SemanticsCheckException {
 		return null;
 	}
 
