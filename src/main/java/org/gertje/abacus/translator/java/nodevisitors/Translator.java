@@ -5,6 +5,7 @@ import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
@@ -32,6 +33,7 @@ import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -75,15 +77,8 @@ public class Translator implements NodeVisitor<String, TranslationException> {
 
 	@Override
 	public String visit(AddNode node) throws TranslationException {
-		ExpressionNode lhs = node.getLhs();
-		ExpressionNode rhs = node.getRhs();
-
-		String left = lhs.accept(this);
-		String right = rhs.accept(this);
-
-		return "(" + determineJavaType(node.getType()) + ") EvaluationHelper.add(" + left + ", "
-				+ determineFullTypeName(lhs.getType())
-				+ ", " + right + ", " + determineFullTypeName(rhs.getType()) + ")";
+		throw new TranslationException(
+				"The Add-node was visited, which means that the node was not properly simplified.", node);
 	}
 
 	@Override
@@ -144,6 +139,17 @@ public class Translator implements NodeVisitor<String, TranslationException> {
 			return "null";
 		}
 		return node.getValue() ? "Boolean.TRUE" : "Boolean.FALSE";
+	}
+
+	@Override
+	public String visit(ConcatStringNode node) throws TranslationException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		String left = lhs.accept(this);
+		String right = rhs.accept(this);
+
+		return "(" + determineJavaType(node.getType()) + ") EvaluationHelper.concatString(" + left + ", " + right + ")";
 	}
 
 	@Override
@@ -449,6 +455,19 @@ public class Translator implements NodeVisitor<String, TranslationException> {
 		return "(" + determineJavaType(node.getType()) + ") EvaluationHelper.substract(" + left + ", "
 				+ determineFullTypeName(lhs.getType()) + ", " + right + ", " + determineFullTypeName(rhs.getType())
 				+ ")";
+	}
+
+	@Override
+	public String visit(SumNode node) throws TranslationException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		String left = lhs.accept(this);
+		String right = rhs.accept(this);
+
+		return "(" + determineJavaType(node.getType()) + ") EvaluationHelper.sum(" + left + ", "
+				+ determineFullTypeName(lhs.getType())
+				+ ", " + right + ", " + determineFullTypeName(rhs.getType()) + ")";
 	}
 
 	@Override
