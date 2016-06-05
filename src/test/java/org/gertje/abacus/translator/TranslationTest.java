@@ -8,5 +8,6 @@ public class TranslationTest extends AbacusTest {
 	@Test
 	public void testTranslation() throws Exception {
 		runTestCaseRunner(new TranslatorTestCaseRunner());
+		runTestCaseRunner(new ClassTranslatorTestCaseRunner());
 	}
 }

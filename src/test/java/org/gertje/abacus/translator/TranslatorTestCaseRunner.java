@@ -16,6 +16,7 @@ import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.parser.Parser;
 import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.translator.java.nodevisitors.Translator;
+import org.gertje.abacus.translator.java.runtime.AbacusWrapper;
 import org.junit.Assert;
 
 import javax.tools.Diagnostic;
@@ -42,7 +43,6 @@ import java.util.Map;
  * Runs the test case for the JavaScript translator.
  */
 public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
-
 
 	@Override
 	public void runTestCase() {
@@ -95,17 +95,16 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 			Assert.fail(createMessage("Incorrect return type."));
 		}
 
-		// System.out.println(expression);
-
 		String javaSource = createJavaSource(expression);
 
-		ExpressionWrapper expressionWrapper;
+		AbacusWrapper expressionWrapper;
 
 		Object returnValue;
 		try {
 			Class<?> clazz = compile("org.gertje.abacus.translator.Z", javaSource);
-			expressionWrapper = (ExpressionWrapper)clazz.newInstance();
-			expressionWrapper.setSymbolTable(sym);
+
+			expressionWrapper = (AbacusWrapper) clazz.newInstance();
+			expressionWrapper.setAbacusContext(abacusContext);
 			returnValue = expressionWrapper.f();
 		} catch (Exception e) {
 			Assert.fail(createMessage("Unexpected exception.", e));
@@ -124,14 +123,14 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 	private String createJavaSource(String expression) {
 		return "package org.gertje.abacus.translator;\n" +
 					"import org.gertje.abacus.translator.java.runtime.*;\n" +
-					"import org.gertje.abacus.util.*;\n" +
+					"import org.gertje.abacus.runtime.expression.*;\n" +
 					"import org.gertje.abacus.types.*;\n" +
 					"\n" +
 					"\n" +
-					"public class Z extends ExpressionWrapper<Object> {\n" +
+					"public class Z extends TestExpressionWrapper<Object> {\n" +
 					"\n" +
 					"\tpublic Object f() throws Exception {\n" +
-					"\t\treturn " + expression + ";\n" +
+					"\t\t" + expression + "\n" +
 					"\t}\n\n" +
 					"}\n"
 				;
