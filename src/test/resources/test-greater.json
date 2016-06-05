@@ -29,6 +29,28 @@
 	},
 
 	{
+		"expression": "a > null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "World!"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "World!"
+			}
+		]
+	},
+
+	{
 		"expression": "'Hello ' > 10",
 		"failsWithException": true
 	},

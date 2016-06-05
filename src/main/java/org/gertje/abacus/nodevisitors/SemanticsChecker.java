@@ -31,7 +31,7 @@ import org.gertje.abacus.nodes.PowerNode;
 import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
@@ -107,8 +107,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 
 		// Als de linkerkant geen VariabeleNode is EN de linkerkant is geen AssignmentNode met aan de rechterkant een
 		// VariableNode, dan gooien we een exceptie.
-		if (!(lhs instanceof VariableNode)
-				&& !((lhs instanceof AssignmentNode) && (((AssignmentNode)lhs).getRhs() instanceof VariableNode))) {
+		if (!(lhs instanceof VariableNode)) {
 			throw new SemanticsCheckException(SemanticsHelper.ASSIGNMENT_ILLEGAL_LEFT_OPERAND, node);
 		}
 
@@ -477,7 +476,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 	}
 
 	@Override
-	public Void visit(SubstractNode node) throws SemanticsCheckException {
+	public Void visit(SubtractNode node) throws SemanticsCheckException {
 		ExpressionNode lhs = node.getLhs();
 		ExpressionNode rhs = node.getRhs();
 

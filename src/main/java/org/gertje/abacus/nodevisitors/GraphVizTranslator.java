@@ -31,7 +31,7 @@ import org.gertje.abacus.nodes.PowerNode;
 import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 
@@ -253,7 +253,7 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 	}
 
 	@Override
-	public Void visit(SubstractNode node) throws VisitingException {
+	public Void visit(SubtractNode node) throws VisitingException {
 		addBinaryOperationNode(node, "-");
 		return null;
 	}

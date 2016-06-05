@@ -3,7 +3,6 @@ package org.gertje.abacus.nodes;
 import org.gertje.abacus.token.Token;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
@@ -83,7 +82,7 @@ public class AbacusNodeFactory implements NodeFactory {
 	}
 
 	@Override
-	public IntegerNode createIntegerNode(BigInteger value, Token token) {
+	public IntegerNode createIntegerNode(Long value, Token token) {
 		return new IntegerNode(value, token);
 	}
 
@@ -158,8 +157,8 @@ public class AbacusNodeFactory implements NodeFactory {
 	}
 
 	@Override
-	public SubstractNode createSubstractNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
-		return new SubstractNode(lhs, rhs, token);
+	public SubtractNode createSubtractNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
+		return new SubtractNode(lhs, rhs, token);
 	}
 
 	@Override

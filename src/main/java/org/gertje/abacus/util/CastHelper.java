@@ -28,12 +28,11 @@ public class CastHelper {
 
 		// Cast the variable to the right type if necessary.
 		if (fromType == Type.INTEGER && toType == Type.DECIMAL) {
-			return new BigDecimal((BigInteger)value);
+			return BigDecimal.valueOf((Long)value);
 		} else if (fromType == Type.DECIMAL && toType == Type.INTEGER) {
-			return ((BigDecimal)value).toBigInteger();
+			return ((BigDecimal)value).longValue();
 		}
 
 		throw new IllegalArgumentException(fromType + " cannot be cast to " + toType);
 	}
-
 }

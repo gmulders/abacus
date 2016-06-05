@@ -11,7 +11,6 @@ import org.gertje.abacus.token.Token;
 import org.gertje.abacus.token.TokenType;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -255,7 +254,7 @@ public class Parser {
 			if (nextToken.getType() == TokenType.PLUS) {
 				lhs = nodeFactory.createAddNode(lhs, rhs, additionToken);
 			} else {
-				lhs = nodeFactory.createSubstractNode(lhs, rhs, additionToken);
+				lhs = nodeFactory.createSubtractNode(lhs, rhs, additionToken);
 			}
 
 			// Spiek naar het volgende token.
@@ -352,10 +351,10 @@ public class Parser {
 
 		// Wanneer het token een geheel getal is geven we een IntegerNode terug.
 		} else if (nextToken.getType() == TokenType.INTEGER) {
-				BigInteger number;
-				// Probeer de string naar een BigInteger te casten.
+				Long number;
+				// Probeer de string naar een Long te casten.
 				try {
-					number = new BigInteger(nextToken.getValue());
+					number = Long.valueOf(nextToken.getValue());
 				} catch (NumberFormatException nfe) {
 					throw new ParserException("Illegal number format; " + nfe.getMessage(), nextToken);
 				}

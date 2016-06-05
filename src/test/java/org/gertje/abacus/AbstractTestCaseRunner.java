@@ -4,12 +4,12 @@ import org.gertje.abacus.functions.RandFunction;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SimpleSymbolTable;
 import org.gertje.abacus.symboltable.SymbolTable;
+import org.gertje.abacus.symboltable.Variable;
 import org.gertje.abacus.types.Type;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,15 +44,14 @@ public abstract class AbstractTestCaseRunner {
 			return symbolTable;
 		}
 
-		Map<String, SimpleSymbolTable.Variable> map = new HashMap<>(valueList.size());
+		Map<String, Variable> variableMap = new HashMap<>(valueList.size());
+		Map<String, Object> valueMap = new HashMap<>(valueList.size());
 		for (AbacusTestCase.Value value : valueList) {
-			SimpleSymbolTable.Variable variable = new SimpleSymbolTable.Variable(value.name, value.type);
-			variable.setValue(convertToType(value.value, value.type));
-
-			map.put(value.name, variable);
+			variableMap.put(value.name, new Variable(value.name, value.type));
+			valueMap.put(value.name, convertToType(value.value, value.type));
 		}
 
-		symbolTable.setVariables(map);
+		symbolTable.setVariables(variableMap, valueMap);
 
 		return symbolTable;
 	}
@@ -70,7 +69,7 @@ public abstract class AbstractTestCaseRunner {
 
 		switch (type) {
 			case DECIMAL: return new BigDecimal(value);
-			case INTEGER: return new BigInteger(value);
+			case INTEGER: return Long.valueOf(value);
 			case BOOLEAN: return Boolean.valueOf(value);
 			case DATE: return Date.valueOf(value);
 			case STRING: return value;

@@ -29,7 +29,7 @@ import org.gertje.abacus.nodes.PowerNode;
 import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 
@@ -40,10 +40,10 @@ public interface NodeVisitor<R, X extends VisitingException> {
 	R visit(BooleanNode node) throws X;
 	R visit(ConcatStringNode node) throws X;
 	R visit(DateNode node) throws X;
+	R visit(DecimalNode node) throws X;
 	R visit(DivideNode node) throws X;
 	R visit(EqNode node) throws X;
 	R visit(FactorNode node) throws X;
-	R visit(DecimalNode node) throws X;
 	R visit(FunctionNode node) throws X;
 	R visit(GeqNode node) throws X;
 	R visit(GtNode node) throws X;
@@ -63,7 +63,7 @@ public interface NodeVisitor<R, X extends VisitingException> {
 	R visit(RootNode node) throws X;
 	R visit(StatementListNode node) throws X;
 	R visit(StringNode node) throws X;
-	R visit(SubstractNode node) throws X;
+	R visit(SubtractNode node) throws X;
 	R visit(SumNode node) throws X;
 	R visit(VariableNode node) throws X;
 }

@@ -31,14 +31,14 @@
 	{
 		"expression": "6 ^ 8",
 		"returnValue": {
-			"type": "DECIMAL",
+			"type": "INTEGER",
 			"value": "1679616"
 		}
 	},
 	{
 		"expression": "6 ^ a",
 		"returnValue": {
-			"type": "DECIMAL",
+			"type": "INTEGER",
 			"value": "1679616"
 		},
 		"variableListBefore": [
@@ -59,7 +59,7 @@
 	{
 		"expression": "a ^ 8",
 		"returnValue": {
-			"type": "DECIMAL",
+			"type": "INTEGER",
 			"value": "1679616"
 		},
 		"variableListBefore": [
@@ -82,14 +82,14 @@
 		"expression": "3 ^ 5.2",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "302.71261832657075"
+			"value": "302.7126183265707102099033218035941"
 		}
 	},
 	{
 		"expression": "3 ^ 5.2",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "302.71261832657075"
+			"value": "302.7126183265707102099033218035941"
 		},
 		"variableListBefore": [
 			{
@@ -110,7 +110,7 @@
 		"expression": "3 ^ 5.2",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "302.71261832657075"
+			"value": "302.7126183265707102099033218035941"
 		},
 		"variableListBefore": [
 			{
@@ -148,7 +148,7 @@
 	{
 		"expression": "100 ^ a",
 		"returnValue": {
-			"type": "DECIMAL",
+			"type": "INTEGER",
 			"value": null
 		},
 		"variableListBefore": [
@@ -197,14 +197,14 @@
 		"expression": "7.12213 ^ 3",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "361.2681621338476"
+			"value": "361.2681621338475970000000000000000"
 		}
 	},
 	{
 		"expression": "7.12213 ^ a",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "361.2681621338476"
+			"value": "361.2681621338475970000000000000000"
 		},
 		"variableListBefore": [
 			{
@@ -225,7 +225,7 @@
 		"expression": "a ^ 3",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "361.2681621338476"
+			"value": "361.2681621338475970000000000000000"
 		},
 		"variableListBefore": [
 			{
@@ -247,14 +247,14 @@
 		"expression": "7.6 ^ 2.4",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "130.00277462557668"
+			"value": "130.0027746255767037731379013365479"
 		}
 	},
 	{
 		"expression": "7.6 ^ a",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "130.00277462557668"
+			"value": "130.0027746255767037731379013365479"
 		},
 		"variableListBefore": [
 			{
@@ -275,7 +275,7 @@
 		"expression": "a ^ 2.4",
 		"returnValue": {
 			"type": "DECIMAL",
-			"value": "130.00277462557668"
+			"value": "130.0027746255767037731379013365479"
 		},
 		"variableListBefore": [
 			{
@@ -437,7 +437,7 @@
 	{
 		"expression": "a ^ 10",
 		"returnValue": {
-			"type": "DECIMAL",
+			"type": "INTEGER",
 			"value": null
 		},
 		"variableListBefore": [

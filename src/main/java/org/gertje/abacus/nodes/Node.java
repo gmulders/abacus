@@ -28,4 +28,10 @@ public interface Node {
 	 * @return the type of the node.
 	 */
 	NodeType getNodeType();
+
+	/**
+	 * Returns an unique id for this node.
+	 * @return The unique id for this node.
+	 */
+	long getId();
 }

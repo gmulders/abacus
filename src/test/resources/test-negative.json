@@ -76,5 +76,26 @@
 			"type": null,
 			"value": null
 		}
+	},
+	{
+		"expression": "-a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
 	}
 ]

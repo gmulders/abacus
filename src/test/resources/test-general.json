@@ -210,7 +210,7 @@
 	{
 		"expression": "2^3;",
 		"returnValue": {
-			"type": "DECIMAL",
+			"type": "INTEGER",
 			"value": "8"
 		}
 	},
@@ -308,29 +308,29 @@
 	{
 		"expression": "3^3/2",
 		"returnValue": {
-			"type": "DECIMAL",
-			"value": "13.5"
+			"type": "INTEGER",
+			"value": "13"
 		}
 	},
 	{
 		"expression": "3^(4/2)",
 		"returnValue": {
-			"type": "DECIMAL",
+			"type": "INTEGER",
 			"value": "9"
 		}
 	},
 	{
 		"expression": "(9/2)^2",
 		"returnValue": {
-			"type": "DECIMAL",
+			"type": "INTEGER",
 			"value": "16"
 		}
 	},
 	{
 		"expression": "9/2^2",
 		"returnValue": {
-			"type": "DECIMAL",
-			"value": "2.25"
+			"type": "INTEGER",
+			"value": "2"
 		}
 	},
 	{

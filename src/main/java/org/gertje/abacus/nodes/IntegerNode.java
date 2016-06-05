@@ -5,19 +5,17 @@ import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.types.Type;
 
-import java.math.BigInteger;
-
 /**
  * Node that represents an integer.
  */
 public class IntegerNode extends AbstractExpressionNode {
 
-	private BigInteger value;
+	private Long value;
 
 	/**
 	 * Constructor
 	 */
-	public IntegerNode(BigInteger value, Token token) {
+	public IntegerNode(Long value, Token token) {
 		super(1, token);
 
 		this.value = value;
@@ -38,11 +36,11 @@ public class IntegerNode extends AbstractExpressionNode {
 		return visitor.visit(this);
 	}
 
-	public BigInteger getValue() {
+	public Long getValue() {
 		return value;
 	}
 
-	public void setValue(BigInteger value) {
+	public void setValue(Long value) {
 		this.value = value;
 	}
 }

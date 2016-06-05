@@ -29,10 +29,11 @@ import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
 import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
-import org.gertje.abacus.symboltable.IllegalTypeException;
+import org.gertje.abacus.runtime.expression.BooleanOperation;
+import org.gertje.abacus.runtime.expression.StringOperation;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -78,7 +79,7 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		Object left = lhs.accept(this);
 		Object right = rhs.accept(this);
 
-		return EvaluationHelper.sum(left, lhs.getType(), right, rhs.getType());
+		return EvaluationHelper.sum(left, lhs.getType(), right, rhs.getType(), abacusContext.getMathContext());
 	}
 
 	@Override
@@ -117,26 +118,18 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 
 		// Evalueer de rechterkant van de toekenning.
 		Object result = rhs.accept(this);
+		result = CastHelper.castValue(result, rhs.getType(), lhs.getType());
 
-		VariableNode variableNode;
-
-		// Zet het resultaat in de symboltable.
-		// Wanneer de linkerkant een variabele is kunnen we het direct in de variabele zetten, anders moeten we eerst
-		// de variabele uit de rechterkant halen.
-		if (lhs instanceof VariableNode) {
-			variableNode = (VariableNode)lhs;
-		} else {
-			variableNode = (VariableNode)((AssignmentNode)lhs).getRhs();
-		}
+		VariableNode variableNode = (VariableNode)lhs;
 
 		try {
-			symbolTable.setVariableValue(variableNode.getIdentifier(), rhs.getType(), result);
-		} catch (IllegalTypeException e) {
+			symbolTable.setVariableValue(variableNode.getIdentifier(), result);
+		} catch (Exception e) {
 			throw new EvaluationException("Could not set the variable value.", node, e);
 		}
 
 		// Geef het resultaat terug.
-		return CastHelper.castValue(result, rhs.getType(), variableNode.getType());
+		return result;
 	}
 
 	@Override
@@ -152,7 +145,7 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		String left = (String)lhs.accept(this);
 		String right = (String)rhs.accept(this);
 
-		return EvaluationHelper.concatString(left, right);
+		return StringOperation.concat(left, right);
 	}
 
 	@Override
@@ -307,7 +300,7 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		Number left = (Number) lhs.accept(this);
 		Number right = (Number) rhs.accept(this);
 
-		return EvaluationHelper.multiply(left, lhs.getType(), right, rhs.getType());
+		return EvaluationHelper.multiply(left, lhs.getType(), right, rhs.getType(), abacusContext.getMathContext());
 	}
 
 	@Override
@@ -317,7 +310,7 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		// Bepaal het getal dat we negatief gaan maken.
 		Number number = (Number)argument.accept(this);
 
-		return EvaluationHelper.negative(number, argument.getType());
+		return EvaluationHelper.negate(number, argument.getType());
 	}
 
 	@Override
@@ -338,7 +331,7 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		// Bepaal de waarde van de boolean.
 		Boolean bool = (Boolean)argument.accept(this);
 
-		return EvaluationHelper.not(bool);
+		return BooleanOperation.not(bool);
 	}
 
 	@Override
@@ -389,7 +382,7 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		Number baseValue = (Number)base.accept(this);
 		Number powerValue = (Number)power.accept(this);
 
-		return EvaluationHelper.power(baseValue, base.getType(), powerValue, power.getType());
+		return EvaluationHelper.power(baseValue, base.getType(), powerValue, power.getType(), abacusContext.getMathContext());
 	}
 
 	@Override
@@ -398,14 +391,14 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 	}
 
 	@Override
-	public Object visit(SubstractNode node) throws EvaluationException {
+	public Object visit(SubtractNode node) throws EvaluationException {
 		ExpressionNode lhs = node.getLhs();
 		ExpressionNode rhs = node.getRhs();
 
 		Number left = (Number) lhs.accept(this);
 		Number right = (Number) rhs.accept(this);
 
-		return EvaluationHelper.substract(left, lhs.getType(), right, rhs.getType());
+		return EvaluationHelper.subtract(left, lhs.getType(), right, rhs.getType(), abacusContext.getMathContext());
 	}
 
 	@Override
@@ -416,7 +409,7 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		Number left = (Number) lhs.accept(this);
 		Number right = (Number) rhs.accept(this);
 
-		return EvaluationHelper.sum(left, lhs.getType(), right, rhs.getType());
+		return EvaluationHelper.sum(left, lhs.getType(), right, rhs.getType(), abacusContext.getMathContext());
 	}
 
 	@Override

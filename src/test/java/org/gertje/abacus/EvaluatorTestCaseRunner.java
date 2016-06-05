@@ -82,7 +82,7 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 		}
 
 		if (!checkReturnValue(returnValue)) {
-			Assert.fail(createMessage("Incorrect return value."));
+			Assert.fail(createMessage("Incorrect return value: " + returnValue));
 		}
 
 		if (!checkSymbolTable(sym)) {

@@ -3,7 +3,6 @@ package org.gertje.abacus.nodes;
 import org.gertje.abacus.token.Token;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public interface NodeFactory {
 	GeqNode createGeqNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	GtNode createGtNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	IfNode createIfNode(ExpressionNode condition, ExpressionNode ifbody, ExpressionNode elsebody, Token token);
-	IntegerNode createIntegerNode(BigInteger value, Token token);
+	IntegerNode createIntegerNode(Long value, Token token);
 	LeqNode createLeqNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	LtNode createLtNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	ModuloNode createModuloNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
@@ -41,7 +40,7 @@ public interface NodeFactory {
 	RootNode createRootNode(StatementListNode node, Token token);
 	StatementListNode createStatementListNode(Token token);
 	StringNode createStringNode(String value, Token token);
-	SubstractNode createSubstractNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
+	SubtractNode createSubtractNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	SumNode createSumNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	VariableNode createVariableNode(String identifier, Token token);
 }

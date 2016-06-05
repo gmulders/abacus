@@ -9,6 +9,11 @@ import java.util.List;
 public interface SymbolTable {
 
 	/**
+	 * Voegt de variabele toe aan de symboltable, wanneer de variabele al bestaat wordt de waarde hiervan overschreven.
+	 */
+	void addVariable(Variable variable);
+
+	/**
 	 * Bepaalt of de variabele met de meegegeven identifier bestaat.
 	 * @param identifier
 	 * @return <code>true</code> wanneer de variabele bestaat, anders <code>false</code>.
@@ -20,7 +25,7 @@ public interface SymbolTable {
 	 * @param identifier
 	 * @param value
 	 */
-	void setVariableValue(String identifier, Type type, Object value) throws IllegalTypeException;
+	void setVariableValue(String identifier, Object value) throws IllegalTypeException, NoSuchVariableException;
 
 	/**
 	 * Geeft de waarde van de variabele met de meegegeven identifier terug.

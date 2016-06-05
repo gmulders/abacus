@@ -3,7 +3,6 @@ package org.gertje.abacus;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Test class.
@@ -11,14 +10,14 @@ import java.io.IOException;
 public class AbacusTest {
 
 
-	private int testCount;
+//	private int testCount;
 
 	/**
 	 * All files containing test cases.
 	 */
 	public static String[] fileNames = {
 			"test-add.json",
-			"test-substract.json",
+			"test-subtract.json",
 			"test-multiplication.json",
 			"test-division.json",
 			"test-modulo.json",
@@ -41,8 +40,7 @@ public class AbacusTest {
 	};
 
 	@Test
-	public void testAbacus() throws IOException {
-
+	public void testAbacus() throws Exception {
 		// Create a runner to test the evaluator and run the tests.
 		runTestCaseRunner(new EvaluatorTestCaseRunner());
 	}
@@ -53,11 +51,11 @@ public class AbacusTest {
 	 * @throws FileNotFoundException
 	 */
 	protected void runTestCaseRunner(AbstractTestCaseRunner testCaseRunner) throws FileNotFoundException {
-		testCount = 0;
+//		testCount = 0;
 		for (String fileName : fileNames) {
 			testFile(fileName, testCaseRunner);
 		}
-		// System.out.println("Total count: " + testCount);
+//      System.out.println("Total count: " + testCount);
 	}
 
 	/**
@@ -72,7 +70,8 @@ public class AbacusTest {
 
 		// Test all separate test cases.
 		for (AbacusTestCase abacusTestCase : atfr.getAbacusTestCaseList()) {
-			testCount++;
+//			testCount++;
+//			System.out.println(abacusTestCase.expression);
 			testCaseRunner.setAbacusTestCase(abacusTestCase);
 			testCaseRunner.runTestCase();
 		}

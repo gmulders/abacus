@@ -8,7 +8,7 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents a substraction.
  */
-public class SubstractNode extends AbstractExpressionNode implements BinaryOperationNode {
+public class SubtractNode extends AbstractExpressionNode implements BinaryOperationNode {
 
 	private ExpressionNode lhs;
 	private ExpressionNode rhs;
@@ -16,7 +16,7 @@ public class SubstractNode extends AbstractExpressionNode implements BinaryOpera
 	/**
 	 * Constructor
 	 */
-	public SubstractNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
+	public SubtractNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
 		super(5, token);
 
 		this.lhs = lhs;

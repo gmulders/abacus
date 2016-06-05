@@ -31,14 +31,13 @@ import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
 import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.token.Token;
 import org.gertje.abacus.types.Type;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Date;
 
 /**
@@ -387,7 +386,7 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 	}
 
 	@Override
-	public ExpressionNode visit(SubstractNode node) throws SimplificationException {
+	public ExpressionNode visit(SubtractNode node) throws SimplificationException {
 		return simplifyBinaryOperation(node, true);
 	}
 
@@ -458,7 +457,7 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 
 		switch (type) {
 			case STRING: return nodeFactory.createStringNode((String) value, token);
-			case INTEGER: return nodeFactory.createIntegerNode((BigInteger)value, token);
+			case INTEGER: return nodeFactory.createIntegerNode((Long)value, token);
 			case DECIMAL: return nodeFactory.createDecimalNode((BigDecimal)value, token);
 			case BOOLEAN: return nodeFactory.createBooleanNode((Boolean)value, token);
 			case DATE: return nodeFactory.createDateNode((Date)value, token);
