@@ -23,6 +23,7 @@ import org.junit.Assert;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.sql.Date;
 
 /**
  * Runs the test case for the JavaScript translator.
@@ -52,7 +53,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		AbacusContext abacusContext = new SimpleAbacusContext(sym);
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
 		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
-		JavaScriptTranslator translator = new JavaScriptTranslator();
+		JavaScriptTranslator translator = new JavaScriptTranslator(abacusContext);
 
 		String javascript;
 		try {
@@ -80,7 +81,9 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
 
 		try {
-			nashorn.eval(createJavaScript(javascript));
+			javascript = createJavaScript(javascript);
+			System.out.println(javascript);
+			nashorn.eval(javascript);
 		} catch (ScriptException e) {
 			Assert.fail(createMessage(e.getMessage()));
 		}
@@ -101,7 +104,8 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 	 */
 	private String createJavaScript(String expression) {
 		return
-				"var rand = Math.random;\n" +
+				"load('classpath:decimal.min.js');\n" +
+				"var function_rand = Math.random;\n" +
 				"var error = false;\n" +
 				"var message = '';\n" +
 				"\n" +
@@ -170,6 +174,11 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 					+ " !== "
 					+ "(" + javaScriptValue + " == null ? null : " + javaScriptValue + ".valueOf()) ";
 		}
+
+		if (type == Type.DECIMAL) {
+			return "(" + name + " == null ? " + javaScriptValue + " != null : " + name + ".cmp(" + javaScriptValue + ") != 0)";
+		}
+
 		return name + " !== " + javaScriptValue;
 	}
 
@@ -185,7 +194,12 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		}
 
 		if (type == Type.DATE && value != null) {
-			return "new Date('" + value + "')";
+			Date date = Date.valueOf(value);
+			return "new Date(" + date.getTime() + ")";
+		}
+
+		if (type == Type.DECIMAL && value != null) {
+			return "new Decimal('" + value + "')";
 		}
 		return value;
 	}
