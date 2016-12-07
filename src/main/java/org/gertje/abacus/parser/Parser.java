@@ -324,14 +324,48 @@ public class Parser {
 	private AbstractExpressionNode unary(Token nextToken) throws ParserException {
 		// Maak afhankelijk van het type van de token de juiste ASTNode aan.
 		if (nextToken.getType() == TokenType.PLUS) {
-			return nodeFactory.createPositiveNode(factor(determineNextToken()), nextToken);
+			return nodeFactory.createPositiveNode(array(determineNextToken()), nextToken);
 		} else if (nextToken.getType() == TokenType.MINUS) {
-			return nodeFactory.createNegativeNode(factor(determineNextToken()), nextToken);
+			return nodeFactory.createNegativeNode(array(determineNextToken()), nextToken);
 		} else if (nextToken.getType() == TokenType.NOT) {
-			return nodeFactory.createNotNode(factor(determineNextToken()), nextToken);
+			return nodeFactory.createNotNode(array(determineNextToken()), nextToken);
 		}
 		// Wanneer we hier komen geven we een factor node terug.
-		return factor(nextToken);
+		return array(nextToken);
+	}
+
+	/**
+	 * Parses the array dereferencing operator (i.e. '[]').
+	 * @param nextToken The next token.
+	 * @return The abstract expression created.
+	 * @throws ParserException
+	 */
+	private AbstractExpressionNode array(Token nextToken) throws ParserException {
+		AbstractExpressionNode lhs = factor(nextToken);
+
+		// Spiek wat het volgende token is.
+		nextToken = peekNextToken();
+
+		// Als de volgende token een linker bracket is voeren we de operatie uit.
+		while (nextToken.getType() == TokenType.LEFT_BRACKET) {
+			// Haal het gespiekte token van de stack.
+			Token arrayToken = determineNextToken();
+			// Bepaal de index AST van de array.
+			AbstractExpressionNode index = assignment(determineNextToken());
+
+			nextToken = determineNextToken();
+			if (nextToken.getType() != TokenType.RIGHT_BRACKET) {
+				throw new ParserException("Expected ']'", nextToken);
+			}
+
+			lhs = nodeFactory.createArrayNode(lhs, index, arrayToken);
+
+			// Spiek wat het volgende token is.
+			nextToken = peekNextToken();
+		}
+
+		// Geef de lhs terug.
+		return lhs;
 	}
 
 	/**

@@ -1,0 +1,497 @@
+[
+	{
+		"expression": "a[1][2]",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": 6
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			}
+		]
+	},
+
+	{
+		"expression": "a[2][2]",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			}
+		]
+	},
+
+	{
+		"expression": "a[2][2] = 4",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][2] = 0",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": 0
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 0]]
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][2] = 0.5",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": 0
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 0]]
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][0.5]",
+		"failsWithException": true
+	},
+
+	{
+		"expression": "a[1][1]",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][b]",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][b]",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": -1
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": -1
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][b]",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": 3
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": 3
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][b] = 5",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a[1][b] = 5",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": -1
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": -1
+			}
+		]
+	},
+	{
+		"expression": "a[1][b] = 5",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": 3
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": 3
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][x = 2 * b]",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": 6
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "x",
+				"type": "INTEGER",
+				"value": 3
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": 1
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "x",
+				"type": "INTEGER",
+				"value": 2
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": 1
+			}
+		]
+	},
+
+	{
+		"expression": "a[1][x = 2 * b] = 0",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": 0
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 6]]
+			},
+			{
+				"name": "x",
+				"type": "INTEGER",
+				"value": 3
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": 1
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": {
+					"baseType": "INTEGER",
+					"dimensionality": 2
+				},
+				"value": [[1, 2, 3], [4, 5, 0]]
+			},
+			{
+				"name": "x",
+				"type": "INTEGER",
+				"value": 2
+			},
+			{
+				"name": "b",
+				"type": "INTEGER",
+				"value": 1
+			}
+		]
+	}
+
+]

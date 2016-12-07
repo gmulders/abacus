@@ -74,7 +74,7 @@ abstract public class AbstractFunction implements Function {
 			currentType = i < allowedTypes.size() ? allowedTypes.get(i) : currentType;
 
 			// Wanneer de types niet overeenkomen geven we false terug.
-			if (currentType != types.get(i)) {
+			if (!Type.equals(currentType, types.get(i))) {
 				return false;
 			}
 		}

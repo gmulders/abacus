@@ -25,7 +25,7 @@ public class PowerNode extends AbstractExpressionNode implements BinaryOperation
 
 	@Override
 	public Type getType() {
-		if (base.getType() == Type.INTEGER && power.getType() == Type.INTEGER) {
+		if (Type.equals(base.getType(), Type.INTEGER) && Type.equals(power.getType(), Type.INTEGER)) {
 			return Type.INTEGER;
 		}
 		return Type.DECIMAL;

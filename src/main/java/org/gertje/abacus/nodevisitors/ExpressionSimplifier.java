@@ -3,6 +3,7 @@ package org.gertje.abacus.nodevisitors;
 import org.gertje.abacus.context.AbacusContext;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
@@ -77,7 +78,7 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 
 	@Override
 	public ExpressionNode visit(AddNode node) throws SimplificationException {
-		if (node.getType() == Type.STRING) {
+		if (Type.equals(node.getType(), Type.STRING)) {
 			return nodeFactory.createConcatStringNode(node.getLhs(), node.getRhs(), node.getToken()).accept(this);
 		}
 
@@ -138,6 +139,18 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 			return lhs;
 		}
 
+
+		return node;
+	}
+
+	@Override
+	public ExpressionNode visit(ArrayNode node) throws SimplificationException {
+		ExpressionNode array = node.getArray();
+		ExpressionNode index = node.getIndex();
+
+		// Vereenvoudig de nodes indien mogelijk.
+		array = array.accept(this); node.setArray(array);
+		index = index.accept(this); node.setIndex(index);
 
 		return node;
 	}
@@ -455,7 +468,7 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 			return nodeFactory.createNullNode(token);
 		}
 
-		switch (type) {
+		switch (type.getBaseType()) {
 			case STRING: return nodeFactory.createStringNode((String) value, token);
 			case INTEGER: return nodeFactory.createIntegerNode((Long)value, token);
 			case DECIMAL: return nodeFactory.createDecimalNode((BigDecimal)value, token);
@@ -477,7 +490,7 @@ public class ExpressionSimplifier extends AbstractExpressionNodeVisitor<Expressi
 			return createNodeForTypeAndValue(type, null, node.getToken());
 		}
 
-		if (node instanceof IntegerNode && type == Type.DECIMAL) {
+		if (node instanceof IntegerNode && Type.equals(type, Type.DECIMAL)) {
 			BigDecimal value = new BigDecimal(((IntegerNode) node).getValue(), abacusContext.getMathContext());
 			return createNodeForTypeAndValue(type, value, node.getToken());
 		}

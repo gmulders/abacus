@@ -13,6 +13,7 @@ public interface NodeFactory {
 
 	AddNode createAddNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	AndNode createAndNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
+	ArrayNode createArrayNode(ExpressionNode lhs, ExpressionNode index, Token arrayToken);
 	AssignmentNode createAssignmentNode(ExpressionNode lhs, ExpressionNode rhs, Token token);
 	BooleanNode createBooleanNode(Boolean value, Token token);
 	ConcatStringNode createConcatStringNode(ExpressionNode lhs, ExpressionNode rhs, Token token);

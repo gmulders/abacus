@@ -3,6 +3,7 @@ package org.gertje.abacus.nodevisitors;
 import org.gertje.abacus.context.AbacusContext;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.ConcatStringNode;
@@ -23,6 +24,7 @@ import org.gertje.abacus.nodes.ModuloNode;
 import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
+import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
@@ -112,6 +114,22 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 	}
 
 	@Override
+	public Object visit(ArrayNode node) throws EvaluationException {
+		ExpressionNode array = node.getArray();
+		ExpressionNode index = node.getIndex();
+
+		// Evalueer de rechterkant van de toekenning.
+		Object[] arrayValue = (Object[]) array.accept(this);
+		Long indexValue = (Long) index.accept(this);
+
+		if (arrayValue == null || indexValue == null || indexValue >= arrayValue.length || indexValue < 0) {
+			return null;
+		}
+
+		return arrayValue[indexValue.intValue()];
+	}
+
+	@Override
 	public Object visit(AssignmentNode node) throws EvaluationException {
 		ExpressionNode lhs = node.getLhs();
 		ExpressionNode rhs = node.getRhs();
@@ -120,16 +138,8 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 		Object result = rhs.accept(this);
 		result = CastHelper.castValue(result, rhs.getType(), lhs.getType());
 
-		VariableNode variableNode = (VariableNode)lhs;
-
-		try {
-			symbolTable.setVariableValue(variableNode.getIdentifier(), result);
-		} catch (Exception e) {
-			throw new EvaluationException("Could not set the variable value.", node, e);
-		}
-
-		// Geef het resultaat terug.
-		return result;
+		ValueAssigner valueAssigner = new ValueAssigner();
+		return valueAssigner.assign(lhs, result);
 	}
 
 	@Override
@@ -423,6 +433,60 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 	}
 
 	/**
+	 * Assigns a value to a variable or to an index.
+	 */
+	private class ValueAssigner extends DefaultVisitor<Object, EvaluationException> {
+
+		/**
+		 * The value to assign.
+		 */
+		private Object value;
+
+		public ValueAssigner() {
+			// Don't visit the child nodes.
+			visitChildNodes = false;
+		}
+
+		/**
+		 * Assigns the value to the correct variable or array-index.
+		 * @param node The node that determines where to assign the value to.
+		 * @param value The value to assign.
+		 * @throws EvaluationException
+		 */
+		public Object assign(Node node, Object value) throws EvaluationException {
+			this.value = value;
+			return node.accept(this);
+		}
+
+		@Override
+		public Object visit(ArrayNode node) throws EvaluationException {
+			// Get the array.
+			Object[] array = (Object[]) node.getArray().accept(ExpressionEvaluator.this);
+			// Determine the index.
+			Long index = (Long) node.getIndex().accept(ExpressionEvaluator.this);
+
+			// If the value cannot be found, this node should evaluate to false.
+			if (array == null || index == null || index >= array.length || index < 0) {
+				return null;
+			}
+
+			// Assign and return the value.
+			return array[index.intValue()] = value;
+		}
+
+		@Override
+		public Object visit(VariableNode node) throws EvaluationException {
+			try {
+				symbolTable.setVariableValue(node.getIdentifier(), value);
+			} catch (Exception e) {
+				throw new EvaluationException("Could not set the variable value.", node, e);
+			}
+
+			return value;
+		}
+	}
+
+	/**
 	 * Casts the given object from one type to another.
 	 * @param object The object to cast.
 	 * @param fromType The original type of the expression.
@@ -430,12 +494,12 @@ public class ExpressionEvaluator extends AbstractExpressionNodeVisitor<Object, E
 	 * @return The given expression casted to the desired type.
 	 */
 	private Object cast(Object object, Type fromType, Type toType) {
-		if (fromType == toType || fromType == null || toType == null) {
+		if (Type.equals(fromType, toType) || fromType == null || toType == null) {
 			return object;
 		}
 
 		// Cast the expression from integer to decimal.
-		if (fromType == Type.INTEGER && toType == Type.DECIMAL) {
+		if (Type.equals(fromType, Type.INTEGER) && Type.equals(toType, Type.DECIMAL)) {
 			return new java.math.BigDecimal(object.toString(), abacusContext.getMathContext());
 		}
 

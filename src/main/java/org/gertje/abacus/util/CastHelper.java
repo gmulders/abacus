@@ -22,14 +22,14 @@ public class CastHelper {
 			return null;
 		}
 
-		if (fromType == toType) {
+		if (Type.equals(fromType, toType)) {
 			return value;
 		}
 
 		// Cast the variable to the right type if necessary.
-		if (fromType == Type.INTEGER && toType == Type.DECIMAL) {
+		if (Type.equals(fromType, Type.INTEGER) && Type.equals(toType, Type.DECIMAL)) {
 			return BigDecimal.valueOf((Long)value);
-		} else if (fromType == Type.DECIMAL && toType == Type.INTEGER) {
+		} else if (Type.equals(fromType, Type.DECIMAL) && Type.equals(toType, Type.INTEGER)) {
 			return ((BigDecimal)value).longValue();
 		}
 

@@ -2,6 +2,7 @@ package org.gertje.abacus.nodevisitors;
 
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
@@ -71,6 +72,14 @@ public class GraphVizTranslator implements NodeVisitor<Void, VisitingException> 
 	@Override
 	public Void visit(AndNode node) throws VisitingException {
 		addBinaryOperationNode(node, "&&");
+		return null;
+	}
+
+	@Override
+	public Void visit(ArrayNode node) throws VisitingException {
+		addNodeDefinition(node, "[]");
+		addReference(node, node.getIndex());
+		addReference(node, node.getArray());
 		return null;
 	}
 

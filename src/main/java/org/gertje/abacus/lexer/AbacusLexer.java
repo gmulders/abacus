@@ -99,6 +99,14 @@ public class AbacusLexer extends AbstractLexer {
 		} else if (c == ')') {
 			token.setType(TokenType.RIGHT_PARENTHESIS);
 
+		// Linkerblokhaakje
+		} else if (c == '[') {
+			token.setType(TokenType.LEFT_BRACKET);
+
+		// Rechterblokhaakje
+		} else if (c == ']') {
+			token.setType(TokenType.RIGHT_BRACKET);
+
 		// String literal
 		} else if (c == '\'') {
 			token.setType(TokenType.STRING);

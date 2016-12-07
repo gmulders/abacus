@@ -2,6 +2,7 @@ package org.gertje.abacus.nodevisitors;
 
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.ConcatStringNode;
@@ -36,6 +37,7 @@ import org.gertje.abacus.nodes.VariableNode;
 public interface NodeVisitor<R, X extends VisitingException> {
 	R visit(AddNode node) throws X;
 	R visit(AndNode node) throws X;
+	R visit(ArrayNode node) throws X;
 	R visit(AssignmentNode node) throws X;
 	R visit(BooleanNode node) throws X;
 	R visit(ConcatStringNode node) throws X;

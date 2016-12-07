@@ -2,6 +2,7 @@ package org.gertje.abacus.nodevisitors;
 
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
@@ -61,6 +62,11 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 	@Override
 	public String visit(AndNode node) throws VisitingException {
 		return createScriptForBinaryOperationNode(node, "&&");
+	}
+
+	@Override
+	public String visit(ArrayNode node) throws VisitingException {
+		return node.getArray().accept(this) + "[" + node.getIndex().accept(this) + "]";
 	}
 
 	@Override

@@ -20,6 +20,8 @@ public class TokenType {
 	public static final TokenType IDENTIFIER = new TokenType("IDENTIFIER");
 	public static final TokenType LEFT_PARENTHESIS = new TokenType("LEFT_PARENTHESIS");
 	public static final TokenType RIGHT_PARENTHESIS = new TokenType("RIGHT_PARENTHESIS");
+	public static final TokenType LEFT_BRACKET = new TokenType("LEFT_BRACKET");
+	public static final TokenType RIGHT_BRACKET = new TokenType("RIGHT_BRACKET");
 	public static final TokenType STRING = new TokenType("STRING");
 	public static final TokenType DECIMAL = new TokenType("DECIMAL");
 	public static final TokenType INTEGER = new TokenType("INTEGER");
