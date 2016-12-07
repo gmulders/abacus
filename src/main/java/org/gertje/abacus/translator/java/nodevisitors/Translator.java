@@ -4,6 +4,7 @@ import org.gertje.abacus.context.AbacusContext;
 import org.gertje.abacus.nodes.AbstractComparisonNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
@@ -38,15 +39,16 @@ import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
+import org.gertje.abacus.nodevisitors.DefaultVisitor;
+import org.gertje.abacus.nodevisitors.EvaluationException;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.translator.java.util.JavaEscaper;
 import org.gertje.abacus.types.Type;
+import org.gertje.abacus.util.JavaTypeHelper;
 
-import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -133,22 +135,42 @@ public class Translator implements NodeVisitor<Void, TranslationException> {
 	}
 
 	@Override
+	public Void visit(ArrayNode node) throws TranslationException {
+		ExpressionNode array = node.getArray();
+		ExpressionNode index = node.getIndex();
+
+		array.accept(this);
+		index.accept(this);
+
+		String name = determineVariableName(node);
+		String arrayName = determineVariableName(array);
+		String indexName = determineVariableName(index);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ")
+				.append(arrayName).append(" == null || ")
+				.append(indexName).append(" == null || ")
+				.append(indexName).append(".intValue() >= ").append(arrayName).append(".length ||")
+				.append(indexName).append(".intValue() < 0 ? null : ")
+				.append(arrayName).append("[").append(indexName).append(".intValue()];\n");
+
+		return null;
+	}
+
+	@Override
 	public Void visit(AssignmentNode node) throws TranslationException {
 		ExpressionNode lhs = node.getLhs();
 		ExpressionNode rhs = node.getRhs();
 
 		String name = determineVariableName(node);
-		String right = determineVariableName(rhs);
+		String left = determineVariableName(lhs);
 
-		String identifier = ((VariableNode) lhs).getIdentifier();
-
-		rhs.accept(this);
+		ValueAssigner valueAssigner = new ValueAssigner();
+		valueAssigner.assign(lhs, rhs, node.getType());
 
 		appendDefinition(node);
-		expression.append("abacusContext.getSymbolTable().setVariableValue(\"").append(identifier).append("\", ")
-				.append(castValue(right, rhs.getType(), node.getType())).append(");\n");
-
-		appendAssignment(name, node.getType(), right, rhs.getType());
+		appendAssignment(name, node.getType(), left, lhs.getType());
 
 		return null;
 	}
@@ -522,7 +544,7 @@ public class Translator implements NodeVisitor<Void, TranslationException> {
 				.append(left).append("==null || ").append(right).append("==null ? null : ")
 				.append("ArithmeticOperation.power(").append(left).append(", ").append(right);
 
-		if (node.getType() == Type.DECIMAL) {
+		if (Type.equals(node.getType(), Type.DECIMAL)) {
 			expression.append(", mathContext");
 		}
 
@@ -609,6 +631,87 @@ public class Translator implements NodeVisitor<Void, TranslationException> {
 	}
 
 	/**
+	 * Assigns a value to a variable or to an index.
+	 */
+	private class ValueAssigner extends DefaultVisitor<Void, TranslationException> {
+
+		/**
+		 * The value to assign.
+		 */
+		private ExpressionNode value;
+
+		/**
+		 * The type of the assignment.
+		 */
+		private Type type;
+
+		public ValueAssigner() {
+			// Don't visit the child nodes.
+			visitChildNodes = false;
+		}
+
+		/**
+		 * Assigns the value to the correct variable or array-index.
+		 * @param node The node that determines where to assign the value to.
+		 * @param value The value to assign.
+		 * @param type The type of the assignment.
+		 * @throws TranslationException
+		 */
+		public void assign(ExpressionNode node, ExpressionNode value, Type type) throws TranslationException {
+			this.value = value;
+			this.type = type;
+
+			// Determine the value to assign.
+			value.accept(Translator.this);
+
+			appendDefinition(node);
+
+			node.accept(this);
+		}
+
+		@Override
+		public Void visit(ArrayNode node) throws TranslationException {
+			String name = determineVariableName(node);
+			String arrayName = determineVariableName(node.getArray());
+			String indexName = determineVariableName(node.getIndex());
+			String valueName = determineVariableName(value);
+
+			// Get the array.
+			node.getArray().accept(Translator.this);
+			// Determine the index.
+			node.getIndex().accept(Translator.this);
+
+			expression.append("if (").append(arrayName).append(" == null || ").append(indexName).append(" == null || ")
+					.append(indexName).append(".intValue() >= ").append(arrayName).append(".length || ")
+					.append(indexName).append(".intValue() < 0) {\n")
+					.append("\t").append(name).append(" = null;\n")
+					.append("} else {\n")
+					.append("\t").append(name).append(" = ").append(arrayName).append("[").append(indexName)
+					.append(".intValue()] = ").append(castValue(valueName, value.getType(), node.getType())).append(";\n")
+					.append("}\n");
+
+			return null;
+		}
+
+		@Override
+		public Void visit(VariableNode node) throws TranslationException {
+			String name = determineVariableName(node);
+
+			// Determine the name of the value.
+			String valueName = determineVariableName(value);
+			// Determine the identifier of the String.
+			String identifier = node.getIdentifier();
+			// Assign the value to the variable in the symbol table.
+			expression.append("abacusContext.getSymbolTable().setVariableValue(\"").append(identifier).append("\", ")
+					.append(castValue(valueName, value.getType(), node.getType())).append(");\n");
+
+			appendAssignment(name, node.getType(), valueName, value.getType());
+
+			return null;
+		}
+	}
+
+	/**
 	 * Appends an assignment to the expression.
 	 * @param name The name of the variable to assign to.
 	 * @param nodeType The type of the variable to assign to.
@@ -626,15 +729,15 @@ public class Translator implements NodeVisitor<Void, TranslationException> {
 	 * @param toType The type to cast to.
 	 */
 	private String castValue(String value, Type fromType, Type toType) {
-		if (fromType == Type.INTEGER && toType == Type.DECIMAL) {
-			return "java.math.BigDecimal.valueOf(" + value + ")\n";
+		if (Type.equals(fromType, Type.INTEGER) && Type.equals(toType, Type.DECIMAL)) {
+			return "java.math.BigDecimal.valueOf(" + value + ")";
 		}
 
-		if (fromType == Type.DECIMAL && toType == Type.INTEGER) {
-			return value + ".longValue()\n";
+		if (Type.equals(fromType, Type.DECIMAL) && Type.equals(toType, Type.INTEGER)) {
+			return value + ".longValue()";
 		}
 
-		if (fromType != toType) {
+		if (!Type.equals(fromType, toType)) {
 			return "(" + determineJavaType(toType) + ")" + value;
 		}
 
@@ -677,9 +780,9 @@ public class Translator implements NodeVisitor<Void, TranslationException> {
 		String left = determineVariableName(lhs);
 		String right = determineVariableName(rhs);
 
-		if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.INTEGER) {
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(".compareTo(new java.math.BigDecimal(").append(right).append(")) ").append(comparator).append(" 0;\n");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.DECIMAL) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append("new java.math.BigDecimal(").append(left).append(").compareTo(").append(right).append(") ").append(comparator).append(" 0;\n");
 		} else {
 			expression.append(left).append(".compareTo(").append(right).append(") ").append(comparator).append(" 0;\n");
@@ -702,7 +805,7 @@ public class Translator implements NodeVisitor<Void, TranslationException> {
 				.append(left).append("==null || ").append(right).append("==null ? null : ")
 				.append("ArithmeticOperation.").append(operation).append("(").append(left).append(", ").append(right);
 
-		if (node.getType() == Type.DECIMAL) {
+		if (Type.equals(node.getType(), Type.DECIMAL)) {
 			expression.append(", mathContext");
 		}
 
@@ -724,17 +827,19 @@ public class Translator implements NodeVisitor<Void, TranslationException> {
 	 * @return The Java type.
 	 */
 	private static String determineJavaType(Type type) {
+		// If the type is null we return the class of Object.
 		if (type == null) {
-			return "Object";
+			return Object.class.getName();
 		}
 
-		switch (type) {
-			case INTEGER: return Long.class.getName();
-			case BOOLEAN: return Boolean.class.getName();
-			case STRING: return String.class.getName();
-			case DECIMAL: return BigDecimal.class.getName();
-			default: return Date.class.getName();
+		// If the type is a primitive type we return the Java type of the base type.
+		if (!type.isArray()) {
+			return JavaTypeHelper.determineJavaType(type.getBaseType()).getName();
 		}
+
+		String baseType = JavaTypeHelper.determineJavaType(type.getBaseType()).getName();
+
+		return baseType + new String(new char[type.getDimensionality()]).replaceAll("\0", "[]");
 	}
 
 	/**

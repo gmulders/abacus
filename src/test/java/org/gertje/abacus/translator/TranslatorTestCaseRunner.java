@@ -97,6 +97,8 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		String javaSource = createJavaSource(expression);
 
+//		System.out.print(javaSource);
+
 		AbacusWrapper expressionWrapper;
 
 		Object returnValue;

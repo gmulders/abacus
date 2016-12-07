@@ -1,5 +1,7 @@
 package org.gertje.abacus.translator;
 
+import jdk.internal.org.objectweb.asm.ClassReader;
+import jdk.internal.org.objectweb.asm.util.CheckClassAdapter;
 import org.gertje.abacus.AbstractTestCaseRunner;
 import org.gertje.abacus.context.AbacusContext;
 import org.gertje.abacus.context.SimpleAbacusContext;
@@ -12,13 +14,14 @@ import org.gertje.abacus.nodes.NodeFactory;
 import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
 import org.gertje.abacus.nodevisitors.Simplifier;
-import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.parser.Parser;
 import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.translator.java.nodevisitors.ClassTranslator;
 import org.gertje.abacus.translator.java.runtime.AbacusWrapper;
 import org.junit.Assert;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.security.SecureClassLoader;
 
 /**
@@ -64,7 +67,9 @@ public class ClassTranslatorTestCaseRunner extends AbstractTestCaseRunner {
 			Node node = simplifier.simplify(rootNode);
 
 			byteCode = translator.translate(node, TestExpressionWrapper.class, CLASS_NAME);
-		} catch (VisitingException e) {
+
+//			checkClass(byteCode);
+		} catch (Exception e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
 			}
@@ -108,5 +113,29 @@ public class ClassTranslatorTestCaseRunner extends AbstractTestCaseRunner {
 				return super.defineClass(name, byteCode, 0, byteCode.length);
 			}
 		}.loadClass(className);
+	}
+
+	/**
+	 * Checks the generated class for errors. If one is found an exception is thrown.
+	 * @param clazz A byte representation of the Class to be checked.
+	 */
+	private void checkClass(byte[] clazz) {
+		ClassReader reader = new ClassReader(clazz);
+
+		StringWriter writer = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(writer);
+
+		Exception error = null;
+		try {
+			CheckClassAdapter.verify(reader, this.getClass().getClassLoader(), false, printWriter);
+		} catch (Exception e) {
+			error = e;
+		}
+
+		String contents = writer.toString();
+
+		if (error != null || contents.length() > 0) {
+			throw new RuntimeException("Generation error\nDump for " + reader.getClassName() + "\n" + writer.toString(), error);
+		}
 	}
 }
