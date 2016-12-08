@@ -9,12 +9,14 @@ import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
 import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
 import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.parser.Parser;
 import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.translator.java.nodevisitors.Translator;
+import org.gertje.abacus.translator.java.runtime.AbacusWrapper;
 import org.junit.Assert;
 
 import javax.tools.Diagnostic;
@@ -42,7 +44,6 @@ import java.util.Map;
  */
 public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 
-
 	@Override
 	public void runTestCase() {
 		// Maak een nieuwe symboltable en vul deze met wat waarden.
@@ -53,9 +54,9 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		Lexer lexer = new AbacusLexer(abacusTestCase.expression);
 		Parser parser = new Parser(lexer, nodeFactory);
 
-		Node tree;
+		RootNode rootNode;
 		try {
-			tree = parser.parse();
+			rootNode = parser.parse();
 		} catch (CompilerException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
@@ -70,15 +71,15 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		String expression;
 		try {
-			semanticsChecker.check(tree);
+			semanticsChecker.check(rootNode);
 
-			if (!checkReturnType(tree.getType())) {
+			if (!checkReturnType(rootNode.getType())) {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
-			tree = simplifier.simplify(tree);
+			Node node = simplifier.simplify(rootNode);
 
-			expression = translator.translate(tree);
+			expression = translator.translate(node);
 		} catch (VisitingException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
@@ -90,21 +91,22 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 			Assert.fail(createMessage("Expected exception, but none was thrown."));
 		}
 
-		if (!checkReturnType(tree.getType())) {
+		if (!checkReturnType(rootNode.getType())) {
 			Assert.fail(createMessage("Incorrect return type."));
 		}
 
-		// System.out.println(expression);
-
 		String javaSource = createJavaSource(expression);
 
-		ExpressionWrapper expressionWrapper;
+//		System.out.print(javaSource);
+
+		AbacusWrapper expressionWrapper;
 
 		Object returnValue;
 		try {
 			Class<?> clazz = compile("org.gertje.abacus.translator.Z", javaSource);
-			expressionWrapper = (ExpressionWrapper)clazz.newInstance();
-			expressionWrapper.setSymbolTable(sym);
+
+			expressionWrapper = (AbacusWrapper) clazz.newInstance();
+			expressionWrapper.setAbacusContext(abacusContext);
 			returnValue = expressionWrapper.f();
 		} catch (Exception e) {
 			Assert.fail(createMessage("Unexpected exception.", e));
@@ -123,14 +125,14 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 	private String createJavaSource(String expression) {
 		return "package org.gertje.abacus.translator;\n" +
 					"import org.gertje.abacus.translator.java.runtime.*;\n" +
-					"import org.gertje.abacus.util.*;\n" +
+					"import org.gertje.abacus.runtime.expression.*;\n" +
 					"import org.gertje.abacus.types.*;\n" +
 					"\n" +
 					"\n" +
-					"public class Z extends ExpressionWrapper<Object> {\n" +
+					"public class Z extends TestExpressionWrapper<Object> {\n" +
 					"\n" +
 					"\tpublic Object f() throws Exception {\n" +
-					"\t\treturn " + expression + ";\n" +
+					"\t\t" + expression + "\n" +
 					"\t}\n\n" +
 					"}\n"
 				;
