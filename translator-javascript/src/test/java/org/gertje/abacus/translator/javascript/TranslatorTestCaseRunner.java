@@ -85,7 +85,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 
 		try {
 			javascript = createJavaScript(javascript);
-			System.out.println(javascript);
+//			System.out.println(javascript);
 			nashorn.eval(javascript);
 		} catch (ScriptException e) {
 			Assert.fail(createMessage(e.getMessage()));
@@ -95,7 +95,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		String message = (String)nashorn.get("message");
 
 		if (error) {
-			System.out.println(javascript);
+//			System.out.println(javascript);
 			Assert.fail(createMessage(message));
 		}
 	}
