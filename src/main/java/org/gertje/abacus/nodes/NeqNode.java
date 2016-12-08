@@ -13,7 +13,7 @@ public class NeqNode extends AbstractComparisonNode {
 	 * Constructor
 	 */
 	public NeqNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
-		super(lhs, rhs, token, 7);
+		super(lhs, rhs, token, 9);
 	}
 
 	@Override

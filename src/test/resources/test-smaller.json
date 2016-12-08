@@ -993,14 +993,14 @@
 		"expression": "D'2015-08-22' < null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": "null"
+			"value": null
 		}
 	},
 	{
 		"expression": "D'2015-08-22' < a",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": "null"
+			"value": null
 		},
 		"variableListBefore": [
 			{
@@ -1014,7 +1014,7 @@
 		"expression": "a < null",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": "null"
+			"value": null
 		},
 		"variableListBefore": [
 			{

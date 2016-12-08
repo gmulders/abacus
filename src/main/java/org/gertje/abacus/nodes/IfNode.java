@@ -19,7 +19,7 @@ public class IfNode extends AbstractExpressionNode {
 	 * Constructor
 	 */
 	public IfNode(ExpressionNode condition, ExpressionNode ifBody, ExpressionNode elseBody, Token token) {
-		super(10, token);
+		super(12, token);
 
 		this.condition = condition;
 		this.ifBody = ifBody;

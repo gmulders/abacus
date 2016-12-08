@@ -33,13 +33,13 @@ public class EvaluationHelper {
 			return null;
 		}
 
-		if (leftType == Type.DECIMAL && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.sum((BigDecimal) left, (BigDecimal) right, mathContext);
 		}
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return ArithmeticOperation.sum((BigDecimal) left, (Long) right, mathContext);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.sum((Long) left, (BigDecimal) right, mathContext);
 		}
 		return ArithmeticOperation.sum((Long) left, (Long) right);
@@ -59,13 +59,13 @@ public class EvaluationHelper {
 			return null;
 		}
 
-		if (leftType == Type.DECIMAL && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.divide((BigDecimal) left, (BigDecimal) right, mathContext);
 		}
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return ArithmeticOperation.divide((BigDecimal) left, (Long) right, mathContext);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.divide((Long) left, (BigDecimal) right, mathContext);
 		}
 		return ArithmeticOperation.divide((Long) left, (Long) right);
@@ -80,22 +80,22 @@ public class EvaluationHelper {
 	 * @return The result of the comparison.
 	 */
 	public static Boolean eq(Object left, Type leftType, Object right, Type rightType) {
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((BigDecimal) left, (Long) right, EQUALS);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((Long) left, (BigDecimal) right, EQUALS);
 		}
-		if (leftType == Type.INTEGER || rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.INTEGER) || Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((Long) left, (Long) right, EQUALS);
 		}
-		if (leftType == Type.DECIMAL || rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) || Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((BigDecimal) left, (BigDecimal) right, EQUALS);
 		}
-		if (leftType == Type.BOOLEAN || rightType == Type.BOOLEAN) {
+		if (Type.equals(leftType, Type.BOOLEAN) || Type.equals(rightType, Type.BOOLEAN)) {
 			return BooleanOperation.compare((Boolean) left, (Boolean) right, EQUALS);
 		}
-		if (leftType == Type.DATE || rightType == Type.DATE) {
+		if (Type.equals(leftType, Type.DATE) || Type.equals(rightType, Type.DATE)) {
 			return BooleanOperation.compare((Date) left, (Date) right, EQUALS);
 		}
 		return BooleanOperation.compare((String) left, (String) right, EQUALS);
@@ -110,22 +110,22 @@ public class EvaluationHelper {
 	 * @return The result of the comparison.
 	 */
 	public static Boolean geq(Object left, Type leftType, Object right, Type rightType) {
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((BigDecimal) left, (Long) right, GREATER_THAN_EQUALS);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((Long) left, (BigDecimal) right, GREATER_THAN_EQUALS);
 		}
-		if (leftType == Type.INTEGER || rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.INTEGER) || Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((Long) left, (Long) right, GREATER_THAN_EQUALS);
 		}
-		if (leftType == Type.DECIMAL || rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) || Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((BigDecimal) left, (BigDecimal) right, GREATER_THAN_EQUALS);
 		}
-		if (leftType == Type.BOOLEAN || rightType == Type.BOOLEAN) {
+		if (Type.equals(leftType, Type.BOOLEAN) || Type.equals(rightType, Type.BOOLEAN)) {
 			return BooleanOperation.compare((Boolean) left, (Boolean) right, GREATER_THAN_EQUALS);
 		}
-		if (leftType == Type.DATE || rightType == Type.DATE) {
+		if (Type.equals(leftType, Type.DATE) || Type.equals(rightType, Type.DATE)) {
 			return BooleanOperation.compare((Date) left, (Date) right, GREATER_THAN_EQUALS);
 		}
 		return BooleanOperation.compare((String) left, (String) right, GREATER_THAN_EQUALS);
@@ -140,22 +140,22 @@ public class EvaluationHelper {
 	 * @return The result of the comparison.
 	 */
 	public static Boolean gt(Object left, Type leftType, Object right, Type rightType) {
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((BigDecimal) left, (Long) right, GREATER_THAN);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((Long) left, (BigDecimal) right, GREATER_THAN);
 		}
-		if (leftType == Type.INTEGER || rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.INTEGER) || Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((Long) left, (Long) right, GREATER_THAN);
 		}
-		if (leftType == Type.DECIMAL || rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) || Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((BigDecimal) left, (BigDecimal) right, GREATER_THAN);
 		}
-		if (leftType == Type.BOOLEAN || rightType == Type.BOOLEAN) {
+		if (Type.equals(leftType, Type.BOOLEAN) || Type.equals(rightType, Type.BOOLEAN)) {
 			return BooleanOperation.compare((Boolean) left, (Boolean) right, GREATER_THAN);
 		}
-		if (leftType == Type.DATE || rightType == Type.DATE) {
+		if (Type.equals(leftType, Type.DATE) || Type.equals(rightType, Type.DATE)) {
 			return BooleanOperation.compare((Date) left, (Date) right, GREATER_THAN);
 		}
 		return BooleanOperation.compare((String) left, (String) right, GREATER_THAN);
@@ -170,22 +170,22 @@ public class EvaluationHelper {
 	 * @return The result of the comparison.
 	 */
 	public static Boolean leq(Object left, Type leftType, Object right, Type rightType) {
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((BigDecimal) left, (Long) right, LESS_THAN_EQUALS);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((Long) left, (BigDecimal) right, LESS_THAN_EQUALS);
 		}
-		if (leftType == Type.INTEGER || rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.INTEGER) || Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((Long) left, (Long) right, LESS_THAN_EQUALS);
 		}
-		if (leftType == Type.DECIMAL || rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) || Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((BigDecimal) left, (BigDecimal) right, LESS_THAN_EQUALS);
 		}
-		if (leftType == Type.BOOLEAN || rightType == Type.BOOLEAN) {
+		if (Type.equals(leftType, Type.BOOLEAN) || Type.equals(rightType, Type.BOOLEAN)) {
 			return BooleanOperation.compare((Boolean) left, (Boolean) right, LESS_THAN_EQUALS);
 		}
-		if (leftType == Type.DATE || rightType == Type.DATE) {
+		if (Type.equals(leftType, Type.DATE) || Type.equals(rightType, Type.DATE)) {
 			return BooleanOperation.compare((Date) left, (Date) right, LESS_THAN_EQUALS);
 		}
 		return BooleanOperation.compare((String) left, (String) right, LESS_THAN_EQUALS);
@@ -200,22 +200,22 @@ public class EvaluationHelper {
 	 * @return The result of the comparison.
 	 */
 	public static Boolean lt(Object left, Type leftType, Object right, Type rightType) {
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((BigDecimal) left, (Long) right, LESS_THAN);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((Long) left, (BigDecimal) right, LESS_THAN);
 		}
-		if (leftType == Type.INTEGER || rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.INTEGER) || Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((Long) left, (Long) right, LESS_THAN);
 		}
-		if (leftType == Type.DECIMAL || rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) || Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((BigDecimal) left, (BigDecimal) right, LESS_THAN);
 		}
-		if (leftType == Type.BOOLEAN || rightType == Type.BOOLEAN) {
+		if (Type.equals(leftType, Type.BOOLEAN) || Type.equals(rightType, Type.BOOLEAN)) {
 			return BooleanOperation.compare((Boolean) left, (Boolean) right, LESS_THAN);
 		}
-		if (leftType == Type.DATE || rightType == Type.DATE) {
+		if (Type.equals(leftType, Type.DATE) || Type.equals(rightType, Type.DATE)) {
 			return BooleanOperation.compare((Date) left, (Date) right, LESS_THAN);
 		}
 		return BooleanOperation.compare((String) left, (String) right, LESS_THAN);
@@ -234,13 +234,13 @@ public class EvaluationHelper {
 			return null;
 		}
 
-		if (leftType == Type.DECIMAL && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.modulo((BigDecimal) left, (BigDecimal) right);
 		}
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return ArithmeticOperation.modulo((BigDecimal) left, (Long) right);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.modulo((Long) left, (BigDecimal) right);
 		}
 		return ArithmeticOperation.modulo((Long) left, (Long) right);
@@ -260,13 +260,13 @@ public class EvaluationHelper {
 			return null;
 		}
 
-		if (leftType == Type.DECIMAL && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.multiply((BigDecimal) left, (BigDecimal) right, mathContext);
 		}
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return ArithmeticOperation.multiply((BigDecimal) left, (Long) right, mathContext);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.multiply((Long) left, (BigDecimal) right, mathContext);
 		}
 		return ArithmeticOperation.multiply((Long) left, (Long) right);
@@ -280,7 +280,7 @@ public class EvaluationHelper {
 	 */
 	public static Number negate(Number number, Type type) {
 		// Cast het argument naar het juiste type voordat we negate erop aan kunnen roepen.
-		if (type == Type.DECIMAL) {
+		if (Type.equals(type, Type.DECIMAL)) {
 			return ArithmeticOperation.negate((BigDecimal) number);
 		}
 
@@ -296,22 +296,22 @@ public class EvaluationHelper {
 	 * @return The result of the comparison.
 	 */
 	public static Boolean neq(Object left, Type leftType, Object right, Type rightType) {
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((BigDecimal) left, (Long) right, NOT_EQUALS);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((Long) left, (BigDecimal) right, NOT_EQUALS);
 		}
-		if (leftType == Type.INTEGER || rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.INTEGER) || Type.equals(rightType, Type.INTEGER)) {
 			return BooleanOperation.compare((Long) left, (Long) right, NOT_EQUALS);
 		}
-		if (leftType == Type.DECIMAL || rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) || Type.equals(rightType, Type.DECIMAL)) {
 			return BooleanOperation.compare((BigDecimal) left, (BigDecimal) right, NOT_EQUALS);
 		}
-		if (leftType == Type.BOOLEAN || rightType == Type.BOOLEAN) {
+		if (Type.equals(leftType, Type.BOOLEAN) || Type.equals(rightType, Type.BOOLEAN)) {
 			return BooleanOperation.compare((Boolean) left, (Boolean) right, NOT_EQUALS);
 		}
-		if (leftType == Type.DATE || rightType == Type.DATE) {
+		if (Type.equals(leftType, Type.DATE) || Type.equals(rightType, Type.DATE)) {
 			return BooleanOperation.compare((Date) left, (Date) right, NOT_EQUALS);
 		}
 		return BooleanOperation.compare((String) left, (String) right, NOT_EQUALS);
@@ -330,13 +330,13 @@ public class EvaluationHelper {
 			return null;
 		}
 
-		if (baseType == Type.DECIMAL && powerType == Type.DECIMAL) {
+		if (Type.equals(baseType, Type.DECIMAL) && Type.equals(powerType, Type.DECIMAL)) {
 			return ArithmeticOperation.power((BigDecimal) baseValue, (BigDecimal) powerValue, mathContext);
 		}
-		if (baseType == Type.DECIMAL && powerType == Type.INTEGER) {
+		if (Type.equals(baseType, Type.DECIMAL) && Type.equals(powerType, Type.INTEGER)) {
 			return ArithmeticOperation.power((BigDecimal) baseValue, (Long) powerValue, mathContext);
 		}
-		if (baseType == Type.INTEGER && powerType == Type.DECIMAL) {
+		if (Type.equals(baseType, Type.INTEGER) && Type.equals(powerType, Type.DECIMAL)) {
 			return ArithmeticOperation.power((Long) baseValue, (BigDecimal) powerValue, mathContext);
 		}
 		return ArithmeticOperation.power((Long) baseValue, (Long) powerValue);
@@ -356,13 +356,13 @@ public class EvaluationHelper {
 			return null;
 		}
 
-		if (leftType == Type.DECIMAL && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.subtract((BigDecimal) left, (BigDecimal) right, mathContext);
 		}
-		if (leftType == Type.DECIMAL && rightType == Type.INTEGER) {
+		if (Type.equals(leftType, Type.DECIMAL) && Type.equals(rightType, Type.INTEGER)) {
 			return ArithmeticOperation.subtract((BigDecimal) left, (Long) right, mathContext);
 		}
-		if (leftType == Type.INTEGER && rightType == Type.DECIMAL) {
+		if (Type.equals(leftType, Type.INTEGER) && Type.equals(rightType, Type.DECIMAL)) {
 			return ArithmeticOperation.subtract((Long) left, (BigDecimal) right, mathContext);
 		}
 		return ArithmeticOperation.subtract((Long) left, (Long) right);

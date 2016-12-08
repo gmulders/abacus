@@ -17,7 +17,7 @@ public class PowerNode extends AbstractExpressionNode implements BinaryOperation
 	 * Constructor
 	 */
 	public PowerNode(ExpressionNode base, ExpressionNode power, Token token) {
-		super(4, token);
+		super(6, token);
 
 		this.base = base;
 		this.power = power;
@@ -25,7 +25,7 @@ public class PowerNode extends AbstractExpressionNode implements BinaryOperation
 
 	@Override
 	public Type getType() {
-		if (base.getType() == Type.INTEGER && power.getType() == Type.INTEGER) {
+		if (Type.equals(base.getType(), Type.INTEGER) && Type.equals(power.getType(), Type.INTEGER)) {
 			return Type.INTEGER;
 		}
 		return Type.DECIMAL;

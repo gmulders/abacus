@@ -16,7 +16,7 @@ public class NotNode extends AbstractExpressionNode {
 	 * Constructor
 	 */
 	public NotNode(ExpressionNode argument, Token token) {
-		super(2, token);
+		super(4, token);
 
 		this.argument = argument;
 	}

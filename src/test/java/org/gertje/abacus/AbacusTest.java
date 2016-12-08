@@ -16,6 +16,7 @@ public class AbacusTest {
 	 * All files containing test cases.
 	 */
 	public static String[] fileNames = {
+			"test-array.json",
 			"test-add.json",
 			"test-subtract.json",
 			"test-multiplication.json",
@@ -55,7 +56,7 @@ public class AbacusTest {
 		for (String fileName : fileNames) {
 			testFile(fileName, testCaseRunner);
 		}
-//      System.out.println("Total count: " + testCount);
+//		System.out.println("Total count: " + testCount);
 	}
 
 	/**

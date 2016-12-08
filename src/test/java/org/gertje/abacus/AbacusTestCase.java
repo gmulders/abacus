@@ -16,7 +16,7 @@ public class AbacusTestCase {
 	 */
 	public static class ReturnValue {
 		public Type type;
-		public String value;
+		public Object value;
 	}
 
 	/**
@@ -25,7 +25,7 @@ public class AbacusTestCase {
 	public static class Value {
 		public String name;
 		public Type type;
-		public String value;
+		public Object value;
 	}
 
 	public String expression;

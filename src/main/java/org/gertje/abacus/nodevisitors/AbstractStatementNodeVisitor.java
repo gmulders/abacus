@@ -2,6 +2,7 @@ package org.gertje.abacus.nodevisitors;
 
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.ConcatStringNode;
@@ -41,6 +42,11 @@ public abstract class AbstractStatementNodeVisitor<R, X extends VisitingExceptio
 
 	@Override
 	public R visit(AndNode node) throws X {
+		throw createIllegalStateException(node);
+	}
+
+	@Override
+	public R visit(ArrayNode node) throws X {
 		throw createIllegalStateException(node);
 	}
 

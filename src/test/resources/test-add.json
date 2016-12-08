@@ -405,14 +405,14 @@
 			{
 				"name": "a",
 				"type": "INTEGER",
-				"value": "null"
+				"value": null
 			}
 		],
 		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "INTEGER",
-				"value": "null"
+				"value": null
 			}
 		]
 	},

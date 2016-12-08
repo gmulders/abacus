@@ -17,7 +17,7 @@ public class SubtractNode extends AbstractExpressionNode implements BinaryOperat
 	 * Constructor
 	 */
 	public SubtractNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
-		super(5, token);
+		super(7, token);
 
 		this.lhs = lhs;
 		this.rhs = rhs;

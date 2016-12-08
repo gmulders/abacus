@@ -1,14 +1,48 @@
 package org.gertje.abacus.types;
 
+import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.Objects;
+import java.util.WeakHashMap;
+
 /**
- * Enum of all types.
+ * Represents a type.
  */
-public enum Type {
-	STRING,
-	INTEGER,
-	DECIMAL,
-	BOOLEAN,
-	DATE;
+public class Type {
+
+	public enum BaseType {
+		INTEGER(0),
+		STRING(1),
+		DECIMAL(2),
+		BOOLEAN(3),
+		DATE(4);
+
+		private int index;
+
+		BaseType(int index) {
+			this.index = index;
+		}
+	}
+
+	private static final Map<Type, WeakReference<Type>> types = new WeakHashMap<>();
+
+	public static synchronized Type get(BaseType baseType, int dimensionality) {
+		Type type = new Type(baseType, dimensionality);
+
+		WeakReference<Type> typeWeakReference = types.get(type);
+		if (typeWeakReference != null) {
+			return typeWeakReference.get();
+		}
+
+		types.put(type, new WeakReference<>(type));
+		return type;
+	}
+
+	public static final Type INTEGER = get(BaseType.INTEGER, 0);
+	public static final Type STRING = get(BaseType.STRING, 0);
+	public static final Type DECIMAL = get(BaseType.DECIMAL, 0);
+	public static final Type BOOLEAN = get(BaseType.BOOLEAN, 0);
+	public static final Type DATE = get(BaseType.DATE, 0);
 
 	/**
 	 * Bepaalt of het meegegeven type een nummer is.
@@ -16,7 +50,7 @@ public enum Type {
 	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
 	 */
 	public static boolean isNumber(Type type) {
-		return DECIMAL == type || INTEGER == type;
+		return Type.equals(DECIMAL, type) || Type.equals(INTEGER, type);
 	}
 
 	/**
@@ -28,30 +62,50 @@ public enum Type {
 		return type == null;
 	}
 
-	/**
-	 * Bepaalt of het meegegeven type een nummer of onbekend is.
-	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
-	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
-	 */
-	public static boolean isNumberOrUnknown(Type type) {
-		return isNumber(type) || isUnknown(type);
+	public static boolean equals(Type type1, Type type2) {
+		return Objects.equals(type1, type2);
 	}
 
-	/**
-	 * Bepaalt of het meegegeven type een string of onbekend is.
-	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
-	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
-	 */
-	public static boolean isStringOrUnknown(Type type) {
-		return type == STRING || isUnknown(type);
+	private BaseType baseType;
+	private int dimensionality;
+
+	private Type(BaseType baseType, int dimensionality) {
+		this.baseType = baseType;
+		this.dimensionality = dimensionality;
 	}
 
-	/**
-	 * Bepaalt of het meegegeven type een string of onbekend is.
-	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
-	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
-	 */
-	public static boolean isBooleanOrUnknown(Type type) {
-		return type == BOOLEAN || isUnknown(type);
+	public boolean isArray() {
+		return dimensionality > 0;
+	}
+
+	public Type determineComponentType() {
+		assert dimensionality > 0;
+		return get(baseType, dimensionality - 1);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Type type = (Type) o;
+
+		if (dimensionality != type.dimensionality) return false;
+		return baseType == type.baseType;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = baseType.hashCode();
+		result = 31 * result + dimensionality;
+		return result;
+	}
+
+	public BaseType getBaseType() {
+		return baseType;
+	}
+
+	public int getDimensionality() {
+		return dimensionality;
 	}
 }

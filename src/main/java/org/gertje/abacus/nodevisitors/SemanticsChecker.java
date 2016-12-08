@@ -2,6 +2,7 @@ package org.gertje.abacus.nodevisitors;
 
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.ConcatStringNode;
@@ -73,8 +74,8 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		rhs.accept(this);
 
 		// Wanneer niet beide zijden van het type 'String' of 'Number' zijn moeten we een exceptie gooien.
-		if (!(Type.isStringOrUnknown(lhs.getType()) && Type.isStringOrUnknown(rhs.getType()))
-				&& !(Type.isNumberOrUnknown(lhs.getType()) && Type.isNumberOrUnknown(rhs.getType()))) {
+		if (!(isStringOrUnknown(lhs.getType()) && isStringOrUnknown(rhs.getType()))
+				&& !(isNumberOrUnknown(lhs.getType()) && isNumberOrUnknown(rhs.getType()))) {
 			throw new SemanticsCheckException(SemanticsHelper.ADD_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -90,9 +91,33 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type Boolean of onbekend zijn.
-		if (!Type.isBooleanOrUnknown(lhs.getType()) || !Type.isBooleanOrUnknown(rhs.getType())) {
+		if (!isBooleanOrUnknown(lhs.getType()) || !isBooleanOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.AND_ILLEGAL_OPERAND_TYPES, node);
 		}
+
+		return null;
+	}
+
+	@Override
+	public Void visit(ArrayNode node) throws SemanticsCheckException {
+		ExpressionNode array = node.getArray();
+		ExpressionNode index = node.getIndex();
+
+		array.accept(this);
+		index.accept(this);
+
+		// The index should be an integer.
+		if (!Type.equals(index.getType(), Type.INTEGER)) {
+			throw new SemanticsCheckException(SemanticsHelper.ARRAY_ILLEGAL_INDEX_TYPE, node);
+		}
+
+		// The operand should be an array.
+		if (!array.getType().isArray()) {
+			throw new SemanticsCheckException(SemanticsHelper.ARRAY_ILLEGAL_ARRAY_TYPE, node);
+		}
+
+		// Set the type on the node.
+		node.setType(Type.get(array.getType().getBaseType(), array.getType().getDimensionality() - 1));
 
 		return null;
 	}
@@ -105,9 +130,8 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Als de linkerkant geen VariabeleNode is EN de linkerkant is geen AssignmentNode met aan de rechterkant een
-		// VariableNode, dan gooien we een exceptie.
-		if (!(lhs instanceof VariableNode)) {
+		AssignmentNodeLhsChecker assignmentNodeLhsChecker = new AssignmentNodeLhsChecker();
+		if (!assignmentNodeLhsChecker.check(lhs)) {
 			throw new SemanticsCheckException(SemanticsHelper.ASSIGNMENT_ILLEGAL_LEFT_OPERAND, node);
 		}
 
@@ -148,7 +172,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
-		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+		if (!isNumberOrUnknown(lhs.getType()) || !isNumberOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.DIVIDE_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -258,7 +282,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		elsebody.accept(this);
 
 		// De waarde van de conditie moet van het type 'boolean' zijn.
- 		if (!Type.isBooleanOrUnknown(condition.getType())) {
+ 		if (!isBooleanOrUnknown(condition.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.IF_ILLEGAL_CONDITION_TYPE, node);
 		}
 
@@ -279,7 +303,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 
 		// If the found type is of type Integer, check if the elsebody is of type Decimal. If so, widen the type to
 		// Decimal.
-		if (type == Type.INTEGER && elsebody.getType() == Type.DECIMAL) {
+		if (Type.equals(type, Type.INTEGER) && Type.equals(elsebody.getType(), Type.DECIMAL)) {
 			type = Type.DECIMAL;
 		}
 
@@ -337,7 +361,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
-		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+		if (!isNumberOrUnknown(lhs.getType()) || !isNumberOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.MODULO_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -353,7 +377,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
-		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+		if (!isNumberOrUnknown(lhs.getType()) || !isNumberOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.MULTIPLY_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -367,7 +391,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		argument.accept(this);
 
 		// Het argument moet een getal of onbekend zijn.
-		if (!Type.isNumberOrUnknown(argument.getType())) {
+		if (!isNumberOrUnknown(argument.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.NEGATIVE_ILLEGAL_OPERAND_TYPE, node);
 		}
 
@@ -397,7 +421,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		argument.accept(this);
 
 		// Het argument moet een boolean zijn.
-		if (!Type.isBooleanOrUnknown(argument.getType())) {
+		if (!isBooleanOrUnknown(argument.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.NOT_ILLEGAL_OPERAND_TYPE, node);
 		}
 
@@ -418,7 +442,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type Boolean of onbekend zijn.
-		if (!Type.isBooleanOrUnknown(lhs.getType()) || !Type.isBooleanOrUnknown(rhs.getType())) {
+		if (!isBooleanOrUnknown(lhs.getType()) || !isBooleanOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.OR_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -432,7 +456,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
         argument.accept(this);
 
 		// Het argument moet een 'number' of onbekend zijn.
-		if (!Type.isNumberOrUnknown(argument.getType())) {
+		if (!isNumberOrUnknown(argument.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.POSITIVE_ILLEGAL_OPERAND_TYPE, node);
 		}
 
@@ -448,7 +472,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		power.accept(this);
 
 		// Beide zijden moeten van het type 'number' of onbekend zijn.
-		if (!Type.isNumberOrUnknown(base.getType()) || !Type.isNumberOrUnknown(power.getType())) {
+		if (!isNumberOrUnknown(base.getType()) || !isNumberOrUnknown(power.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.POWER_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -484,7 +508,7 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type 'number' of onbekend zijn.
-		if (!Type.isNumberOrUnknown(rhs.getType()) || !Type.isNumberOrUnknown(lhs.getType())) {
+		if (!isNumberOrUnknown(rhs.getType()) || !isNumberOrUnknown(lhs.getType())) {
 				throw new SemanticsCheckException(SemanticsHelper.SUBSTRACT_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -515,5 +539,70 @@ public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckExcepti
 
 		return null;
 	}
+
+	/**
+	 * Checks the left hand side of an assignment node.
+	 */
+	private class AssignmentNodeLhsChecker extends DefaultVisitor<Boolean, SemanticsCheckException> {
+
+		public AssignmentNodeLhsChecker() {
+			// Don't visit the child nodes.
+			visitChildNodes = false;
+		}
+
+		/**
+		 * Method to check the node.
+		 * @param node The node to check.
+		 * @return {@code true} if the node is valid, {@code false} otherwise.
+		 * @throws SemanticsCheckException
+		 */
+		public Boolean check(Node node) throws SemanticsCheckException {
+			return node.accept(this);
+		}
+
+		@Override
+		public Boolean visit(ArrayNode node) throws SemanticsCheckException {
+			// It is allowed to assign to an array node if it works on a variable.
+			return node.getArray().accept(this);
+		}
+
+		@Override
+		public Boolean visit(VariableNode node) throws SemanticsCheckException {
+			return Boolean.TRUE;
+		}
+
+		@Override
+		protected Boolean visitDefault(Node node) {
+			return Boolean.FALSE;
+		}
+	}
+
+	/**
+	 * Bepaalt of het meegegeven type een nummer of onbekend is.
+	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
+	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
+	 */
+	private static boolean isNumberOrUnknown(Type type) {
+		return Type.isNumber(type) || Type.isUnknown(type);
+	}
+
+	/**
+	 * Bepaalt of het meegegeven type een string of onbekend is.
+	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
+	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
+	 */
+	private static boolean isStringOrUnknown(Type type) {
+		return Type.equals(type, Type.STRING) || Type.isUnknown(type);
+	}
+
+	/**
+	 * Bepaalt of het meegegeven type een string of onbekend is.
+	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
+	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
+	 */
+	private static boolean isBooleanOrUnknown(Type type) {
+		return Type.equals(type, Type.BOOLEAN) || Type.isUnknown(type);
+	}
+
 }
 

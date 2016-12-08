@@ -22,6 +22,11 @@ public class AbacusNodeFactory implements NodeFactory {
 	}
 
 	@Override
+	public ArrayNode createArrayNode(ExpressionNode array, ExpressionNode index, Token token) {
+		return new ArrayNode(array, index, token);
+	}
+
+	@Override
 	public AssignmentNode createAssignmentNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
 		return new AssignmentNode(lhs, rhs, token);
 	}

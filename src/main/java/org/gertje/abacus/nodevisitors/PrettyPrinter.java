@@ -2,6 +2,7 @@ package org.gertje.abacus.nodevisitors;
 
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
@@ -36,12 +37,19 @@ import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
 /**
  * Prints the expression.
  */
 public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
+
+	/**
+	 * The format to be used for dates.
+	 */
+	private static DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	/**
 	 * Prints the given AST.
@@ -64,6 +72,12 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 	}
 
 	@Override
+	public String visit(ArrayNode node) throws VisitingException {
+		return parenthesize(node.getPrecedence(), node.getArray().getPrecedence(), node.getArray().accept(this))
+				+ "[" + node.getIndex().accept(this) + "]";
+	}
+
+	@Override
 	public String visit(AssignmentNode node) throws VisitingException {
 		return node.getLhs().accept(this) + " = " + node.getRhs().accept(this);
 	}
@@ -80,7 +94,7 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 
 	@Override
 	public String visit(DateNode node) throws VisitingException {
-		return null;
+		return "D\"" + DATE_FORMAT.format(node.getValue()) + "\"";
 	}
 
 	@Override
@@ -129,8 +143,13 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 
 	@Override
 	public String visit(IfNode node) throws VisitingException {
-		return node.getCondition().accept(this) + " ? " + node.getIfBody().accept(this) + " : " 
-				+ node.getElseBody().accept(this);
+		String condition = parenthesize(node.getPrecedence(), node.getCondition().getPrecedence(),
+				node.getCondition().accept(this));
+		String ifBody = parenthesize(node.getPrecedence(), node.getIfBody().getPrecedence(),
+				node.getIfBody().accept(this));
+		String elseBody = parenthesize(node.getPrecedence(), node.getElseBody().getPrecedence(),
+				node.getElseBody().accept(this));
+		return condition + " ? " + ifBody + " : " + elseBody;
 	}
 
 	@Override
@@ -160,7 +179,8 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 
 	@Override
 	public String visit(NegativeNode node) throws VisitingException {
-		return "-" + node.getArgument().accept(this);
+		return "-" + parenthesize(node.getPrecedence(), node.getArgument().getPrecedence(),
+				node.getArgument().accept(this));
 	}
 
 	@Override
@@ -170,7 +190,8 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 
 	@Override
 	public String visit(NotNode node) throws VisitingException {
-		return "!" + node.getArgument().accept(this);
+		return "!" + parenthesize(node.getPrecedence(), node.getArgument().getPrecedence(),
+				node.getArgument().accept(this));
 	}
 
 	@Override
@@ -185,7 +206,8 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 
 	@Override
 	public String visit(PositiveNode node) throws VisitingException {
-		return "+" + node.getArgument().accept(this);
+		return "+" + parenthesize(node.getPrecedence(), node.getArgument().getPrecedence(),
+				node.getArgument().accept(this));
 	}
 
 	@Override
@@ -237,7 +259,24 @@ public class PrettyPrinter implements NodeVisitor<String, VisitingException> {
 	 */
 	protected String createScriptForBinaryOperationNode(BinaryOperationNode node, String operator)
 			throws VisitingException {
-		return node.getLhs().accept(this) + " " + operator + " " + node.getRhs().accept(this);
+		return parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), node.getLhs().accept(this))
+				+ " " + operator + " "
+				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), node.getRhs().accept(this));
 	}
 
+	/**
+	 * Adds parenthesis around the expression if necessary.
+	 *
+	 * @param parentNodePrecedence precedence of the parent node
+	 * @param childNodePrecedence precedence of the child node
+	 * @param part The expression
+	 * @return The expression with parenthesis if necessary.
+	 */
+	protected static String parenthesize(int parentNodePrecedence, int childNodePrecedence, String part) {
+		// Add parenthesis if the parent has a lower order of execution than the child.
+		if (parentNodePrecedence < childNodePrecedence) {
+			part = "(" + part + ")";
+		}
+		return part;
+	}
 }

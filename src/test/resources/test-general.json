@@ -519,14 +519,14 @@
 		"expression": "3*null",
 		"returnValue": {
 			"type": "INTEGER",
-			"value": "null"
+			"value": null
 		}
 	},
 	{
 		"expression": "true ? null : null",
 		"returnValue": {
-			"type": "null",
-			"value": "null"
+			"type": null,
+			"value": null
 		}
 	},
 	{
@@ -540,14 +540,14 @@
 		"expression": "null ? true : false",
 		"returnValue": {
 			"type": "BOOLEAN",
-			"value": "null"
+			"value": null
 		}
 	},
 	{
 		"expression": "4 > 3 : 5 ? 6",
 		"returnValue": {
-			"type": "null",
-			"value": "null"
+			"type": null,
+			"value": null
 		},
 		"failsWithException": true
 	},
@@ -569,7 +569,7 @@
 		"expression": "3 * (4 < a ? 5 : null)",
 		"returnValue": {
 			"type": "INTEGER",
-			"value": "null"
+			"value": null
 		},
 		"variableListBefore": [
 			{

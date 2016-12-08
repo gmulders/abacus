@@ -17,7 +17,7 @@ public class OrNode extends AbstractExpressionNode implements BinaryOperationNod
 	 * Constructor
 	 */
 	public OrNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
-		super(8, token);
+		super(10, token);
 
 		this.lhs = lhs;
 		this.rhs = rhs;

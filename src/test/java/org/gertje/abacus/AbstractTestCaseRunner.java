@@ -6,11 +6,14 @@ import org.gertje.abacus.symboltable.SimpleSymbolTable;
 import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.symboltable.Variable;
 import org.gertje.abacus.types.Type;
+import org.gertje.abacus.util.JavaTypeHelper;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,16 +65,31 @@ public abstract class AbstractTestCaseRunner {
 	 * @param type The type to convert the value to.
 	 * @return The converted value.
 	 */
-	protected Object convertToType(String value, Type type) {
+	protected Object convertToType(Object value, Type type) {
 		if (value == null || "null".equals(value)) {
 			return null;
 		}
 
-		switch (type) {
-			case DECIMAL: return new BigDecimal(value);
-			case INTEGER: return Long.valueOf(value);
-			case BOOLEAN: return Boolean.valueOf(value);
-			case DATE: return Date.valueOf(value);
+		if (type.isArray()) {
+			List valueList = (List) value;
+
+			Type componentType = type.determineComponentType();
+
+			Object[] array = (Object[]) Array.newInstance(JavaTypeHelper.determineJavaType(componentType),
+					valueList.size());
+
+			for (int i = 0; i < array.length; i++) {
+				array[i] = convertToType(valueList.get(i), componentType);
+			}
+
+			return array;
+		}
+
+		switch (type.getBaseType()) {
+			case DECIMAL: return new BigDecimal(value.toString());
+			case INTEGER: return value instanceof Double ? (long) ((double) value) : Long.valueOf(value.toString());
+			case BOOLEAN: return Boolean.valueOf(value.toString());
+			case DATE: return Date.valueOf(value.toString());
 			case STRING: return value;
 		}
 
@@ -84,24 +102,7 @@ public abstract class AbstractTestCaseRunner {
 	 * @return {@code true} wanneer de return-waarde correct was, anders {@code false}.
 	 */
 	protected boolean checkReturnValue(Object value) {
-		Object expectedValue = determineExpectedValue();
-
-		// Wanneer het resultaat null is en we hadden dit ook verwacht geven we true terug.
-		if (value == null && expectedValue == null) {
-			return true;
-		}
-
-		// Wanneer het resultaat of de verwachting null is geven we false terug, dit kan omdat als ze allebei null
-		// hadden moeten zijn hadden we al true terug gegeven bij vorige vergelijking.
-		if (value == null || expectedValue == null) {
-			return false;
-		}
-
-		if (((Comparable) value).compareTo(expectedValue) != 0) {
-			return false;
-		}
-
-		return true;
+		return checkValues(value, determineExpectedValue());
 	}
 
 	/**
@@ -135,25 +136,49 @@ public abstract class AbstractTestCaseRunner {
 
 		try {
 			for (AbacusTestCase.Value value : valueAfterList) {
-				Comparable variableValue = (Comparable) symbolTable.getVariableValue(value.name);
-				Comparable expectedValue = (Comparable) convertToType(value.value, value.type);
+				Object variableValue = symbolTable.getVariableValue(value.name);
+				Object expectedValue = convertToType(value.value, value.type);
 				Type variableType = symbolTable.getVariableType(value.name);
 
-				if (variableType != value.type) {
+				if (!Type.equals(variableType, value.type)) {
 					return false;
 				}
 
-				if (variableValue == null && expectedValue == null) {
-					continue;
-				}
-
-				if (variableValue.compareTo(expectedValue) != 0) {
+				if (!checkValues(variableValue, expectedValue)) {
 					return false;
 				}
 			}
 		} catch (NoSuchVariableException e) {
 			return false;
 		}
+		return true;
+	}
+
+	private boolean checkValues(Object variableValue, Object expectedValue) {
+		// If they are both null, they are equal.
+		if (variableValue == null && expectedValue == null) {
+			return true;
+		}
+
+		// If one is null, they are not equal (since they are not both null).
+		if (variableValue == null || expectedValue == null) {
+			return false;
+		}
+
+		// If either of one is an array, but the other is not, they are not equal.
+		if (variableValue instanceof Object[] && !(expectedValue instanceof Object[])
+				|| !(variableValue instanceof Object[]) && expectedValue instanceof Object[]) {
+			return false;
+		}
+
+		if (variableValue instanceof Object[]) {
+			return Arrays.deepEquals((Object[]) variableValue, (Object[]) expectedValue);
+		}
+
+		if (((Comparable) variableValue).compareTo(expectedValue) != 0) {
+			return false;
+		}
+
 		return true;
 	}
 
