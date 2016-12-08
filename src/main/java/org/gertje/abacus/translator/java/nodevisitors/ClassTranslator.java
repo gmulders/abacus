@@ -4,6 +4,7 @@ import org.gertje.abacus.context.AbacusContext;
 import org.gertje.abacus.nodes.AbstractComparisonNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
@@ -38,6 +39,9 @@ import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
+import org.gertje.abacus.nodevisitors.DefaultVisitor;
+import org.gertje.abacus.nodevisitors.EvaluationException;
+import org.gertje.abacus.nodevisitors.ExpressionEvaluator;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VariableVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -51,6 +55,7 @@ import org.gertje.abacus.symboltable.Variable;
 import org.gertje.abacus.translator.java.runtime.AbacusRuntimeException;
 import org.gertje.abacus.types.Type;
 
+import org.gertje.abacus.util.JavaTypeHelper;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -67,16 +72,21 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
+import static org.objectweb.asm.Opcodes.AALOAD;
+import static org.objectweb.asm.Opcodes.AASTORE;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_SUPER;
 import static org.objectweb.asm.Opcodes.ACONST_NULL;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ARETURN;
+import static org.objectweb.asm.Opcodes.ARRAYLENGTH;
 import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.ATHROW;
 import static org.objectweb.asm.Opcodes.CHECKCAST;
 import static org.objectweb.asm.Opcodes.DUP;
+import static org.objectweb.asm.Opcodes.DUP2_X1;
 import static org.objectweb.asm.Opcodes.DUP_X1;
+import static org.objectweb.asm.Opcodes.DUP_X2;
 import static org.objectweb.asm.Opcodes.F_SAME1;
 import static org.objectweb.asm.Opcodes.GETFIELD;
 import static org.objectweb.asm.Opcodes.GETSTATIC;
@@ -84,14 +94,17 @@ import static org.objectweb.asm.Opcodes.GOTO;
 import static org.objectweb.asm.Opcodes.ICONST_0;
 import static org.objectweb.asm.Opcodes.ICONST_1;
 import static org.objectweb.asm.Opcodes.IFEQ;
+import static org.objectweb.asm.Opcodes.IFLT;
 import static org.objectweb.asm.Opcodes.IFNE;
 import static org.objectweb.asm.Opcodes.IFNULL;
+import static org.objectweb.asm.Opcodes.IF_ICMPGE;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Opcodes.NEW;
 import static org.objectweb.asm.Opcodes.POP;
+import static org.objectweb.asm.Opcodes.POP2;
 import static org.objectweb.asm.Opcodes.RETURN;
 import static org.objectweb.asm.Opcodes.SWAP;
 import static org.objectweb.asm.Opcodes.V1_7;
@@ -258,17 +271,20 @@ public class ClassTranslator implements NodeVisitor<Void, TranslationException> 
 	}
 
 	@Override
+	public Void visit(ArrayNode node) throws TranslationException {
+		appendLineNumberLabel(node);
+
+		unreferenceArray(node, null, null);
+
+		return null;
+	}
+
+	@Override
 	public Void visit(AssignmentNode node) throws TranslationException {
 		appendLineNumberLabel(node);
 
-		String identifier = ((VariableNode) node.getLhs()).getIdentifier();
-
-		node.getRhs().accept(this);
-
-		appendCast(node.getRhs().getType(), node.getType());
-
-		mv.visitInsn(DUP);
-		mv.visitVarInsn(ASTORE, methodVariableIndexes.get(identifier));
+		ValueAssigner valueAssigner = new ValueAssigner();
+		valueAssigner.assign(node.getLhs(), node.getRhs(), node.getType());
 
 		return null;
 	}
@@ -579,20 +595,136 @@ public class ClassTranslator implements NodeVisitor<Void, TranslationException> 
 	}
 
 	/**
+	 * Assigns a value to a variable or to an index.
+	 */
+	private class ValueAssigner extends DefaultVisitor<Void, TranslationException> {
+
+		/**
+		 * The value to assign.
+		 */
+		private ExpressionNode value;
+
+		/**
+		 * The type of the assignment.
+		 */
+		private Type type;
+
+		public ValueAssigner() {
+			// Don't visit the child nodes.
+			visitChildNodes = false;
+		}
+
+		/**
+		 * Assigns the value to the correct variable or array-index.
+		 * @param node The node that determines where to assign the value to.
+		 * @param value The value to assign.
+		 * @throws TranslationException
+		 */
+		public void assign(ExpressionNode node, ExpressionNode value, Type type) throws TranslationException {
+			this.value = value;
+			this.type = type;
+			node.accept(this);
+		}
+
+		@Override
+		public Void visit(ArrayNode node) throws TranslationException {
+
+			unreferenceArray(node, value, type);
+
+			return null;
+		}
+
+		@Override
+		public Void visit(VariableNode node) throws TranslationException {
+			// Get the value.
+			value.accept(ClassTranslator.this);
+			// Cast the value to the correct type.
+			appendCast(value.getType(), type);
+			// Duplicate the value.
+			mv.visitInsn(DUP);
+			// Store the value in the variable with index.
+			mv.visitVarInsn(ASTORE, methodVariableIndexes.get(node.getIdentifier()));
+
+			return null;
+		}
+	}
+
+	/**
+	 * Unreferences an array and either returns the value, or assigns a new value.
+	 * @param node The array node to unreference.
+	 * @param assignValue The value to assign.
+	 * @param type The type of the assignment.
+	 * @throws TranslationException
+	 */
+	private void unreferenceArray(ArrayNode node, ExpressionNode assignValue, Type type) throws TranslationException {
+		Label labelPop1 = new Label();
+		Label labelPop2 = new Label();
+		Label labelPop4 = new Label();
+		Label labelEnd = new Label();
+
+		node.getIndex().accept(this);                   // Get the index.
+		node.getArray().accept(this);                   // Get the array.
+
+		mv.visitInsn(DUP_X1);                           // Duplicate the index
+		mv.visitJumpInsn(IFNULL, labelPop2);            // If null, jump to pop2
+
+		mv.visitInsn(DUP);                              // Duplicate the array
+		mv.visitJumpInsn(IFNULL, labelPop2);            // If null, jump to pop1
+
+		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "intValue", "()I", false);
+		mv.visitInsn(DUP_X1);                           // Duplicate the index
+		mv.visitInsn(DUP2_X1);                          // Duplicate the index and the array and push to the bottom
+
+		mv.visitJumpInsn(IFLT, labelPop4);              // If the index is less then 0, jump to pop4
+
+		mv.visitInsn(ARRAYLENGTH);                      // Get the length of the array
+		mv.visitJumpInsn(IF_ICMPGE, labelPop2);         // If the length is LE to the index jump to pop2
+
+		// Assign the value if one was passed to the method.
+		if (assignValue != null) {
+			// Determine the value to assign.
+			assignValue.accept(this);
+			// Cast the value to the correct type.
+			appendCast(assignValue.getType(), type);
+			// Duplicate the value.
+			mv.visitInsn(DUP_X2);
+			// Assign the value.
+			mv.visitInsn(AASTORE);
+
+		// Otherwise, we need to load the value.
+		} else {
+			mv.visitInsn(AALOAD);
+		}
+
+		mv.visitJumpInsn(GOTO, labelEnd);               // Done! Go to the end!
+
+		mv.visitLabel(labelPop4);                       // We need to pop 4 items
+		mv.visitInsn(POP2);                             // Pop the first 2 items
+		mv.visitLabel(labelPop2);                       // Now we only need to pop 2 items
+		mv.visitInsn(POP);                              // Pop the item
+		mv.visitLabel(labelPop1);                       // Now we only need to pop 1 item
+		mv.visitInsn(POP);                              // Pop the last item
+
+		mv.visitInsn(ACONST_NULL);                      // Set null on the stack
+
+		mv.visitLabel(labelEnd);                        // The end!
+	}
+
+	/**
 	 * Appends a cast from one type to another.
 	 * @param fromType The type to cast from.
 	 * @param toType The type to cast to.
 	 */
 	private void appendCast(Type fromType, Type toType) {
-		if (toType == fromType || fromType == null) {
+		if (Type.equals(toType, fromType) || fromType == null) {
 			return;
 		}
 
 		String operation;
 
-		if (fromType == Type.DECIMAL && toType == Type.INTEGER) {
+		if (Type.equals(fromType, Type.DECIMAL) && Type.equals(toType, Type.INTEGER)) {
 			operation = "toInteger";
-		} else if (fromType == Type.INTEGER && toType == Type.DECIMAL) {
+		} else if (Type.equals(fromType, Type.INTEGER) && Type.equals(toType, Type.DECIMAL)) {
 			operation = "toDecimal";
 		} else {
 			throw new IllegalArgumentException("Unsupported types: " + fromType + ", " + toType);
@@ -714,7 +846,7 @@ public class ClassTranslator implements NodeVisitor<Void, TranslationException> 
 		node.getLhs().accept(this);
 		node.getRhs().accept(this);
 
-		if (node.getType() == Type.DECIMAL) {
+		if (Type.equals(node.getType(), Type.DECIMAL)) {
 			appendGetMathContext();
 		}
 
@@ -725,7 +857,7 @@ public class ClassTranslator implements NodeVisitor<Void, TranslationException> 
 						determineJavaClass(node.getType()),
 						determineJavaClass(node.getLhs().getType()),
 						determineJavaClass(node.getRhs().getType()),
-						node.getType() == Type.DECIMAL ? MathContext.class : null
+						Type.equals(node.getType(), Type.DECIMAL) ? MathContext.class : null
 				),
 				false);
 	}
@@ -861,17 +993,7 @@ public class ClassTranslator implements NodeVisitor<Void, TranslationException> 
 	 * @return The Java type.
 	 */
 	private static Class determineJavaClass(Type type) {
-		if (type == null) {
-			return Object.class;
-		}
-
-		switch (type) {
-			case INTEGER: return Long.class;
-			case BOOLEAN: return Boolean.class;
-			case STRING: return String.class;
-			case DECIMAL: return BigDecimal.class;
-			default: return Date.class;
-		}
+		return JavaTypeHelper.determineJavaType(type);
 	}
 
 	/**
