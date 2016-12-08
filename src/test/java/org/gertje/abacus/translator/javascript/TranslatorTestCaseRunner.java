@@ -10,6 +10,7 @@ import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
 import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
 import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -22,6 +23,10 @@ import org.junit.Assert;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Runs the test case for the JavaScript translator.
@@ -38,7 +43,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		Lexer lexer = new AbacusLexer(abacusTestCase.expression);
 		Parser parser = new Parser(lexer, nodeFactory);
 
-		Node tree;
+		RootNode tree;
 		try {
 			tree = parser.parse();
 		} catch (CompilerException e) {
@@ -51,7 +56,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		AbacusContext abacusContext = new SimpleAbacusContext(sym);
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
 		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
-		JavaScriptTranslator translator = new JavaScriptTranslator();
+		JavaScriptTranslator translator = new JavaScriptTranslator(abacusContext);
 
 		String javascript;
 		try {
@@ -61,9 +66,9 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
-			tree = simplifier.simplify(tree);
+			Node node = simplifier.simplify(tree);
 
-			javascript = translator.translate(tree);
+			javascript = translator.translate(node);
 		} catch (VisitingException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
@@ -71,7 +76,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 			return;
 		}
 
-		if (abacusTestCase.failsWithException && !abacusTestCase.succeedsInInterpreter) {
+		if (abacusTestCase.failsWithException) {
 			Assert.fail(createMessage("Expected exception, but none was thrown."));
 		}
 
@@ -79,7 +84,9 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
 
 		try {
-			nashorn.eval(createJavaScript(javascript));
+			javascript = createJavaScript(javascript);
+			System.out.println(javascript);
+			nashorn.eval(javascript);
 		} catch (ScriptException e) {
 			Assert.fail(createMessage(e.getMessage()));
 		}
@@ -100,7 +107,9 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 	 */
 	private String createJavaScript(String expression) {
 		return
-				"var rand = Math.random;\n" +
+				"// " + abacusTestCase.expression + "\n" +
+				"load('classpath:decimal.min.js');\n" +
+				"var function_rand = Math.random;\n" +
 				"var error = false;\n" +
 				"var message = '';\n" +
 				"\n" +
@@ -108,7 +117,8 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 				"\n" +
 				"var returnValue = " + expression + ";\n" +
 				"\n" +
-				"if (returnValue !== " + formatValueForJavaScript(abacusTestCase.returnValue.value, abacusTestCase.returnValue.type) + ") {\n" +
+				"if (" + determineUnequalsCheck("returnValue", abacusTestCase.returnValue.value,
+						abacusTestCase.returnValue.type) + ") {\n" +
 				"\terror = true;\n" +
 				"\tmessage = 'Incorrect return value; ' + returnValue;\n" +
 				"}\n" +
@@ -150,15 +160,86 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		StringBuilder builder = new StringBuilder();
 
 		for (AbacusTestCase.Value value : abacusTestCase.variableListAfter) {
-			builder.append("if (").append(value.name).append(" !== ")
-						.append(formatValueForJavaScript(value.value, value.type)).append(") {\n")
-					.append("\terror = true;\n")
-					.append("\tmessage = 'Incorrect value for ").append(value.name).append(":' + ").append(value.name)
-						.append(";\n")
+			builder.append("if (");
+
+			if (value.type.isArray()) {
+				List<String> parts = new ArrayList<>();
+				createJavaScriptForCompareArrays(parts, value.name, (ArrayList)value.value, value.type,
+						new LinkedList<Integer>());
+				builder.append(joinStrings(parts, "||"));
+			} else {
+				builder.append(determineUnequalsCheck(value.name, value.value, value.type));
+			}
+
+			builder.append(") {\n")
+						.append("\terror = true;\n")
+						.append("\tmessage = 'Incorrect value for ").append(value.name).append(":' + ")
+						.append(value.name).append(";\n")
 					.append("}\n");
 		}
 
 		return builder.toString();
+	}
+
+	public static String joinStrings(List<String> strings, String separator) {
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < strings.size(); i++) {
+			sb.append(strings.get(i));
+			if(i < strings.size() - 1)
+				sb.append(separator);
+		}
+		return sb.toString();
+	}
+
+	private void createJavaScriptForCompareArrays(List<String> parts, String name, ArrayList array, Type type,
+			LinkedList<Integer> indices) {
+
+		if (array == null) {
+			String nameIndex = "";
+			for (Integer index : indices) {
+				nameIndex = "[" + index + "]" + nameIndex;
+			}
+			parts.add(name + nameIndex + " != null");
+			return;
+		}
+
+		Type subType = type.determineComponentType();
+		for (int i = 0; i < array.size(); i++) {
+			indices.push(i);
+			if (subType.isArray()) {
+				createJavaScriptForCompareArrays(parts, name, (ArrayList)array.get(i), subType, indices);
+			} else {
+				String nameIndex = "";
+				for (Integer index : indices) {
+					nameIndex = "[" + index + "]" + nameIndex;
+				}
+				parts.add(determineUnequalsCheck(name + nameIndex, array.get(i), subType));
+			}
+			indices.pop();
+		}
+	}
+
+	/**
+	 * Creates JavaScript that determines whether a variable and a value are unequal.
+	 * @param name The name of the variable.
+	 * @param value The value.
+	 * @param type The type of the variable.
+	 * @return The JavaScript that does the comparison.
+	 */
+	private String determineUnequalsCheck(String name, Object value, Type type) {
+		String javaScriptValue = formatValueForJavaScript(value, type);
+
+		if (type == Type.DATE) {
+			return "(" + name + " == null ? null : " + name + ".valueOf())"
+					+ " !== "
+					+ "(" + javaScriptValue + " == null ? null : " + javaScriptValue + ".valueOf()) ";
+		}
+
+		if (Type.equals(type, Type.DECIMAL)) {
+			return "(" + name + " == null ? " + javaScriptValue + " != null : " + name + ".cmp(" + javaScriptValue + ") != 0)";
+		}
+
+		return name + " !== " + javaScriptValue;
 	}
 
 	/**
@@ -167,10 +248,31 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 	 * @param type The type of the value.
 	 * @return The value formatted for JavaScript.
 	 */
-	private String formatValueForJavaScript(String value, Type type) {
-		if (type == Type.STRING && value != null) {
+	private String formatValueForJavaScript(Object value, Type type) {
+		if (Type.equals(type, Type.STRING) && value != null) {
 			return "'" + value + "'";
 		}
-		return value;
+
+		if (Type.equals(type, Type.DATE) && value != null) {
+			Date date = Date.valueOf(value.toString());
+			return "new Date(" + date.getTime() + ")";
+		}
+
+		if (Type.equals(type, Type.DECIMAL) && value != null) {
+			return "new Decimal('" + value + "')";
+		}
+
+		if (Type.equals(type, Type.INTEGER) && value != null) {
+			if (value instanceof Double) {
+				return String.valueOf(((Double)value).longValue());
+			}
+			return Long.valueOf((String)value).toString();
+		}
+
+		if (value == null) {
+			return "null";
+		}
+
+		return value.toString();
 	}
 }

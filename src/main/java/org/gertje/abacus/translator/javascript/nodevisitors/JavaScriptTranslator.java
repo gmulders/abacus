@@ -1,14 +1,18 @@
 package org.gertje.abacus.translator.javascript.nodevisitors;
 
+import org.gertje.abacus.context.AbacusContext;
+import org.gertje.abacus.nodes.AbstractComparisonNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
-import org.gertje.abacus.nodes.BinaryOperationNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.FactorNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
@@ -22,533 +26,961 @@ import org.gertje.abacus.nodes.MultiplyNode;
 import org.gertje.abacus.nodes.NegativeNode;
 import org.gertje.abacus.nodes.NeqNode;
 import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.NodeType;
 import org.gertje.abacus.nodes.NotNode;
 import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SubtractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
-import org.gertje.abacus.nodevisitors.AbstractNodeVisitor;
+import org.gertje.abacus.nodevisitors.DefaultVisitor;
+import org.gertje.abacus.nodevisitors.EvaluationException;
+import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
-import org.gertje.abacus.token.Token;
+import org.gertje.abacus.symboltable.SymbolTable;
 import org.gertje.abacus.types.Type;
 
-import java.util.Stack;
+import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-public class JavaScriptTranslator extends AbstractNodeVisitor<Void, VisitingException> {
-
-	/**
-	 * Deze stack gebruiken we om gedeeltelijke vertalingen in op te slaan.
-	 */
-	protected Stack<String> partStack;
-	
-	/**
-	 * Deze stack gebruiken we om variabelen die we gebruiken binnen een ifNode op te slaan. Dit is nodig omdat 
-	 * JavaScript anders met NULL waardes omgaat dan Abacus.
-	 */
-	protected Stack<String> variableStack;
+/**
+ * Translator to translate an AST to JavaScript.
+ */
+public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException> {
 
 	/**
-	 * Deze stack gebruiken we om afgeleide if-statements in op te slaan, dit is inclusief toekenning aan een variabele.
+	 * The context for this evaluator.
 	 */
-	protected Stack<String> declarationStack;
+	private final AbacusContext abacusContext;
+
+	/**
+	 * De symboltable met de variabelen en de functies.
+	 */
+	protected SymbolTable symbolTable;
+
+	/**
+	 * The translation result.
+	 */
+	private StringBuilder expression;
+
+	/**
+	 * The result of the evaluation.
+	 */
+	private String resultName;
 
 	/**
 	 * Constructor.
 	 */
-	public JavaScriptTranslator() {
-		partStack = new Stack<String>();
-		variableStack = new Stack<String>();
-		declarationStack = new Stack<String>();
+	public JavaScriptTranslator(AbacusContext abacusContext) {
+		this.abacusContext = abacusContext;
+		this.symbolTable = abacusContext.getSymbolTable();
+
+		expression = new StringBuilder();
 	}
 
 	public String translate(Node node) throws VisitingException {
-		
-		ExpressionTranslator expressionTranslator = new ExpressionTranslator(node);
 
-		StringBuilder translation = new StringBuilder();
-		
-		// Wrap de expressie in een closure. Wanneer er geen declaraties zijn en er zijn geen controles op null en de
-		// node is een NodeList, dan is deze closure onnodig. Voorlopig laat ik dit wel zo.
-		translation.append("(function(){")
-			.append(expressionTranslator.getDeclarations())
-			.append(expressionTranslator.getNullableCheck())
-			.append("return ").append(expressionTranslator.getExpression()).append(";")
-		.append("})()");
+		expression.append("(function(){\n");
 
-		return translation.toString();
+		expression.append(determineMathContext());
+		node.accept(this);
+
+		if (node.getNodeType() == NodeType.EXPRESSION) {
+			expression.append("return ").append(determineVariableName(node)).append(";\n");
+		} else {
+			expression.append("return ").append(resultName).append(";\n");
+		}
+
+		return expression.append("})();\n").toString();
 	}
 	
 	@Override
 	public Void visit(AddNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "+");
-		return null;
+		throw new VisitingException(
+				"The Add-node was visited, which means that the node was not properly simplified.", node);
 	}
 
 	@Override
 	public Void visit(AndNode node) throws VisitingException {
-		ExpressionTranslator lhsExpression = new ExpressionTranslator(node.getLhs());
-		ExpressionTranslator rhsExpression = new ExpressionTranslator(node.getRhs());
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
-		// Bouw javascript op die
-		StringBuilder translation = new StringBuilder();
-		translation
-				.append("var _").append(variableStack.size()).append("=(function(){")
-					.append("var _l=(function(){")
-						.append(lhsExpression.getDeclarations())
-						.append(lhsExpression.getNullableCheck())
-						.append("return ").append(lhsExpression.getExpression())
-					.append("})();")
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
 
-					.append("if(_l===false)return false;")
+		lhs.accept(this);
 
-					.append("var _r=(function(){")
-						.append(rhsExpression.getDeclarations())
-						.append(rhsExpression.getNullableCheck())
-						.append("return ").append(rhsExpression.getExpression())
-					.append("})();")
+		appendDefinition(node);
 
-					.append("if(_r===false)return false;")
-					.append("if(_l==null||_r==null)return null;")
+		expression.append("if (").append(left).append(" != null && !").append(left).append(") {")
+						.append(name).append(" = false;")
+					.append("} else {");
 
-					.append("return true;")
-				.append("})()");
+		rhs.accept(this);
 
-		declarationStack.push(translation.toString());
-		String variable = "_" + variableStack.size();
-		partStack.push(variable);
-		variableStack.push(variable);
+		expression.append("if (").append(right).append(" != null && !").append(right).append(") {")
+						.append(name).append(" = false;")
+					.append("} else if (").append(left).append(" == null || ").append(right).append(" == null) {")
+						.append(name).append(" = null;")
+					.append("} else {")
+						.append(name).append(" = true;")
+					.append("}")
+				.append("}\n");
+
+		return null;
+	}
+
+	@Override
+	public Void visit(ArrayNode node) throws VisitingException {
+		ExpressionNode array = node.getArray();
+		ExpressionNode index = node.getIndex();
+
+		array.accept(this);
+		index.accept(this);
+
+		String name = determineVariableName(node);
+		String arrayName = determineVariableName(array);
+		String indexName = determineVariableName(index);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ")
+				.append(arrayName).append(" == null || ")
+				.append(indexName).append(" == null || ")
+				.append(indexName).append(" >= ").append(arrayName).append(".length ||")
+				.append(indexName).append(" < 0 ? null : ")
+				.append(arrayName).append("[").append(indexName).append("];\n");
+
 		return null;
 	}
 
 	@Override
 	public Void visit(AssignmentNode node) throws VisitingException {
-		node.getLhs().accept(this);
-		// Pop tussendoor even de assignee van de variabelestack om te voorkomen dat we controleren of de assignee niet
-		// null is. Anders zou je zoiets krijgen: a = 3 --> (function(){if(a==null)return null;return a = 3;})()
-		variableStack.pop();
+//		ExpressionNode lhs = node.getLhs();
+//		ExpressionNode rhs = node.getRhs();
+//
+//		String name = determineVariableName(node);
+//		String right = determineVariableName(rhs);
+//
+//		String identifier = ((VariableNode) lhs).getIdentifier();
+//
+//		rhs.accept(this);
+//
+//		appendDefinition(node);
+//		appendAssignment(identifier, node.getType(), right, rhs.getType());
+//		appendAssignment(name, node.getType(), identifier, node.getType());
 
-		node.getRhs().accept(this);
 
-		String rhsScript = partStack.pop();
-		String lhsScript = partStack.pop();
 
-		// Cast the rhs if neccesary.
-		if (node.getLhs().getType() == Type.INTEGER && node.getRhs().getType() == Type.DECIMAL) {
-			// Use de double tilde to do the casting. Single tilde is the NOT operator. JavaScript bitwise operators
-			// cast their operands to signed 32-bits integer values.
-			rhsScript = "~~" + rhsScript;
-		}
 
-		String script = parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), lhsScript)
-				+ "="
-				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), rhsScript);
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
-		partStack.push(script);
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+
+		ValueAssigner valueAssigner = new ValueAssigner();
+		valueAssigner.assign(lhs, rhs, node.getType());
+
+		appendDefinition(node);
+		appendAssignment(name, node.getType(), left, lhs.getType());
+
 		return null;
 	}
 
 	@Override
 	public Void visit(BooleanNode node) throws VisitingException {
-		if (node.getValue() == null) {
-			partStack.push("null");
-		} else {
-			partStack.push(node.getValue().booleanValue() ? "true" : "false");
+		String value = "null";
+		if (node.getValue() != null) {
+			value = node.getValue() ? "true" : "false";
 		}
+		appendDefinition(node);
+		expression.append(determineVariableName(node)).append(" = ").append(value).append(";\n");
+		return null;
+	}
+
+	@Override
+	public Void visit(ConcatStringNode node) throws VisitingException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+		expression.append(left).append("==null||").append(right).append("==null ? null : ");
+		expression.append(left).append(" + ").append(right).append(";\n");
 		return null;
 	}
 
 	@Override
 	public Void visit(DateNode node) throws VisitingException {
-		// TODO: data (meervoud van datum) kunnen we nog niet parsen...
-		partStack.push("new Date('TODO')");
+		String value = "null";
+		if (node.getValue() != null) {
+			value = "new Date(" + node.getValue().getTime() + ")";
+		}
+		appendDefinition(node);
+		expression.append(determineVariableName(node)).append(" = ").append(value).append(";\n");
+		return null;
+	}
+
+	@Override
+	public Void visit(DecimalNode node) throws VisitingException {
+		String value = "null";
+		if (node.getValue() != null) {
+			value = "new Decimal(\"" + node.getValue().toPlainString() + "\")";
+		}
+		appendDefinition(node);
+		expression.append(determineVariableName(node)).append(" = ").append(value).append(";\n");
 		return null;
 	}
 
 	@Override
 	public Void visit(DivideNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "/");
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+
+		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
+
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append(left).append(".div(").append(right).append(");");
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(".div(new Decimal(").append(right).append("));");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append("(new Decimal(").append(left).append(")).div(").append(right).append(");");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append("(").append(left).append(" / ").append(right).append(")|0;");
+		}
+
+		expression.append("\n");
+
 		return null;
 	}
 
 	@Override
 	public Void visit(EqNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "==");
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+
+		if (lhs instanceof NullNode) {
+			expression.append(right).append("==null;\n");
+			return null;
+		} else if (rhs instanceof NullNode) {
+			expression.append(left).append("==null;\n");
+			return null;
+		}
+
+		expression.append(left).append("==null && ").append(right).append("==null ? true : ");
+		expression.append(left).append("==null || ").append(right).append("==null ? false : ");
+		appendComparison(lhs, rhs, "==");
 		return null;
 	}
 
 	@Override
 	public Void visit(FactorNode node) throws VisitingException {
 		node.getArgument().accept(this);
-		partStack.push("(" + partStack.pop() + ")");
-		return null;
-	}
-
-	@Override
-	public Void visit(DecimalNode node) throws VisitingException {
-		if (node.getValue() == null) {
-			partStack.push("null");
-		} else {
-			partStack.push(node.getValue().toString());
-		}
 		return null;
 	}
 
 	@Override
 	public Void visit(FunctionNode node) throws VisitingException {
-		// Loop eerst over alle parameters heen, om de stack op te bouwen.
-		for (Node childNode : node.getParameters()) {
-			childNode.accept(this);
+		// TODO: Afmaken.
+		List<ExpressionNode> parameters = node.getParameters();
+		String identifier = node.getIdentifier();
+
+		String name = determineVariableName(node);
+
+		// Create a list with all parameter names.
+		List<String> paramNames = new ArrayList<>();
+
+		// Create a list with all parameter types.
+		List<Type> paramTypes = new ArrayList<>();
+
+		// Loop over all parameters.
+		for (ExpressionNode parameter : parameters) {
+			parameter.accept(this);
+			paramNames.add(determineVariableName(parameter));
+			paramTypes.add(parameter.getType());
 		}
-		
-		String arguments = "";
-		// Haal evenveel elementen van de stack als er zojuist bijgekomen zijn.
-		for (int i = 0; i < node.getParameters().size(); i++) {
-			arguments = partStack.pop() + (i != 0 ? "," : "") + arguments;
+
+		appendDefinition(node);
+
+		// Maak de functie-aanroep.
+		expression.append(name).append(" = function_").append(identifier).append("(");
+		Iterator<String> it = paramNames.iterator();
+		while (it.hasNext()) {
+			expression.append(it.next());
+			if (it.hasNext()) {
+				expression.append(", ");
+			}
 		}
-		
-		partStack.push(node.getIdentifier() + "(" + arguments + ")");
+		expression.append(");\n");
+
+		// Controleer of de variabele bestaat. Als deze niet bestaat gooien we een exceptie.
+		if (!symbolTable.getExistsFunction(identifier, paramTypes)) {
+			throw new VisitingException("Function '" + identifier + "' does not exist.", node);
+		}
+
 		return null;
 	}
 
 	@Override
 	public Void visit(GeqNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, ">=");
+		appendComparison(node, ">=");
 		return null;
 	}
 
 	@Override
 	public Void visit(GtNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, ">");
+		appendComparison(node, ">");
 		return null;
 	}
 
 	@Override
 	public Void visit(IfNode node) throws VisitingException {
+		ExpressionNode condition = node.getCondition();
+		ExpressionNode ifBody = node.getIfBody();
+		ExpressionNode elseBody = node.getElseBody();
 
-		ExpressionTranslator conditionTranslator = new ExpressionTranslator(node.getCondition());
-		ExpressionTranslator ifBodyTranslator = new ExpressionTranslator(node.getIfBody());
-		ExpressionTranslator elseBodyTranslator = new ExpressionTranslator(node.getElseBody());
-		
-		// Bouw javascript op die
-		StringBuilder ifExpression = new StringBuilder();
-		ifExpression
-			.append("var _").append(variableStack.size()).append(" = (function(){")
-				.append(conditionTranslator.getDeclarations())
-				.append(conditionTranslator.getNullableCheck())
-				.append("if(").append(conditionTranslator.getExpression()).append("){")
-					.append(ifBodyTranslator.getDeclarations())
-					.append(ifBodyTranslator.getNullableCheck())
-					.append("return ").append(ifBodyTranslator.getExpression()).append(";")
-				.append("}else{")
-					.append(elseBodyTranslator.getDeclarations())
-					.append(elseBodyTranslator.getNullableCheck())
-					.append("return ").append(elseBodyTranslator.getExpression()).append(";")
-				.append("}")
-			.append("})()");
-		
-		declarationStack.push(ifExpression.toString());
-		String variable = "_" + variableStack.size();
-		partStack.push(variable);
-		variableStack.push(variable);
+		String name = determineVariableName(node);
+		String cond = determineVariableName(condition);
+		String ifb = determineVariableName(ifBody);
+		String elseb = determineVariableName(elseBody);
+
+		condition.accept(this);
+
+		appendDefinition(node);
+
+		expression.append("if (").append(cond).append(" == null) {\n")
+						.append(name).append(" = null;\n")
+					.append("} else if (").append(cond).append(") {\n");
+
+		ifBody.accept(this);
+		appendAssignment(name, node.getType(), ifb, ifBody.getType());
+
+		expression.append("} else {\n");
+
+		elseBody.accept(this);
+		appendAssignment(name, node.getType(), elseb, elseBody.getType());
+
+		expression.append("}\n");
 		return null;
 	}
 
 	@Override
 	public Void visit(IntegerNode node) throws VisitingException {
-		if (node.getValue() == null) {
-			partStack.push("null");
-		} else {
-			partStack.push(node.getValue().toString());
+		String value = "null";
+		if (node.getValue() != null) {
+			value = node.getValue().toString() + "|0";
 		}
+		appendDefinition(node);
+		expression.append(determineVariableName(node)).append(" = ").append(value).append(";\n");
 		return null;
 	}
 
 	@Override
 	public Void visit(LeqNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "<=");
+		appendComparison(node, "<=");
 		return null;
 	}
 
 	@Override
 	public Void visit(LtNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "<");
+		appendComparison(node, "<");
 		return null;
 	}
 
 	@Override
 	public Void visit(ModuloNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "%");
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+
+		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
+
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append("(").append(left).append(".toNumber()|0) % (").append(right).append(".toNumber()|0);");
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append("(").append(left).append(".toNumber()|0) % ").append(right).append(";");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append(left).append(" % (").append(right).append(".toNumber()|0);");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(" % ").append(right).append(";");
+		}
+
+		expression.append("\n");
+
 		return null;
 	}
 
 	@Override
 	public Void visit(MultiplyNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "*");
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+
+		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
+
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append(left).append(".mul(").append(right).append(");");
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(".mul(new Decimal(").append(right).append("));");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append("(new Decimal(").append(left).append(")).mul(").append(right).append(");");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(" * ").append(right).append(";");
+		}
+
+		expression.append("\n");
+
 		return null;
 	}
 
 	@Override
 	public Void visit(NegativeNode node) throws VisitingException {
-		node.getArgument().accept(this);
-		
-		partStack.push("-" + partStack.pop());
+		ExpressionNode argument = node.getArgument();
+
+		argument.accept(this);
+
+		String name = determineVariableName(node);
+		String arg = determineVariableName(argument);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+		expression.append(arg).append("==null ? null : ");
+
+		if (Type.equals(argument.getType(), Type.DECIMAL)) {
+			expression.append(arg).append(".neg();\n");
+		} else {
+			expression.append("-").append(arg).append(";\n");
+		}
+
 		return null;
 	}
 
 	@Override
 	public Void visit(NeqNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "!=");
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+
+		if (lhs instanceof NullNode) {
+			expression.append(right).append("!=null;\n");
+			return null;
+		} else if (rhs instanceof NullNode) {
+			expression.append(left).append("!=null;\n");
+			return null;
+		}
+
+		expression.append(left).append("==null && ").append(right).append("==null ? false : ");
+		expression.append(left).append("==null || ").append(right).append("==null ? true : ");
+		appendComparison(lhs, rhs, "!=");
 		return null;
 	}
 
 	@Override
 	public Void visit(NotNode node) throws VisitingException {
-		node.getArgument().accept(this);
-		
-		partStack.push("!" + partStack.pop());
+		ExpressionNode argument = node.getArgument();
+
+		argument.accept(this);
+
+		String name = determineVariableName(node);
+		String arg = determineVariableName(argument);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+		expression.append(arg).append("==null ? null : !").append(arg).append(";\n");
+
 		return null;
 	}
 
 	@Override
 	public Void visit(NullNode node) throws VisitingException {
-		partStack.push("null");
+		appendDefinition(node);
+		expression.append(determineVariableName(node)).append(" = null;\n");
 		return null;
 	}
 
 	@Override
 	public Void visit(OrNode node) throws VisitingException {
-		ExpressionTranslator lhsExpression = new ExpressionTranslator(node.getLhs());
-		ExpressionTranslator rhsExpression = new ExpressionTranslator(node.getRhs());
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
-		// Bouw javascript op die
-		StringBuilder translation = new StringBuilder();
-		translation
-				.append("var _").append(variableStack.size()).append("=(function(){")
-					.append("var _l=(function(){")
-						.append(lhsExpression.getDeclarations())
-						.append(lhsExpression.getNullableCheck())
-						.append("return ").append(lhsExpression.getExpression())
-					.append("})();")
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
 
-					.append("if(_l===true)return true;")
+		lhs.accept(this);
 
-					.append("var _r=(function(){")
-						.append(rhsExpression.getDeclarations())
-						.append(rhsExpression.getNullableCheck())
-						.append("return ").append(rhsExpression.getExpression())
-					.append("})();")
+		appendDefinition(node);
 
-					.append("if(_r===true)return true;")
-					.append("if(_l==null||_r==null)return null;")
+		expression.append("if (").append(left).append(" != null && ").append(left).append(") {")
+						.append(name).append(" = true;")
+					.append("} else {");
 
-					.append("return false;")
-				.append("})()");
+		rhs.accept(this);
 
-		declarationStack.push(translation.toString());
-		String variable = "_" + variableStack.size();
-		partStack.push(variable);
-		variableStack.push(variable);
+		expression.append("if (").append(right).append(" != null && ").append(right).append(") {")
+						.append(name).append(" = true;")
+					.append("} else if (").append(left).append(" == null || ").append(right).append(" == null) {")
+						.append(name).append(" = null;")
+					.append("} else {")
+						.append(name).append(" = false;")
+					.append("}")
+				.append("}\n");
+
 		return null;
 	}
 
 	@Override
 	public Void visit(PositiveNode node) throws VisitingException {
-		node.getArgument().accept(this);
-		
-		partStack.push(partStack.pop());
+		ExpressionNode argument = node.getArgument();
+		argument.accept(this);
+
+		String name = determineVariableName(node);
+		String arg = determineVariableName(argument);
+
+		appendDefinition(node);
+		expression.append(name).append(" = ").append(arg).append(";\n");
 		return null;
 	}
 
 	@Override
 	public Void visit(PowerNode node) throws VisitingException {
-		node.getBase().accept(this);
-		node.getPower().accept(this);
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
-		String power = partStack.pop();
-		String base = partStack.pop();
+		lhs.accept(this);
+		rhs.accept(this);
 
-		partStack.push("Math.pow(" + base + ", " + power + ")");
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ")
+				.append(left).append("==null || ").append(right).append("==null ? null : ");
+
+		if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append("Math.pow(").append(left).append(", ").append(right).append(")|0;\n");
+			return null;
+		}
+
+		if (Type.equals(lhs.getType(), Type.INTEGER)) {
+			left = "new Decimal(" + left + ")";
+		}
+
+		if (Type.equals(rhs.getType(), Type.INTEGER)) {
+			right = "new Decimal(" + right + ")";
+		}
+
+		expression.append("Decimal.pow(").append(left).append(", ").append(right).append(");\n");
+
+		return null;
+	}
+
+	@Override
+	public Void visit(RootNode node) throws VisitingException {
+		node.getStatementListNode().accept(this);
 		return null;
 	}
 
 	@Override
 	public Void visit(StatementListNode node) throws VisitingException {
-		// Wanneer er 1 statement in de lijst zit hoeven we dit statement niet te bundelen in een closure.
-		if (node.size() == 1) {
-			// Haal het ene element op en zorg dat het op de stack terecht komt.
-			node.get(0).accept(this);
-			// Doe NIETS: stack.push(stack.pop());
-			return null;
-		}
+		Iterator<Node> it = node.iterator();
+		while (it.hasNext()) {
+			Node subNode = it.next();
 
-		// Er zitten meerdere statements in de lijst, bundel ze in een closure.
-		String closure = "(function(){";
+			subNode.accept(this);
 
-		// Haal evenveel elementen van de stack als er zojuist bijgekomen zijn.
-		for (int i = 0; i < node.size(); i++) {
-			// Bewaar het aantal variabelen dat nu op de variabelen stack zit.
-			int variableStackSize = variableStack.size();
-			// Zorg dat de JavaScript voor dit ene element op de stack komt.
-			node.get(i).accept(this);
-			// Wanneer dit niet het laatste statement is moeten we alle variabelen die nog op de stack zitten poppen om
-			// te voorkomen dat we allerlei checks op null gaan doen.
-			if (i < node.size() - 1) {
-				for (int j = 0; j < variableStack.size() - variableStackSize; j++) {
-					variableStack.pop();
-				}
+			if (subNode.getNodeType() == NodeType.EXPRESSION && !it.hasNext()) {
+				resultName = determineVariableName(subNode);
 			}
-			// Zet voor het laatste statement 'return '.
-			closure += (i == node.size() - 1 ? "return ": "") + partStack.pop() + ";";
 		}
 
-		closure += "})()";
-
-		partStack.push(closure);
 		return null;
 	}
 
 	@Override
 	public Void visit(StringNode node) throws VisitingException {
-		if (node.getValue() == null) {
-			partStack.push("null");
-		} else {
-			partStack.push("'" + node.getValue() + "'");
+		String value = "null";
+		if (node.getValue() != null) {
+			value = '"' + escapeJavaScript(node.getValue()) + '"';
 		}
+		appendDefinition(node);
+		expression.append(determineVariableName(node)).append(" = ").append(value).append(";\n");
 		return null;
 	}
 
 	@Override
-	public Void visit(SubstractNode node) throws VisitingException {
-		createScriptForBinaryOperationNode(node, "-");
+	public Void visit(SubtractNode node) throws VisitingException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+
+		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
+
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append(left).append(".sub(").append(right).append(");");
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(".sub(new Decimal(").append(right).append("));");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append("(new Decimal(").append(left).append(")).sub(").append(right).append(");");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(" - ").append(right).append(";");
+		}
+
+		expression.append("\n");
+
+		return null;
+	}
+
+	@Override
+	public Void visit(SumNode node) throws VisitingException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+
+		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
+
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append(left).append(".add(").append(right).append(");");
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(".add(new Decimal(").append(right).append("));");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append("(new Decimal(").append(left).append(")).add(").append(right).append(");");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(" + ").append(right).append(";");
+		}
+
+		expression.append("\n");
+
 		return null;
 	}
 
 	@Override
 	public Void visit(VariableNode node) throws VisitingException {
-		// Duw de identifier op de variabelen stack, doe dit zodat we hierover kunnen beschikken in een IfNode. Dit doen
-		// we omdat JavaScript anders omgaat met NULL-waardes dan Abacus.
-		variableStack.push(node.getIdentifier());
-		partStack.push(node.getIdentifier());
+		appendDefinition(node);
+
+		String identifier = node.getIdentifier();
+		String name = determineVariableName(node);
+
+		expression.append(name).append(" = ").append(identifier).append(";\n");
 		return null;
 	}
 
 	/**
-	 * Voegt indien nodig haakjes om het JavaScript stukje.
-	 * 
-	 * @param parentNodePrecedence getal van volgorde van executie van de parent node.
-	 * @param childNodePrecedence getal van volgorde van executie van de child node.
-	 * @param part Het stukje JavaScript.
-	 * @return het JavaScript stukje met, indien nodig, haakjes eromheen.
+	 * Assigns a value to a variable or to an index.
 	 */
-	protected static String parenthesize(int parentNodePrecedence, int childNodePrecedence, String part) {
-		// Wanneer deze node een lagere prio heeft dan de node onder hem moeten we haakjes toevoegen.
-		if (parentNodePrecedence < childNodePrecedence) {
-			part = "(" + part + ")";
+	private class ValueAssigner extends DefaultVisitor<Void, VisitingException> {
+
+		/**
+		 * The value to assign.
+		 */
+		private ExpressionNode value;
+
+		/**
+		 * The type of the assignment.
+		 */
+		private Type type;
+
+		public ValueAssigner() {
+			// Don't visit the child nodes.
+			visitChildNodes = false;
 		}
-		return part;
+
+		/**
+		 * Assigns the value to the correct variable or array-index.
+		 * @param node The node that determines where to assign the value to.
+		 * @param value The value to assign.
+		 * @param type The type of the assignment.
+		 * @throws VisitingException
+		 */
+		public void assign(ExpressionNode node, ExpressionNode value, Type type) throws VisitingException {
+			this.value = value;
+			this.type = type;
+
+			// Determine the value to assign.
+			value.accept(JavaScriptTranslator.this);
+
+			appendDefinition(node);
+
+			node.accept(this);
+		}
+
+		@Override
+		public Void visit(ArrayNode node) throws VisitingException {
+			String name = determineVariableName(node);
+			String arrayName = determineVariableName(node.getArray());
+			String indexName = determineVariableName(node.getIndex());
+			String valueName = determineVariableName(value);
+
+			// Get the array.
+			node.getArray().accept(JavaScriptTranslator.this);
+			// Determine the index.
+			node.getIndex().accept(JavaScriptTranslator.this);
+
+			expression.append("if (").append(arrayName).append(" == null || ").append(indexName).append(" == null || ")
+					.append(indexName).append(" >= ").append(arrayName).append(".length || ")
+					.append(indexName).append(" < 0) {\n")
+					.append("\t").append(name).append(" = null;\n")
+					.append("} else {\n")
+					.append("\t").append(name).append(" = ").append(arrayName).append("[").append(indexName)
+					.append("] = ").append(castValue(valueName, value.getType(), node.getType())).append(";\n")
+					.append("}\n");
+
+			return null;
+		}
+
+		@Override
+		public Void visit(VariableNode node) throws VisitingException {
+			String name = determineVariableName(node);
+
+			// Determine the name of the value.
+			String valueName = determineVariableName(value);
+			// Determine the identifier of the String.
+			String identifier = node.getIdentifier();
+			// Assign the value to the variable in the symbol table.
+			appendAssignment(identifier, node.getType(), valueName, value.getType());
+			appendAssignment(name, node.getType(), identifier, node.getType());
+
+			return null;
+		}
 	}
 
 	/**
-	 * Maakt JavaScript aan voor een node die een lhs en een rhs side heeft.
-	 * @param node De node die een binaire operatie voorstelt.
-	 * @param operator De JavaScript representatie van de operatie.
+	 * Appends an assignment to the expression.
+	 * @param name The name of the variable to assign to.
+	 * @param nodeType The type of the variable to assign to.
+	 * @param value The value to assign to the variable.
+	 * @param valueType The type of the value to assign to the variable.
+	 */
+	private void appendAssignment(String name, Type nodeType, String value, Type valueType) {
+		expression.append(name).append(" = ").append(castValue(value, valueType, nodeType)).append(";\n");
+	}
+
+	/**
+	 * Casts the given value from the given from-type, to the given to-type.
+	 * @param value The name of the variable holding the value.
+	 * @param fromType The type to cast from.
+	 * @param toType The type to cast to.
+	 */
+	private String castValue(String value, Type fromType, Type toType) {
+		if (Type.equals(fromType, Type.INTEGER) && Type.equals(toType, Type.DECIMAL)) {
+			return "new Decimal(" + value + ")";
+		}
+
+		if (Type.equals(fromType, Type.DECIMAL) && Type.equals(toType, Type.INTEGER)) {
+			return value + ".toNumber()|0";
+		}
+
+		return value;
+	}
+
+	/**
+	 * Appends a comparison to the {@link StringBuilder}.
+	 * @param node The node to build the comparison for.
+	 * @param comparator A string representing the Java comparison operator.
 	 * @throws VisitingException
 	 */
-	protected void createScriptForBinaryOperationNode(BinaryOperationNode node, String operator)
-			throws VisitingException {
-		node.getLhs().accept(this);
-		node.getRhs().accept(this);
-		
-		String rhsScript = partStack.pop();
-		String lhsScript = partStack.pop();
-		
-		String script = parenthesize(node.getPrecedence(), node.getLhs().getPrecedence(), lhsScript)
-				+ operator 
-				+ parenthesize(node.getPrecedence(), node.getRhs().getPrecedence(), rhsScript);
-		
-		partStack.push(script);
+	private void appendComparison(AbstractComparisonNode node, String comparator) throws VisitingException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
+
+		lhs.accept(this);
+		rhs.accept(this);
+
+		String name = determineVariableName(node);
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ");
+
+		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
+
+		appendComparison(lhs, rhs, comparator);
 	}
-	
+
 	/**
-	 * Inner klasse om een expressie te kunnen vertalen. (Let op: met expressie bedoel ik hier een onderdeel van een 
-	 * if-statement, zie ook {@link org.gertje.abacus.parser.Parser#expression(Token)} .)
+	 * Appends a comparison to the expression.
+	 * @param lhs The left hand side of the expression.
+	 * @param rhs The right hand side of the expression.
+	 * @param comparator The comparator to use.
 	 */
-	private class ExpressionTranslator {
-		/** StringBuilder om de declaraties in op te bouwen. */
-		StringBuilder declarations;
-		/** StringBuilder om de nullable controle in op te bouwen. */
-		StringBuilder nullableCheck;
-		/** String om de expressie in op te bouwen. */
-		String expression;
+	private void appendComparison(ExpressionNode lhs, ExpressionNode rhs, String comparator) {
+		String left = determineVariableName(lhs);
+		String right = determineVariableName(rhs);
 
-		/**
-		 * Maakt een nieuwe instantie aan. Vertaal de expressie en bouw nodige gedeelten op.
-		 * @throws VisitingException 
-		 */
-		private ExpressionTranslator(Node node) throws VisitingException {
-			declarations = new StringBuilder();
-			nullableCheck = new StringBuilder();
-			
-			// Haal de grootte van de stapel met variabelen op, zodat we straks weten hoeveel we eraf moeten halen.
-			int size = variableStack.size();
-
-			// Visit de node.
-			node.accept(JavaScriptTranslator.this);
-			
-			expression = partStack.pop();
-			createNullableScript(size);
-
-			// Loop over alle elementen in de ifStatementStack heen, om deze achter elkaar te plakken.
-			while(!declarationStack.empty()) {
-				declarations.append(declarationStack.pop()).append(";");
-			}
-		}
-
-		/**
-		 * Maakt het gedeelte waar gecontroleerd wordt of alle variabelen wel netjes gezet zijn. Dit doen we omdat 
-		 * JavaScript anders met null-waarden omgaat dan Abacus.
-		 * 
-		 * @param size De grootte van de variabelestack voordat de node waarvoor nullablescript aangemaakt moet worden 
-		 * 			ge-visit was.
-		 */
-		protected void createNullableScript(int size) {
-			// Wanneer de index tot waar we de stack moeten poppen kleiner of gelijk is aan de stackgrootte zijn we klaar.
-			if (size >= variableStack.size()) {
-				return;
-			}
-
-			// Open de if.
-			nullableCheck.append("if(");
-			
-			// Loop over de variabelen heen die null kunnen zijn.
-			while(variableStack.size() > size) {
-				// Controleer of de variabele gelijk is aan null.
-				nullableCheck.append(variableStack.pop()).append("==null");
-				
-				// Wanneer dit niet de laatste in de stack is moeten we het 'of' teken erachter aan tonen.
-				if (variableStack.size() != size) {
-					nullableCheck.append("||");
-				}
-			}
-			
-			// Sluit de if, wanneer aan de conditie voldaan wordt geven we null terug.
-			nullableCheck.append(")return null;");
-		}
-
-		public StringBuilder getDeclarations() {
-			return declarations;
-		}
-
-		public StringBuilder getNullableCheck() {
-			return nullableCheck;
-		}
-
-		public String getExpression() {
-			return expression;
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append(left).append(".cmp(").append(right).append(") ").append(comparator).append(" 0;\n");
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
+			expression.append(left).append(".cmp(new Decimal(").append(right).append(")) ").append(comparator).append(" 0;\n");
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
+			expression.append("new Decimal(").append(left).append(").cmp(").append(right).append(") ").append(comparator).append(" 0;\n");
+		} else if (Type.equals(lhs.getType(), Type.DATE) && Type.equals(rhs.getType(), Type.DATE)) {
+			expression.append(left).append(".valueOf() ").append(comparator).append(" ").append(right).append(".valueOf();\n");
+		} else {
+			expression.append(left).append(" ").append(comparator).append(" ").append(right).append(";\n");
 		}
 	}
+
+	/**
+	 * Appends the definition of the variable of the given node.
+	 * @param node The node to create the variable for.
+	 */
+	private void appendDefinition(ExpressionNode node) {
+		expression.append("var ").append(determineVariableName(node)).append(";\n");
+	}
+
+	/**
+	 * Determines the name of the variable that represents this node.
+	 * @param node The node.
+	 * @return The name of the variable that represents this node.
+	 */
+	private static String determineVariableName(Node node) {
+		return "n" + node.getId();
+	}
+
+	/**
+	 * Determines the Java-string representation of the {@link MathContext}.
+	 * @return The Java-string representation of the {@link MathContext}.
+	 */
+	private String determineMathContext() {
+		MathContext mathContext = abacusContext.getMathContext();
+		return "Decimal.config({ precision: " + mathContext.getPrecision() + ", rounding: Decimal.ROUND_"
+				+ mathContext.getRoundingMode() + " });\n";
+	}
+
+	/**
+	 * Escapes a string so it can be used as a Java string in Java-source code.
+	 * @param input The string to be escaped.
+	 * @return The escaped string.
+	 */
+	public static String escapeJavaScript(String input) {
+		StringBuilder result = new StringBuilder(input.length() + 50);
+
+		for (int i = 0; i < input.length(); i++) {
+
+			// Determine the escaped value of the currect character.
+			char currentChar = input.charAt(i);
+			String filtered = null;
+			if (currentChar == '"') {
+				filtered = "\\\"";
+			} else if (currentChar == '\\') {
+				filtered = "\\\\";
+			} else if (currentChar == '\b') {
+				filtered = "\\b";
+			} else if (currentChar == '\n') {
+				filtered = "\\n";
+			} else if (currentChar == '\t') {
+				filtered = "\\t";
+			} else if (currentChar == '\f') {
+				filtered = "\\f";
+			} else if (currentChar == '\r') {
+				filtered = "\\r";
+			} else if (currentChar < 0x20 || currentChar > 0x7f) {
+				filtered = Integer.toHexString(currentChar | 0x10000).substring(1);
+			}
+
+			if (filtered == null) {
+				result.append(input.charAt(i));
+			} else {
+				result.append(filtered);
+			}
+		}
+
+		return result.toString();
+	}
+
 }
