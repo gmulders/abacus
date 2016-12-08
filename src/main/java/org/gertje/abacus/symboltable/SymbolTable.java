@@ -1,12 +1,17 @@
 package org.gertje.abacus.symboltable;
 
-import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.types.Type;
 
 import java.util.List;
 
 
 public interface SymbolTable {
+
+	/**
+	 * Voegt de variabele toe aan de symboltable, wanneer de variabele al bestaat wordt de waarde hiervan overschreven.
+	 */
+	void addVariable(Variable variable);
 
 	/**
 	 * Bepaalt of de variabele met de meegegeven identifier bestaat.
@@ -20,7 +25,7 @@ public interface SymbolTable {
 	 * @param identifier
 	 * @param value
 	 */
-	void setVariableValue(String identifier, Type type, Object value) throws IllegalTypeException;
+	void setVariableValue(String identifier, Object value) throws IllegalTypeException, NoSuchVariableException;
 
 	/**
 	 * Geeft de waarde van de variabele met de meegegeven identifier terug.
@@ -68,5 +73,5 @@ public interface SymbolTable {
 	 * @param params
 	 * @return het return type van de functie.
 	 */
-	Type getFunctionReturnType(String identifier, List<Node> params) throws NoSuchFunctionException;
+	Type getFunctionReturnType(String identifier, List<ExpressionNode> params) throws NoSuchFunctionException;
 }

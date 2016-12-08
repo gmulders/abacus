@@ -16,11 +16,7 @@ public class AbacusTestCase {
 	 */
 	public static class ReturnValue {
 		public Type type;
-		public String value;
-
-		// In some cases the type cannot be inferred in the interpreter, therefor we need a deviant type.
-		public boolean hasDeviantTypeInInterpreter;
-		public Type typeInInterpreter;
+		public Object value;
 	}
 
 	/**
@@ -29,13 +25,12 @@ public class AbacusTestCase {
 	public static class Value {
 		public String name;
 		public Type type;
-		public String value;
+		public Object value;
 	}
 
 	public String expression;
 	public ReturnValue returnValue;
 	public boolean failsWithException;
-	public boolean succeedsInInterpreter;
 	public List<Value> variableListBefore;
 	public List<Value> variableListAfter;
 

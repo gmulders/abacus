@@ -53,6 +53,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "'Hello ' || D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "'Hello ' || null",
 		"failsWithException": true
 	},
@@ -70,6 +74,10 @@
 	},
 	{
 		"expression": "12 || true",
+		"failsWithException": true
+	},
+	{
+		"expression": "12 || D'2015-08-17'",
 		"failsWithException": true
 	},
 	{
@@ -93,35 +101,22 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "102.9 || D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "2.4 || null",
 		"failsWithException": true
 	},
 
 	{
 		"expression": "true || ' '",
-		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		}
+		"failsWithException": true
 	},
 	{
 		"expression": "true || a",
 		"failsWithException": true,
-		"succeedsInInterpreter": true,
-		"returnValue": {
-			"type": "BOOLEAN",
-			"value": "true"
-		},
 		"variableListBefore": [
-			{
-				"name": "a",
-				"type": "STRING",
-				"value": " "
-			}
-		],
-		"variableListAfter": [
 			{
 				"name": "a",
 				"type": "STRING",
@@ -188,6 +183,12 @@
 			}
 		]
 	},
+
+	{
+		"expression": "false || D'2015-08-17'",
+		"failsWithException": true
+	},
+
 	{
 		"expression": "true || null",
 		"returnValue": {
@@ -286,6 +287,31 @@
 				"value": "false"
 			}
 		]
+	},
+
+	{
+		"expression": "D'2015-08-17' || ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || 3",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || 2.4",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || true",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' || null",
+		"failsWithException": true
 	},
 
 	{
@@ -399,6 +425,11 @@
 				"value": null
 			}
 		]
+	},
+
+	{
+		"expression": "null || D'2015-08-17'",
+		"failsWithException": true
 	},
 
 	{

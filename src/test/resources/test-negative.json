@@ -67,10 +67,35 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "-(D'2015-08-17')",
+		"failsWithException": true
+	},
+	{
 		"expression": "-(null)",
 		"returnValue": {
 			"type": null,
 			"value": null
 		}
+	},
+	{
+		"expression": "-a",
+		"returnValue": {
+			"type": "INTEGER",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": null
+			}
+		]
 	}
 ]

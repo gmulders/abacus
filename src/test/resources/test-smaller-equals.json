@@ -131,6 +131,33 @@
 	},
 
 	{
+		"expression": "'Hello ' <= D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' <= a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+	{
+		"expression": "a <= D'2015-08-17'",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "Hello "
+			}
+		]
+	},
+
+	{
 		"expression": "'Hello ' <= null",
 		"returnValue": {
 			"type": "BOOLEAN",
@@ -330,6 +357,33 @@
 				"name": "a",
 				"type": "INTEGER",
 				"value": "12"
+			}
+		]
+	},
+
+	{
+		"expression": "678 <= D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
+		"expression": "678 <= a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+	{
+		"expression": "a <= D'2015-08-17'",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "678"
 			}
 		]
 	},
@@ -539,6 +593,33 @@
 	},
 
 	{
+		"expression": "100.0 <= D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
+		"expression": "100.0 <= a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+	{
+		"expression": "a <= D'2015-08-17'",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "100.0"
+			}
+		]
+	},
+
+	{
 		"expression": "2.4 <= null",
 		"returnValue": {
 			"type": "BOOLEAN",
@@ -697,6 +778,33 @@
 	},
 
 	{
+		"expression": "true <= D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
+		"expression": "true <= a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+	{
+		"expression": "a <= D'2015-08-17'",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+
+	{
 		"expression": "true <= null",
 		"failsWithException": true
 	},
@@ -719,6 +827,214 @@
 				"name": "a",
 				"type": "BOOLEAN",
 				"value": "true"
+			}
+		]
+	},
+
+	{
+		"expression": "D'2015-08-17' <= ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' <= a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": " "
+			}
+		]
+	},
+	{
+		"expression": "a <= ' '",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+
+	{
+		"expression": "D'2015-08-17' <= 3",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' <= a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "INTEGER",
+				"value": "3"
+			}
+		]
+	},
+	{
+		"expression": "a <= 3",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-09-17"
+			}
+		]
+	},
+
+	{
+		"expression": "D'2015-08-17' <= 6.7",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' <= a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DECIMAL",
+				"value": "6.7"
+			}
+		]
+	},
+	{
+		"expression": "a <= 6.7",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-09-17"
+			}
+		]
+	},
+
+	{
+		"expression": "D'2015-08-17' <= true",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' <= a",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "BOOLEAN",
+				"value": "true"
+			}
+		]
+	},
+	{
+		"expression": "a <= true",
+		"failsWithException": true,
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+
+	{
+		"expression": "D'2015-08-17' <= D'2015-08-17'",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		}
+	},
+	{
+		"expression": "D'2015-08-17' <= a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+	{
+		"expression": "a <= D'2015-08-17'",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "true"
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+
+	{
+		"expression": "D'2015-08-17' <= null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "D'2015-08-17' <= a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		]
+	},
+	{
+		"expression": "a <= null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
 			}
 		]
 	},
@@ -895,6 +1211,56 @@
 			{
 				"name": "a",
 				"type": "BOOLEAN",
+				"value": null
+			}
+		]
+	},
+
+	{
+		"expression": "null <= D'2015-08-17'",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
+	},
+	{
+		"expression": "null <= a",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": "2015-08-17"
+			}
+		]
+	},
+	{
+		"expression": "a <= D'2015-08-17'",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "DATE",
+				"value": null
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "DATE",
 				"value": null
 			}
 		]

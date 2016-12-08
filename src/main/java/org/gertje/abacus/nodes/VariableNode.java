@@ -8,7 +8,7 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents a variable.
  */
-public class VariableNode extends AbstractNode {
+public class VariableNode extends AbstractExpressionNode {
 
 	private String identifier;
 	private Type type;

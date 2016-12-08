@@ -2,12 +2,15 @@ package org.gertje.abacus.nodevisitors;
 
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
+import org.gertje.abacus.nodes.ConcatStringNode;
 import org.gertje.abacus.nodes.DateNode;
 import org.gertje.abacus.nodes.DecimalNode;
 import org.gertje.abacus.nodes.DivideNode;
 import org.gertje.abacus.nodes.EqNode;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.nodes.FactorNode;
 import org.gertje.abacus.nodes.FunctionNode;
 import org.gertje.abacus.nodes.GeqNode;
@@ -26,9 +29,11 @@ import org.gertje.abacus.nodes.NullNode;
 import org.gertje.abacus.nodes.OrNode;
 import org.gertje.abacus.nodes.PositiveNode;
 import org.gertje.abacus.nodes.PowerNode;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodes.StatementListNode;
 import org.gertje.abacus.nodes.StringNode;
-import org.gertje.abacus.nodes.SubstractNode;
+import org.gertje.abacus.nodes.SubtractNode;
+import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
 import org.gertje.abacus.symboltable.NoSuchFunctionException;
 import org.gertje.abacus.symboltable.NoSuchVariableException;
@@ -39,7 +44,10 @@ import org.gertje.abacus.util.SemanticsHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckException> {
+/**
+ * Semantics checker for an AST.
+ */
+public class SemanticsChecker implements NodeVisitor<Void, SemanticsCheckException> {
 
 	/**
 	 * De symboltable met de variabelen en de functies.
@@ -59,15 +67,15 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(AddNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Wanneer niet beide zijden van het type 'String' of 'Number' zijn moeten we een exceptie gooien.
-		if (!(Type.isStringOrUnknown(lhs.getType()) && Type.isStringOrUnknown(rhs.getType()))
-				&& !(Type.isNumberOrUnknown(lhs.getType()) && Type.isNumberOrUnknown(rhs.getType()))) {
+		if (!(isStringOrUnknown(lhs.getType()) && isStringOrUnknown(rhs.getType()))
+				&& !(isNumberOrUnknown(lhs.getType()) && isNumberOrUnknown(rhs.getType()))) {
 			throw new SemanticsCheckException(SemanticsHelper.ADD_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -76,14 +84,14 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(AndNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type Boolean of onbekend zijn.
-		if (!Type.isBooleanOrUnknown(lhs.getType()) || !Type.isBooleanOrUnknown(rhs.getType())) {
+		if (!isBooleanOrUnknown(lhs.getType()) || !isBooleanOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.AND_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -91,17 +99,39 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 	}
 
 	@Override
+	public Void visit(ArrayNode node) throws SemanticsCheckException {
+		ExpressionNode array = node.getArray();
+		ExpressionNode index = node.getIndex();
+
+		array.accept(this);
+		index.accept(this);
+
+		// The index should be an integer.
+		if (!Type.equals(index.getType(), Type.INTEGER)) {
+			throw new SemanticsCheckException(SemanticsHelper.ARRAY_ILLEGAL_INDEX_TYPE, node);
+		}
+
+		// The operand should be an array.
+		if (!array.getType().isArray()) {
+			throw new SemanticsCheckException(SemanticsHelper.ARRAY_ILLEGAL_ARRAY_TYPE, node);
+		}
+
+		// Set the type on the node.
+		node.setType(Type.get(array.getType().getBaseType(), array.getType().getDimensionality() - 1));
+
+		return null;
+	}
+
+	@Override
 	public Void visit(AssignmentNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
-		// Als de linkerkant geen VariabeleNode is EN de linkerkant is geen AssignmentNode met aan de rechterkant een
-		// VariableNode, dan gooien we een exceptie.
-		if (!(lhs instanceof VariableNode)
-				&& !((lhs instanceof AssignmentNode) && (((AssignmentNode)lhs).getRhs() instanceof VariableNode))) {
+		AssignmentNodeLhsChecker assignmentNodeLhsChecker = new AssignmentNodeLhsChecker();
+		if (!assignmentNodeLhsChecker.check(lhs)) {
 			throw new SemanticsCheckException(SemanticsHelper.ASSIGNMENT_ILLEGAL_LEFT_OPERAND, node);
 		}
 
@@ -119,6 +149,11 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 	}
 
 	@Override
+	public Void visit(ConcatStringNode node) throws SemanticsCheckException {
+		return null;
+	}
+
+	@Override
 	public Void visit(DateNode node) throws SemanticsCheckException {
 		return null;
 	}
@@ -130,14 +165,14 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(DivideNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
-		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+		if (!isNumberOrUnknown(lhs.getType()) || !isNumberOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.DIVIDE_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -146,8 +181,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(EqNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -162,7 +197,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(FactorNode node) throws SemanticsCheckException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		argument.accept(this);
 
@@ -173,14 +208,14 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(FunctionNode node) throws SemanticsCheckException {
-		List<Node> parameters = node.getParameters();
+		List<ExpressionNode> parameters = node.getParameters();
 		String identifier = node.getIdentifier();
 
 		// Maak een lijst van Objecten aan waarin we de parameters gaan evalueren.
 		List<Type> types = new ArrayList<>();
 
 		// Loop over alle nodes heen.
-		for (Node parameter : parameters) {
+		for (ExpressionNode parameter : parameters) {
 			parameter.accept(this);
 			// Voeg het type van de node toe aan de lijst.
 			types.add(parameter.getType());
@@ -204,8 +239,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(GeqNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -221,8 +256,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(GtNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -238,16 +273,16 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(IfNode node) throws SemanticsCheckException {
-		Node condition = node.getCondition();
-		Node ifbody = node.getIfBody();
-		Node elsebody = node.getElseBody();
+		ExpressionNode condition = node.getCondition();
+		ExpressionNode ifbody = node.getIfBody();
+		ExpressionNode elsebody = node.getElseBody();
 
 		condition.accept(this);
 		ifbody.accept(this);
 		elsebody.accept(this);
 
 		// De waarde van de conditie moet van het type 'boolean' zijn.
- 		if (!Type.isBooleanOrUnknown(condition.getType())) {
+ 		if (!isBooleanOrUnknown(condition.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.IF_ILLEGAL_CONDITION_TYPE, node);
 		}
 
@@ -257,7 +292,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 		}
 
 		// Determine the type of the node.
-		Type type = null;
+		Type type;
 
 		// Find the first non-null type.
 		if (ifbody.getType() != null) {
@@ -268,7 +303,7 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 		// If the found type is of type Integer, check if the elsebody is of type Decimal. If so, widen the type to
 		// Decimal.
-		if (type == Type.INTEGER && elsebody.getType() == Type.DECIMAL) {
+		if (Type.equals(type, Type.INTEGER) && Type.equals(elsebody.getType(), Type.DECIMAL)) {
 			type = Type.DECIMAL;
 		}
 
@@ -285,8 +320,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(LeqNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -302,8 +337,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(LtNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -319,14 +354,14 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(ModuloNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
-		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+		if (!isNumberOrUnknown(lhs.getType()) || !isNumberOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.MODULO_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -335,14 +370,14 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(MultiplyNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type 'number', of een onbekend type zijn.
-		if (!Type.isNumberOrUnknown(lhs.getType()) || !Type.isNumberOrUnknown(rhs.getType())) {
+		if (!isNumberOrUnknown(lhs.getType()) || !isNumberOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.MULTIPLY_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -351,12 +386,12 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NegativeNode node) throws SemanticsCheckException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		argument.accept(this);
 
 		// Het argument moet een getal of onbekend zijn.
-		if (!Type.isNumberOrUnknown(argument.getType())) {
+		if (!isNumberOrUnknown(argument.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.NEGATIVE_ILLEGAL_OPERAND_TYPE, node);
 		}
 
@@ -365,8 +400,8 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NeqNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
@@ -381,12 +416,12 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(NotNode node) throws SemanticsCheckException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
 		argument.accept(this);
 
 		// Het argument moet een boolean zijn.
-		if (!Type.isBooleanOrUnknown(argument.getType())) {
+		if (!isBooleanOrUnknown(argument.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.NOT_ILLEGAL_OPERAND_TYPE, node);
 		}
 
@@ -400,14 +435,14 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(OrNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type Boolean of onbekend zijn.
-		if (!Type.isBooleanOrUnknown(lhs.getType()) || !Type.isBooleanOrUnknown(rhs.getType())) {
+		if (!isBooleanOrUnknown(lhs.getType()) || !isBooleanOrUnknown(rhs.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.OR_ILLEGAL_OPERAND_TYPES, node);
 		}
 
@@ -416,12 +451,12 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(PositiveNode node) throws SemanticsCheckException {
-		Node argument = node.getArgument();
+		ExpressionNode argument = node.getArgument();
 
         argument.accept(this);
 
 		// Het argument moet een 'number' of onbekend zijn.
-		if (!Type.isNumberOrUnknown(argument.getType())) {
+		if (!isNumberOrUnknown(argument.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.POSITIVE_ILLEGAL_OPERAND_TYPE, node);
 		}
 
@@ -430,18 +465,23 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 	@Override
 	public Void visit(PowerNode node) throws SemanticsCheckException {
-		Node base = node.getBase();
-		Node power = node.getPower();
+		ExpressionNode base = node.getBase();
+		ExpressionNode power = node.getPower();
 
 		base.accept(this);
 		power.accept(this);
 
 		// Beide zijden moeten van het type 'number' of onbekend zijn.
-		if (!Type.isNumberOrUnknown(base.getType()) || !Type.isNumberOrUnknown(power.getType())) {
+		if (!isNumberOrUnknown(base.getType()) || !isNumberOrUnknown(power.getType())) {
 			throw new SemanticsCheckException(SemanticsHelper.POWER_ILLEGAL_OPERAND_TYPES, node);
 		}
 
 		return null;
+	}
+
+	@Override
+	public Void visit(RootNode node) throws SemanticsCheckException {
+		return node.getStatementListNode().accept(this);
 	}
 
 	@Override
@@ -460,18 +500,23 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 	}
 
 	@Override
-	public Void visit(SubstractNode node) throws SemanticsCheckException {
-		Node lhs = node.getLhs();
-		Node rhs = node.getRhs();
+	public Void visit(SubtractNode node) throws SemanticsCheckException {
+		ExpressionNode lhs = node.getLhs();
+		ExpressionNode rhs = node.getRhs();
 
 		lhs.accept(this);
 		rhs.accept(this);
 
 		// Beide zijden moeten van het type 'number' of onbekend zijn.
-		if (!Type.isNumberOrUnknown(rhs.getType()) || !Type.isNumberOrUnknown(lhs.getType())) {
+		if (!isNumberOrUnknown(rhs.getType()) || !isNumberOrUnknown(lhs.getType())) {
 				throw new SemanticsCheckException(SemanticsHelper.SUBSTRACT_ILLEGAL_OPERAND_TYPES, node);
 		}
 
+		return null;
+	}
+
+	@Override
+	public Void visit(SumNode node) throws SemanticsCheckException {
 		return null;
 	}
 
@@ -494,5 +539,70 @@ public class SemanticsChecker extends AbstractNodeVisitor<Void, SemanticsCheckEx
 
 		return null;
 	}
+
+	/**
+	 * Checks the left hand side of an assignment node.
+	 */
+	private class AssignmentNodeLhsChecker extends DefaultVisitor<Boolean, SemanticsCheckException> {
+
+		public AssignmentNodeLhsChecker() {
+			// Don't visit the child nodes.
+			visitChildNodes = false;
+		}
+
+		/**
+		 * Method to check the node.
+		 * @param node The node to check.
+		 * @return {@code true} if the node is valid, {@code false} otherwise.
+		 * @throws SemanticsCheckException
+		 */
+		public Boolean check(Node node) throws SemanticsCheckException {
+			return node.accept(this);
+		}
+
+		@Override
+		public Boolean visit(ArrayNode node) throws SemanticsCheckException {
+			// It is allowed to assign to an array node if it works on a variable.
+			return node.getArray().accept(this);
+		}
+
+		@Override
+		public Boolean visit(VariableNode node) throws SemanticsCheckException {
+			return Boolean.TRUE;
+		}
+
+		@Override
+		protected Boolean visitDefault(Node node) {
+			return Boolean.FALSE;
+		}
+	}
+
+	/**
+	 * Bepaalt of het meegegeven type een nummer of onbekend is.
+	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
+	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
+	 */
+	private static boolean isNumberOrUnknown(Type type) {
+		return Type.isNumber(type) || Type.isUnknown(type);
+	}
+
+	/**
+	 * Bepaalt of het meegegeven type een string of onbekend is.
+	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
+	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
+	 */
+	private static boolean isStringOrUnknown(Type type) {
+		return Type.equals(type, Type.STRING) || Type.isUnknown(type);
+	}
+
+	/**
+	 * Bepaalt of het meegegeven type een string of onbekend is.
+	 * @param type Het type waarvan de methode bepaalt of het een nummer is.
+	 * @return {@code true} wanneer het meegegeven type een nummer is, anders {@code false}.
+	 */
+	private static boolean isBooleanOrUnknown(Type type) {
+		return Type.equals(type, Type.BOOLEAN) || Type.isUnknown(type);
+	}
+
 }
 

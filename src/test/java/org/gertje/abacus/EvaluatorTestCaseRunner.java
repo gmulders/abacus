@@ -8,7 +8,9 @@ import org.gertje.abacus.lexer.Lexer;
 import org.gertje.abacus.nodes.AbacusNodeFactory;
 import org.gertje.abacus.nodes.Node;
 import org.gertje.abacus.nodes.NodeFactory;
+import org.gertje.abacus.nodes.RootNode;
 import org.gertje.abacus.nodevisitors.Evaluator;
+import org.gertje.abacus.nodevisitors.GraphVizTranslator;
 import org.gertje.abacus.nodevisitors.SemanticsChecker;
 import org.gertje.abacus.nodevisitors.Simplifier;
 import org.gertje.abacus.nodevisitors.VisitingException;
@@ -31,9 +33,10 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 		Lexer lexer = new AbacusLexer(abacusTestCase.expression);
 		Parser parser = new Parser(lexer, nodeFactory);
 
-		Node tree;
+		RootNode rootNode;
+		Node node;
 		try {
-			tree = parser.parse();
+			rootNode = parser.parse();
 		} catch (CompilerException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
@@ -41,22 +44,28 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 			return;
 		}
 
+		//vizualize(rootNode);
+
 		AbacusContext abacusContext = new SimpleAbacusContext(sym);
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
 		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
-		Evaluator evaluator = new Evaluator(abacusContext);
+		Evaluator expressionEvaluator = new Evaluator(abacusContext);
 
 		Object returnValue;
 		try {
-			semanticsChecker.check(tree);
+			semanticsChecker.check(rootNode);
 
-			if (!checkReturnType(tree.getType())) {
+			//vizualize(rootNode);
+
+			if (!checkReturnType(rootNode.getType())) {
 				Assert.fail(createMessage("Incorrect return type."));
 			}
 
-			tree = simplifier.simplify(tree);
+			node = simplifier.simplify(rootNode);
 
-			returnValue = evaluator.evaluate(tree);
+			//vizualize(node);
+
+			returnValue = expressionEvaluator.evaluate(node);
 		} catch (VisitingException e) {
 			if (!abacusTestCase.failsWithException) {
 				Assert.fail(createMessage("Unexpected exception.", e));
@@ -68,16 +77,29 @@ public class EvaluatorTestCaseRunner extends AbstractTestCaseRunner {
 			Assert.fail(createMessage("Expected exception, but none was thrown."));
 		}
 
-		if (!checkReturnType(tree.getType())) {
+		if (!checkReturnType(rootNode.getType())) {
 			Assert.fail(createMessage("Incorrect return type."));
 		}
 
 		if (!checkReturnValue(returnValue)) {
-			Assert.fail(createMessage("Incorrect return value."));
+			Assert.fail(createMessage("Incorrect return value: " + returnValue));
 		}
 
 		if (!checkSymbolTable(sym)) {
 			Assert.fail(createMessage("Incorrect symbol table."));
+		}
+	}
+
+	/**
+	 * Uses the {@link GraphVizTranslator} to make a GraphViz definition and prints it to System.out.
+	 * @param node The node to visualize.
+	 */
+	private void vizualize(Node node) {
+		try {
+			GraphVizTranslator graphVizTranslator = new GraphVizTranslator();
+			System.out.println(graphVizTranslator.translate(node));
+		} catch (VisitingException e) {
+			Assert.fail(createMessage("Unexpected exception.", e));
 		}
 	}
 }

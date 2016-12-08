@@ -20,9 +20,12 @@ public class TokenType {
 	public static final TokenType IDENTIFIER = new TokenType("IDENTIFIER");
 	public static final TokenType LEFT_PARENTHESIS = new TokenType("LEFT_PARENTHESIS");
 	public static final TokenType RIGHT_PARENTHESIS = new TokenType("RIGHT_PARENTHESIS");
+	public static final TokenType LEFT_BRACKET = new TokenType("LEFT_BRACKET");
+	public static final TokenType RIGHT_BRACKET = new TokenType("RIGHT_BRACKET");
 	public static final TokenType STRING = new TokenType("STRING");
-	public static final TokenType FLOAT = new TokenType("FLOAT");
+	public static final TokenType DECIMAL = new TokenType("DECIMAL");
 	public static final TokenType INTEGER = new TokenType("INTEGER");
+	public static final TokenType DATE = new TokenType("DATE");
 	public static final TokenType BOOLEAN_AND = new TokenType("BOOLEAN_AND");
 	public static final TokenType BOOLEAN_OR = new TokenType("BOOLEAN_OR");
 	public static final TokenType PLUS = new TokenType("PLUS");
@@ -81,8 +84,9 @@ public enum TokenType {
 	LEFT_PARENTHESIS,
 	RIGHT_PARENTHESIS,
 	STRING,
-	FLOAT,
+	DECIMAL,
 	INTEGER,
+	DATE,
 	BOOLEAN_AND,
 	BOOLEAN_OR,
 	PLUS,

@@ -8,7 +8,7 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents a string.
  */
-public class StringNode extends AbstractNode {
+public class StringNode extends AbstractExpressionNode {
 
 	private String value;
 

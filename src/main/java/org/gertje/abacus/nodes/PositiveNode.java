@@ -8,15 +8,15 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents an unary positive.
  */
-public class PositiveNode extends AbstractNode {
+public class PositiveNode extends AbstractExpressionNode {
 
-	private Node argument;
+	private ExpressionNode argument;
 
 	/**
 	 * Constructor
 	 */
-	public PositiveNode(Node argument, Token token) {
-		super(2, token);
+	public PositiveNode(ExpressionNode argument, Token token) {
+		super(4, token);
 
 		this.argument = argument;
 	}
@@ -36,11 +36,11 @@ public class PositiveNode extends AbstractNode {
 		return visitor.visit(this);
 	}
 
-	public Node getArgument() {
+	public ExpressionNode getArgument() {
 		return argument;
 	}
 
-	public void setArgument(Node argument) {
+	public void setArgument(ExpressionNode argument) {
 		this.argument = argument;
 	}
 }

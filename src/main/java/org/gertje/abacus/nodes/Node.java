@@ -3,51 +3,35 @@ package org.gertje.abacus.nodes;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.token.Token;
-import org.gertje.abacus.types.Type;
 
 /**
- * Stelt een AST Node voor.
+ * Represents a node in the AST.
  */
 public interface Node {
-	/**
-	 * Geeft het type van de node terug.
-	 *
-	 * Voordat deze methode aangeroepen kan worden moet eerst de node of de kinderen van de node bezocht zijn om het
-	 * type te bepalen.
-	 */
-	Type getType();
 
 	/**
-	 * Geeft terug of de node constant is, dit is het geval wanneer:
-	 * - de node niet een expressie is (er zijn geen subnodes)
-	 * - EN de node niet een variabele is.
+	 * Accepts the visitor.
 	 *
-	 * Voorbeelden van constante nodes zijn (niet uitputtend):
-	 * - StringNode
-	 * - DecimalNode
-	 * - BooleanNode
-	 * - DateNode
-	 */
-	boolean getIsConstant();
-
-	/**
-	 * Geeft de precedence terug.
-	 */
-	int getPrecedence();
-
-	/**
-	 * Registreert een visitor bij de node.
-	 *
-	 * De bedoeling is dat een node deze methode ook aanroept bij zijn child-nodes.
-	 *
-	 * @param visitor De visitor.
+	 * @param visitor The visitor.
 	 * @throws X
 	 */
 	<R, X extends VisitingException> R accept(NodeVisitor<R, X> visitor) throws X;
 
 	/**
-	 * Geeft het token terug.
-	 * @return het token.
+	 * Returns the token.
+	 * @return the token.
 	 */
 	Token getToken();
+
+	/**
+	 * Returns the type of the node.
+	 * @return the type of the node.
+	 */
+	NodeType getNodeType();
+
+	/**
+	 * Returns an unique id for this node.
+	 * @return The unique id for this node.
+	 */
+	long getId();
 }

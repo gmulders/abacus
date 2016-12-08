@@ -80,6 +80,12 @@ public class AbacusLexer extends AbstractLexer {
 			}
 			token.setType(TokenType.NEW_LINE);
 
+		// Date
+		} else if (c == 'D' && !isEndOfInput() && peekChar() == '\'') {
+			nextChar();
+			token.setType(TokenType.DATE);
+			token.setValue(buildString());
+
 		// identifier
 		} else if (isAlphaOrUnderscore(c)) {
 			token.setType(TokenType.IDENTIFIER);
@@ -93,6 +99,14 @@ public class AbacusLexer extends AbstractLexer {
 		} else if (c == ')') {
 			token.setType(TokenType.RIGHT_PARENTHESIS);
 
+		// Linkerblokhaakje
+		} else if (c == '[') {
+			token.setType(TokenType.LEFT_BRACKET);
+
+		// Rechterblokhaakje
+		} else if (c == ']') {
+			token.setType(TokenType.RIGHT_BRACKET);
+
 		// String literal
 		} else if (c == '\'') {
 			token.setType(TokenType.STRING);
@@ -102,7 +116,7 @@ public class AbacusLexer extends AbstractLexer {
 		} else if (isNumeric(c)) {
 			String number = buildNumber(c);
 			if (number.indexOf('.') >= 0) {
-				token.setType(TokenType.FLOAT);
+				token.setType(TokenType.DECIMAL);
 			} else {
 				token.setType(TokenType.INTEGER);
 			}

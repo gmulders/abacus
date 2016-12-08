@@ -1,7 +1,7 @@
 package org.gertje.abacus.symboltable;
 
 import org.gertje.abacus.functions.Function;
-import org.gertje.abacus.nodes.Node;
+import org.gertje.abacus.nodes.ExpressionNode;
 import org.gertje.abacus.types.Type;
 import org.gertje.abacus.util.CastHelper;
 import org.gertje.abacus.util.SemanticsHelper;
@@ -23,56 +23,27 @@ import java.util.Map;
  */
 public class SimpleSymbolTable implements SymbolTable {
 
-	/**
-	 * Represents a variable in this SymbolTable.
-	 */
-	public static class Variable {
-		private String name;
-		private Object value;
-		private Type type;
-
-		public Variable(String name, Type type) {
-			this.name = name;
-			this.type = type;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public Object getValue() {
-			return value;
-		}
-
-		public void setValue(Object value) {
-			this.value = value;
-		}
-
-		public Type getType() {
-			return type;
-		}
-	}
-
 	private Map<String, Variable> variables;
+	private Map<String, Object> values;
+
 	private Map<String, Function> functions;
 
 	public SimpleSymbolTable() {
 		variables = new HashMap<>();
+		values = new HashMap<>();
 		functions = new HashMap<>();
 	}
 
 	/**
 	 * Voegt de variabelen toe aan de symboltable, wanneer de variabele al bestaat wordt de waarde hiervan overschreven.
 	 */
-	public void setVariables(Map<String, Variable> variables) {
+	public void setVariables(Map<String, Variable> variables, Map<String, Object> values) {
 		this.variables.putAll(variables);
+		this.values.putAll(values);
 	}
 
-	/**
-	 * Voegt de variabele toe aan de symboltable, wanneer de variabele al bestaat wordt de waarde hiervan overschreven.
-	 */
 	public void addVariable(Variable variable) {
-		this.variables.put(variable.getName(), variable);
+		this.variables.put(variable.getIdentifier(), variable);
 	}
 
 	/**
@@ -83,26 +54,14 @@ public class SimpleSymbolTable implements SymbolTable {
 	}
 
 	@Override
-	public void setVariableValue(String identifier, Type type, Object value) throws IllegalTypeException {
+	public void setVariableValue(String identifier, Object value) throws IllegalTypeException, NoSuchVariableException {
 		// Wanneer de variabele nog niet bestaat maken we die nu eerst aan.
 		if (!getExistsVariable(identifier)) {
-			variables.put(identifier, new Variable(identifier, type));
+			throw new NoSuchVariableException("Variable '" + identifier + "' does not exsist.");
 		}
-
-		// Haal de variabele op.
-		Variable variable = variables.get(identifier);
-
-		// Controleer of de types compatible zijn.
-		if (!SemanticsHelper.checkAssignmentType(variable.type, type)) {
-			throw new IllegalTypeException("Cannot assign value of '" + type + "' to a variable with type '"
-					+ variable.type + "'.");
-		}
-
-		// Cast the value to the correct type.
-		value = CastHelper.castValue(value, type, variable.type);
 
 		// Ken de waarde toe.
-		variable.value = value;
+		values.put(identifier, value);
 	}
 
 	@Override
@@ -117,7 +76,7 @@ public class SimpleSymbolTable implements SymbolTable {
 			throw new NoSuchVariableException("Variable '" + identifier + "' does not exsist.");
 		}
 		// De variabele bestaat, geef de waarde terug.
-		return variables.get(identifier).value;
+		return values.get(identifier);
 	}
 
 	@Override
@@ -127,7 +86,7 @@ public class SimpleSymbolTable implements SymbolTable {
 			throw new NoSuchVariableException("Variable '" + identifier + "' does not exsist.");
 		}
 		// De variabele bestaat, geef het type terug.
-		return variables.get(identifier).type;
+		return variables.get(identifier).getType();
 	}
 
 	/**
@@ -160,7 +119,7 @@ public class SimpleSymbolTable implements SymbolTable {
 	}
 
 	@Override
-	public Type getFunctionReturnType(String identifier, List<Node> params) {
+	public Type getFunctionReturnType(String identifier, List<ExpressionNode> params) {
 		// Bepaal het return type.
 		return functions.get(identifier).getReturnType();
 	}

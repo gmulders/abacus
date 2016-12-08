@@ -19,6 +19,8 @@ public class SemanticsHelper {
 
 	public static final String ADD_ILLEGAL_OPERAND_TYPES = "Expected two parameters of type 'Number' or type 'String' to ADD-expression.";
 	public static final String AND_ILLEGAL_OPERAND_TYPES = "Expected two boolean parameters to AND-expression.";
+	public static final String ARRAY_ILLEGAL_INDEX_TYPE = "Expected integer expression for array index.";
+	public static final String ARRAY_ILLEGAL_ARRAY_TYPE = "Expected an array expression.";
 	public static final String ASSIGNMENT_ILLEGAL_LEFT_OPERAND = "Left side of assignment should be a variable or an assignment.";
 	public static final String ASSIGNMENT_ILLEGAL_RIGHT_OPERAND = "Expected expression of the same type as the variable.";
 	public static final String DIVIDE_ILLEGAL_OPERAND_TYPES = "Expected two parameters of type 'number' to divide-expression.";
@@ -64,16 +66,16 @@ public class SemanticsHelper {
 		}
 
 		// We casten de Integer's naar Decimal's, omdat dit makkelijk te vergelijken is.
-		if (lhsType == Type.INTEGER) {
+		if (Type.equals(lhsType, Type.INTEGER)) {
 			lhsType = Type.DECIMAL;
 		}
 		// We casten de Integer's naar Decimal's, omdat dit makkelijk te vergelijken is.
-		if (rhsType == Type.INTEGER) {
+		if (Type.equals(rhsType, Type.INTEGER)) {
 			rhsType = Type.DECIMAL;
 		}
 
 		for(Type type : allowedTypes) {
-			if ((lhsType == type || lhsType == null) && (rhsType == type || rhsType == null)) {
+			if ((Type.equals(lhsType, type) || lhsType == null) && (Type.equals(rhsType, type) || rhsType == null)) {
 				return true;
 			}
 		}
@@ -81,10 +83,10 @@ public class SemanticsHelper {
 	}
 
 	/**
-	 * Controleert of de gegeven types compatible zijn voor toekenning.
-	 * @param variableType
-	 * @param valueType
-	 * @return
+	 * Checks whether the two given types are compatible for assignment.
+	 * @param variableType The type of the variable to assign to.
+	 * @param valueType The type of the value that gets assigned.
+	 * @return {@code true} if the types are compatible, {@code false} otherwise.
 	 */
 	public static boolean checkAssignmentType(Type variableType, Type valueType) {
 		// Wanneer het type van de waarde null is, is de waarde null. Deze situatie kan alleen voorkomen wanneer niet
@@ -97,7 +99,7 @@ public class SemanticsHelper {
 		}
 
 		// Wanneer de beide types gelijk zijn, zijn ze compatible.
-		if (variableType == valueType) {
+		if (Type.equals(variableType, valueType)) {
 			return true;
 		}
 

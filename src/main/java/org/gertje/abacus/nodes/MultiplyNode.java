@@ -13,8 +13,8 @@ public class MultiplyNode extends AbstractTermNode {
 	/**
 	 * Constructor
 	 */
-	public MultiplyNode(Node lhs, Node rhs, Token token) {
-		super(lhs, rhs, token, 4);
+	public MultiplyNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
+		super(lhs, rhs, token, 6);
 	}
 
 	@Override

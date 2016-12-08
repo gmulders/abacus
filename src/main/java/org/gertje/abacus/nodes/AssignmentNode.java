@@ -8,12 +8,12 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents an assignment.
  */
-public class AssignmentNode extends AbstractNode {
+public class AssignmentNode extends AbstractExpressionNode {
 
-	protected Node lhs;
-	protected Node rhs;
+	protected ExpressionNode lhs;
+	protected ExpressionNode rhs;
 
-	public AssignmentNode(Node lhs, Node rhs, Token token) {
+	public AssignmentNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
 		super(1, token);
 
 		this.lhs = lhs;
@@ -35,19 +35,19 @@ public class AssignmentNode extends AbstractNode {
 		return visitor.visit(this);		
 	}
 
-	public Node getLhs() {
+	public ExpressionNode getLhs() {
 		return lhs;
 	}
 
-	public void setLhs(Node lhs) {
+	public void setLhs(ExpressionNode lhs) {
 		this.lhs = lhs;
 	}
 
-	public Node getRhs() {
+	public ExpressionNode getRhs() {
 		return rhs;
 	}
 
-	public void setRhs(Node rhs) {
+	public void setRhs(ExpressionNode rhs) {
 		this.rhs = rhs;
 	}
 }

@@ -29,6 +29,28 @@
 	},
 
 	{
+		"expression": "a > null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		},
+		"variableListBefore": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "World!"
+			}
+		],
+		"variableListAfter": [
+			{
+				"name": "a",
+				"type": "STRING",
+				"value": "World!"
+			}
+		]
+	},
+
+	{
 		"expression": "'Hello ' > 10",
 		"failsWithException": true
 	},
@@ -38,6 +60,10 @@
 	},
 	{
 		"expression": "'Hello ' > true",
+		"failsWithException": true
+	},
+	{
+		"expression": "'Hello ' > D'2015-08-17'",
 		"failsWithException": true
 	},
 
@@ -93,6 +119,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "12 > D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "100 > null",
 		"returnValue": {
 			"type": "BOOLEAN",
@@ -122,6 +152,10 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "102.9 > D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "2.4 > null",
 		"returnValue": {
 			"type": "BOOLEAN",
@@ -145,8 +179,42 @@
 		"failsWithException": true
 	},
 	{
+		"expression": "false > D'2015-08-17'",
+		"failsWithException": true
+	},
+	{
 		"expression": "true > null",
 		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' > ' '",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' > 3",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' > 2.4",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' > true",
+		"failsWithException": true
+	},
+	{
+		"expression": "D'2015-08-17' > D'2015-08-17'",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": "false"
+		}
+	},
+	{
+		"expression": "D'2015-08-17' > null",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
 	},
 	{
 		"expression": "null > ' '",
@@ -172,6 +240,13 @@
 	{
 		"expression": "null > true",
 		"failsWithException": true
+	},
+	{
+		"expression": "null > D'2015-08-17'",
+		"returnValue": {
+			"type": "BOOLEAN",
+			"value": null
+		}
 	},
 	{
 		"expression": "null > null",

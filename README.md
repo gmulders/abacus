@@ -19,8 +19,9 @@ Quick start
 For those who can't wait to see it running, try copy pasting the following code:
 
 	SimpleSymbolTable sym = new SimpleSymbolTable();
+	AbacusContext abacusContext = new SimpleAbacusContext(sym);
 
-	AbstractNode tree;
+	Node tree;
 	try {
 		NodeFactory nodeFactory = new AbacusNodeFactory();
 		Lexer lexer = new AbacusLexer(expression);
@@ -31,7 +32,7 @@ For those who can't wait to see it running, try copy pasting the following code:
 		SemanticsChecker semanticsChecker = new SemanticsChecker(sym);
 		semanticsChecker.check(tree);
 
-		Simplifier simplifier = new Simplifier(sym, nodeFactory);
+		Simplifier simplifier = new Simplifier(abacusContext, nodeFactory);
 		tree = simplifier.simplify(tree);
 
 	} catch (CompilerException | SemanticsCheckException | SimplificationException e) {
@@ -40,7 +41,7 @@ For those who can't wait to see it running, try copy pasting the following code:
 
 	Object value;
 	try {
-		Evaluator evaluator = new Evaluator(sym);
+		Evaluator evaluator = new Evaluator(abacusContext);
 		value = evaluator.evaluate(tree);
 	} catch (EvaluationException e) {
 		// Handle exception.
@@ -68,14 +69,14 @@ The following types are supported:
 - Integer
 - Decimal
 - Boolean
-- Date (TODO)
+- Date
 
 ###Operations
 The following operations are defined:
 
 #### addition `+`
 - Operands: either two numbers or two strings
-- Precedence: 5
+- Precedence: 7
 - Return type:
 
 | lhs \ rhs   | String  | Integer | Decimal | Unknown |
@@ -85,9 +86,9 @@ The following operations are defined:
 | **Decimal** | -       | Decimal | Decimal | Decimal |
 | **Unknown** | String  | Integer | Decimal | Unknown |
 
-#### substraction `-`
+#### subtraction `-`
 - Operands: two numbers
-- Precedence: 5
+- Precedence: 7
 - Return type:
 
 | lhs \ rhs   | Integer | Decimal | Unknown |
@@ -98,7 +99,7 @@ The following operations are defined:
 
 #### multiplication `*`
 - Operands: two numbers
-- Precedence: 4
+- Precedence: 6
 - Return type:
 
 | lhs \ rhs   | Integer | Decimal | Unknown |
@@ -109,7 +110,7 @@ The following operations are defined:
 
 #### division `/`
 - Operands: two numbers
-- Precedence: 4
+- Precedence: 6
 - Return type:
 
 | lhs \ rhs   | Integer | Decimal | Unknown |
@@ -120,73 +121,73 @@ The following operations are defined:
 
 #### modulo `%`
 - Operands: two numbers
-- Precedence: 4
+- Precedence: 6
 - Return type:
   - Integer
 
 #### power `^`
 - Operands: two numbers
-- Precedence: 4
+- Precedence: 6
 - Return type: Decimal
 
 #### unary positive `+`
 - Operands: one number
-- Precedence: 2
+- Precedence: 4
 - Return type: the same type as the operand
 
 #### unary negative `-`
 - Operands: one number
-- Precedence: 2
+- Precedence: 4
 - Return type: the same type as the operand
 
 #### unary not `!`
 - Operands: Boolean
-- Precedence: 2
+- Precedence: 4
 - Return type: Boolean
 
 #### smaller `<`
 - Operands: either two numbers or two operands of the same type
-- Precedence: 6
+- Precedence: 8
 - Return type: Boolean
 
 #### smaller or equals `<=`
 - Operands: either two numbers or two operands of the same type
-- Precedence: 6
+- Precedence: 8
 - Return type: Boolean
 
 #### equals `==`
 - Operands: either two numbers or two operands of the same type
-- Precedence: 7
+- Precedence: 9
 - Return type: Boolean
 
 #### unequals `!=`
 - Operands: either two numbers or two operands of the same type
-- Precedence: 7
+- Precedence: 9
 - Return type: Boolean
 
 #### greater or equals `>=`
 - Operands: either two numbers or two operands of the same type
-- Precedence: 6
+- Precedence: 8
 - Return type: Boolean
 
 #### greater `>`
 - Operands: either two numbers or two operands of the same type
-- Precedence: 6
+- Precedence: 8
 - Return type: Boolean
 
 #### logical and `&&`
 - Operands: two Booleans
-- Precedence: 8
+- Precedence: 10
 - Return type: Boolean
 
 #### logical or `||`
 - Operands: two Booleans
-- Precedence: 8
+- Precedence: 10
 - Return type: Boolean
 
 #### ternary if `? :`
 - Operands: a boolean and two operands of the same type
-- Precedence: 10
+- Precedence: 12
 - Return type:
 
 | if \ else   | String  | Integer | Decimal | Date    | Unknown |
@@ -198,18 +199,13 @@ The following operations are defined:
 | **Date**    | -       | -       | -       | Date    | Date    |
 | **Unknown** | String  | Integer | Decimal | Date    | Unknown |
 
-Note: The interpreter does not do a complete check of the AST before evaluating it. Because of this it _may_ be possible
-that the type of the non-applicable branch (if the condition evaluated to false the if-branch otherwise the else-branch)
-is unknown while it could have been known otherwise. In this case we also infer the type using the above table. There
-are a couple of situation where the behaviour is slightly different.
-
-- The applicable branch has type Integer, while the non applicable brach has type Decimal. The inferred type when using
-  the interpreter is Integer, otherwise it would have been Decimal. For example: `true ? 1 : (false ? 2.0 : 3.0)`.
-- When both branches have non compatible types, i.e. String and Integer, the interpreter does not throw an exception.
-  For example: `true ? 'Hello World!' : (false ? 2.0 : 3.0)`.
+#### array dereferencing `[...]`
+- Operands: left an array, the index should be an INTEGER
+- Precedence: 3
+- Return type: the same type as the array with dimensionality one less
 
 #### assignment `=`
-- Operands: left a variable, right any type
+- Operands: left a variable, right a value of the same type as the variable or any type if the variable does not exists.
 - Precedence: 1
 - Return type: the same type as the right operand
 
@@ -230,6 +226,8 @@ The lexer recognises the following tokens:
 	IDENTIFIER        = [a-zA-Z][a-zA-Z0-9]*
 	LEFT_PARENTHESIS  = "("
 	RIGHT_PARENTHESIS = ")"
+	LEFT_BRACKET      = "["
+	RIGHT_BRACKET     = "]"
 	STRING            = \'(\\.|[^\\'])*\'  (escaping of special characters is possible)
 	DECIMAL           = ([0-9]+ \. [0-9]* | \. [0-9]+)
 	INTEGER           = 0 | [1-9][0-9]*
@@ -265,7 +263,8 @@ The lexer recognises the following tokens:
 	<addition>         := <term> | <term> ( PLUS | MINUS ) <comparison>
 	<term>             := <power> | <power> ( MULTIPLY | DIVIDE | PERCENT ) <term>
 	<power>            := <unary> | <unary> ( POWER ) <power>
-	<unary>            := ( epsilon | PLUS | MINUS | NOT ) <factor>
+	<unary>            := ( epsilon | PLUS | MINUS | NOT ) <array>
+	<array>            := <factor> | <factor> ( LEFT_BRACKET <assignment> RIGHT_BRACKET )
 	<factor>           := DECIMAL | INTEGER | STRING | ( LEFT_PARENTHESIS <expression> RIGHT_PARENTHESIS )
 	                         | IDENTIFIER ( epsilon | LEFT_PARENTHESIS <expression-list> RIGHT_PARENTHESIS )
 	<expression-list>  := <expression> | <expression> <expression-list>
@@ -275,18 +274,12 @@ The lexer recognises the following tokens:
 TODO
 ----
 - Parse dates. Probably using the following syntax; `D'yyyy-MM-dd'`.
-- Apply typechecking on the rhs of an `OrNode`, on the rhs of an `AndNode` and on the rhs of an `IfNode` in the
-  `Interperter`. For instance, the `Interpreter` will evaluate the expression `true || 9.6` to true, while the
-  `Evaluator` will throw an exception beacuse the rhs is of type Decimal. In this case the checking can be done easilly.
-  In contrast; in the case `true || (a * b)` we cannot infer the type of the rhs (without interpreting), but we _do_
-  know that the type of the rhs cannot ever become `Boolean`. So (without interpreting the rhs) we should be able to
-  deduct that an exception should be thrown. For the `IfNode` this also means that the type cannot always be inferred.
 - Translate comments in code to English.
 
 Copyright
 ---------
 
-	Copyright 2011 Geert Mulders
+	Copyright 2016 Geert Mulders
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.

@@ -10,7 +10,7 @@ import java.sql.Date;
 /**
  * Node that represents a date.
  */
-public class DateNode extends AbstractNode {
+public class DateNode extends AbstractExpressionNode {
 
 	private Date value;
 

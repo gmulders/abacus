@@ -8,16 +8,16 @@ import org.gertje.abacus.types.Type;
 /**
  * Node that represents the power.
  */
-public class PowerNode extends AbstractNode implements BinaryOperationNode {
+public class PowerNode extends AbstractExpressionNode implements BinaryOperationNode {
 
-	private Node base;
-	private Node power;
+	private ExpressionNode base;
+	private ExpressionNode power;
 
 	/**
 	 * Constructor
 	 */
-	public PowerNode(Node base, Node power, Token token) {
-		super(4, token);
+	public PowerNode(ExpressionNode base, ExpressionNode power, Token token) {
+		super(6, token);
 
 		this.base = base;
 		this.power = power;
@@ -25,6 +25,9 @@ public class PowerNode extends AbstractNode implements BinaryOperationNode {
 
 	@Override
 	public Type getType() {
+		if (Type.equals(base.getType(), Type.INTEGER) && Type.equals(power.getType(), Type.INTEGER)) {
+			return Type.INTEGER;
+		}
 		return Type.DECIMAL;
 	}
 
@@ -38,39 +41,39 @@ public class PowerNode extends AbstractNode implements BinaryOperationNode {
 		return visitor.visit(this);
 	}
 
-	public Node getBase() {
+	public ExpressionNode getBase() {
 		return base;
 	}
 
-	public void setBase(Node base) {
+	public void setBase(ExpressionNode base) {
 		this.base = base;
 	}
 
-	public Node getPower() {
+	public ExpressionNode getPower() {
 		return power;
 	}
 
-	public void setPower(Node power) {
+	public void setPower(ExpressionNode power) {
 		this.power = power;
 	}
 
 	@Override
-	public Node getLhs() {
+	public ExpressionNode getLhs() {
 		return base;
 	}
 
 	@Override
-	public void setLhs(Node node) {
+	public void setLhs(ExpressionNode node) {
 		this.base = node;
 	}
 
 	@Override
-	public Node getRhs() {
+	public ExpressionNode getRhs() {
 		return power;
 	}
 
 	@Override
-	public void setRhs(Node node) {
+	public void setRhs(ExpressionNode node) {
 		this.power = node;
 	}
 }

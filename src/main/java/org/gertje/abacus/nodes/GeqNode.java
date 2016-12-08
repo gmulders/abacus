@@ -12,8 +12,8 @@ public class GeqNode extends AbstractComparisonNode {
 	/**
 	 * Constructor
 	 */
-	public GeqNode(Node lhs, Node rhs, Token token) {
-		super(lhs, rhs, token, 6);
+	public GeqNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
+		super(lhs, rhs, token, 8);
 	}
 
 	@Override

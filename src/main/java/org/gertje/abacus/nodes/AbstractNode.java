@@ -2,40 +2,44 @@ package org.gertje.abacus.nodes;
 
 import org.gertje.abacus.token.Token;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
- * Deze klasse stelt een node in een AbstractSyntaxTree voor.
+ * Abstract node.
  */
-abstract public class AbstractNode implements Node {
+public abstract class AbstractNode implements Node {
 
 	/**
-	 * Getal wat de volgorde van uitvoering van operatoren aangeeft. Voor het geval operatoren niet commuteren.
+	 * The id for the next node that is created.
 	 */
-	protected int precedence;
+	private static AtomicLong NEXT_ID = new AtomicLong(0);
 
 	/**
-	 * Bevat het token waaruit deze node is ontstaan.
+	 * The token from which the node was created.
 	 */
 	protected Token token;
 
 	/**
-	 * Contructor.
-	 * 
-	 * @param precedence Getal wat de volgorde van uitvoering van operatoren aangeeft. Voor het geval operatoren niet 
-	 * commuteren.
-	 * @param token Bevat het token waaruit deze node is ontstaan.
+	 * The id of the node.
 	 */
-	public AbstractNode(int precedence, Token token) {
-		this.precedence = precedence;
-		this.token = token;
-	}
+	private long id = NEXT_ID.incrementAndGet();
 
-	@Override
-	public int getPrecedence() {
-		return precedence;
+	public AbstractNode(Token token) {
+		this.token = token;
 	}
 
 	@Override
 	public Token getToken() {
 		return token;
+	}
+
+	@Override
+	public NodeType getNodeType() {
+		return NodeType.STATEMENT;
+	}
+
+	@Override
+	public long getId() {
+		return id;
 	}
 }
