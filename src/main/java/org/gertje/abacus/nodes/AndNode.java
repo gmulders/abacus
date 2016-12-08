@@ -17,7 +17,7 @@ public class AndNode extends AbstractExpressionNode implements BinaryOperationNo
 	 * Constructor
 	 */
 	public AndNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
-		super(8, token);
+		super(10, token);
 
 		this.lhs = lhs;
 		this.rhs = rhs;

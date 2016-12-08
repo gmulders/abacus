@@ -17,7 +17,7 @@ public class AddNode extends AbstractExpressionNode implements BinaryOperationNo
 	 * Constructor
 	 */
 	public AddNode(ExpressionNode lhs, ExpressionNode rhs, Token token) {
-		super (5, token);
+		super (7, token);
 
 		this.lhs = lhs;
 		this.rhs = rhs;

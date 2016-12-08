@@ -17,7 +17,7 @@ public class PowerNode extends AbstractExpressionNode implements BinaryOperation
 	 * Constructor
 	 */
 	public PowerNode(ExpressionNode base, ExpressionNode power, Token token) {
-		super(4, token);
+		super(6, token);
 
 		this.base = base;
 		this.power = power;

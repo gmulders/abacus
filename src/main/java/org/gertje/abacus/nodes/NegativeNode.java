@@ -16,7 +16,7 @@ public class NegativeNode extends AbstractExpressionNode {
 	 * Constructor
 	 */
 	public NegativeNode(ExpressionNode argument, Token token) {
-		super(2, token);
+		super(4, token);
 
 		this.argument = argument;
 	}

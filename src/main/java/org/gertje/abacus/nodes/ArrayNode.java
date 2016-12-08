@@ -16,7 +16,7 @@ public class ArrayNode extends AbstractExpressionNode {
 	private Type type;
 
 	public ArrayNode(ExpressionNode array, ExpressionNode index, Token token) {
-		super(0, token);
+		super(3, token);
 
 		this.array = array;
 		this.index = index;
