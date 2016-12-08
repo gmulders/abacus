@@ -4,7 +4,7 @@
 
     <groupId>org.gertje.abacus</groupId>
     <artifactId>abacus</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <packaging>jar</packaging>
 
     <name>abacus expression library</name>
