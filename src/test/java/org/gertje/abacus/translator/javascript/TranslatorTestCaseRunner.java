@@ -24,6 +24,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Runs the test case for the JavaScript translator.
@@ -104,6 +107,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 	 */
 	private String createJavaScript(String expression) {
 		return
+				"// " + abacusTestCase.expression + "\n" +
 				"load('classpath:decimal.min.js');\n" +
 				"var function_rand = Math.random;\n" +
 				"var error = false;\n" +
@@ -156,17 +160,73 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 		StringBuilder builder = new StringBuilder();
 
 		for (AbacusTestCase.Value value : abacusTestCase.variableListAfter) {
-			builder.append("if (").append(determineUnequalsCheck(value.name, value.value, value.type)).append(") {\n")
-					.append("\terror = true;\n")
-					.append("\tmessage = 'Incorrect value for ").append(value.name).append(":' + ").append(value.name)
-						.append(";\n")
+			builder.append("if (");
+
+			if (value.type.isArray()) {
+				List<String> parts = new ArrayList<>();
+				createJavaScriptForCompareArrays(parts, value.name, (ArrayList)value.value, value.type,
+						new LinkedList<Integer>());
+				builder.append(joinStrings(parts, "||"));
+			} else {
+				builder.append(determineUnequalsCheck(value.name, value.value, value.type));
+			}
+
+			builder.append(") {\n")
+						.append("\terror = true;\n")
+						.append("\tmessage = 'Incorrect value for ").append(value.name).append(":' + ")
+						.append(value.name).append(";\n")
 					.append("}\n");
 		}
 
 		return builder.toString();
 	}
 
-	private String determineUnequalsCheck(String name, String value, Type type) {
+	public static String joinStrings(List<String> strings, String separator) {
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < strings.size(); i++) {
+			sb.append(strings.get(i));
+			if(i < strings.size() - 1)
+				sb.append(separator);
+		}
+		return sb.toString();
+	}
+
+	private void createJavaScriptForCompareArrays(List<String> parts, String name, ArrayList array, Type type,
+			LinkedList<Integer> indices) {
+
+		if (array == null) {
+			String nameIndex = "";
+			for (Integer index : indices) {
+				nameIndex = "[" + index + "]" + nameIndex;
+			}
+			parts.add(name + nameIndex + " != null");
+			return;
+		}
+
+		Type subType = type.determineComponentType();
+		for (int i = 0; i < array.size(); i++) {
+			indices.push(i);
+			if (subType.isArray()) {
+				createJavaScriptForCompareArrays(parts, name, (ArrayList)array.get(i), subType, indices);
+			} else {
+				String nameIndex = "";
+				for (Integer index : indices) {
+					nameIndex = "[" + index + "]" + nameIndex;
+				}
+				parts.add(determineUnequalsCheck(name + nameIndex, array.get(i), subType));
+			}
+			indices.pop();
+		}
+	}
+
+	/**
+	 * Creates JavaScript that determines whether a variable and a value are unequal.
+	 * @param name The name of the variable.
+	 * @param value The value.
+	 * @param type The type of the variable.
+	 * @return The JavaScript that does the comparison.
+	 */
+	private String determineUnequalsCheck(String name, Object value, Type type) {
 		String javaScriptValue = formatValueForJavaScript(value, type);
 
 		if (type == Type.DATE) {
@@ -175,7 +235,7 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 					+ "(" + javaScriptValue + " == null ? null : " + javaScriptValue + ".valueOf()) ";
 		}
 
-		if (type == Type.DECIMAL) {
+		if (Type.equals(type, Type.DECIMAL)) {
 			return "(" + name + " == null ? " + javaScriptValue + " != null : " + name + ".cmp(" + javaScriptValue + ") != 0)";
 		}
 
@@ -188,19 +248,31 @@ public class TranslatorTestCaseRunner extends AbstractTestCaseRunner {
 	 * @param type The type of the value.
 	 * @return The value formatted for JavaScript.
 	 */
-	private String formatValueForJavaScript(String value, Type type) {
-		if (type == Type.STRING && value != null) {
+	private String formatValueForJavaScript(Object value, Type type) {
+		if (Type.equals(type, Type.STRING) && value != null) {
 			return "'" + value + "'";
 		}
 
-		if (type == Type.DATE && value != null) {
-			Date date = Date.valueOf(value);
+		if (Type.equals(type, Type.DATE) && value != null) {
+			Date date = Date.valueOf(value.toString());
 			return "new Date(" + date.getTime() + ")";
 		}
 
-		if (type == Type.DECIMAL && value != null) {
+		if (Type.equals(type, Type.DECIMAL) && value != null) {
 			return "new Decimal('" + value + "')";
 		}
-		return value;
+
+		if (Type.equals(type, Type.INTEGER) && value != null) {
+			if (value instanceof Double) {
+				return String.valueOf(((Double)value).longValue());
+			}
+			return Long.valueOf((String)value).toString();
+		}
+
+		if (value == null) {
+			return "null";
+		}
+
+		return value.toString();
 	}
 }

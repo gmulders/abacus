@@ -4,6 +4,7 @@ import org.gertje.abacus.context.AbacusContext;
 import org.gertje.abacus.nodes.AbstractComparisonNode;
 import org.gertje.abacus.nodes.AddNode;
 import org.gertje.abacus.nodes.AndNode;
+import org.gertje.abacus.nodes.ArrayNode;
 import org.gertje.abacus.nodes.AssignmentNode;
 import org.gertje.abacus.nodes.BooleanNode;
 import org.gertje.abacus.nodes.ConcatStringNode;
@@ -37,6 +38,8 @@ import org.gertje.abacus.nodes.StringNode;
 import org.gertje.abacus.nodes.SubtractNode;
 import org.gertje.abacus.nodes.SumNode;
 import org.gertje.abacus.nodes.VariableNode;
+import org.gertje.abacus.nodevisitors.DefaultVisitor;
+import org.gertje.abacus.nodevisitors.EvaluationException;
 import org.gertje.abacus.nodevisitors.NodeVisitor;
 import org.gertje.abacus.nodevisitors.VisitingException;
 import org.gertje.abacus.symboltable.SymbolTable;
@@ -136,20 +139,59 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 	}
 
 	@Override
+	public Void visit(ArrayNode node) throws VisitingException {
+		ExpressionNode array = node.getArray();
+		ExpressionNode index = node.getIndex();
+
+		array.accept(this);
+		index.accept(this);
+
+		String name = determineVariableName(node);
+		String arrayName = determineVariableName(array);
+		String indexName = determineVariableName(index);
+
+		appendDefinition(node);
+
+		expression.append(name).append(" = ")
+				.append(arrayName).append(" == null || ")
+				.append(indexName).append(" == null || ")
+				.append(indexName).append(" >= ").append(arrayName).append(".length ||")
+				.append(indexName).append(" < 0 ? null : ")
+				.append(arrayName).append("[").append(indexName).append("];\n");
+
+		return null;
+	}
+
+	@Override
 	public Void visit(AssignmentNode node) throws VisitingException {
+//		ExpressionNode lhs = node.getLhs();
+//		ExpressionNode rhs = node.getRhs();
+//
+//		String name = determineVariableName(node);
+//		String right = determineVariableName(rhs);
+//
+//		String identifier = ((VariableNode) lhs).getIdentifier();
+//
+//		rhs.accept(this);
+//
+//		appendDefinition(node);
+//		appendAssignment(identifier, node.getType(), right, rhs.getType());
+//		appendAssignment(name, node.getType(), identifier, node.getType());
+
+
+
+
 		ExpressionNode lhs = node.getLhs();
 		ExpressionNode rhs = node.getRhs();
 
 		String name = determineVariableName(node);
-		String right = determineVariableName(rhs);
+		String left = determineVariableName(lhs);
 
-		String identifier = ((VariableNode) lhs).getIdentifier();
-
-		rhs.accept(this);
+		ValueAssigner valueAssigner = new ValueAssigner();
+		valueAssigner.assign(lhs, rhs, node.getType());
 
 		appendDefinition(node);
-		appendAssignment(identifier, node.getType(), right, rhs.getType());
-		appendAssignment(name, node.getType(), identifier, node.getType());
+		appendAssignment(name, node.getType(), left, lhs.getType());
 
 		return null;
 	}
@@ -225,13 +267,13 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 
 		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
 
-		if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.DECIMAL) {
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append(left).append(".div(").append(right).append(");");
-		} else if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(".div(new Decimal(").append(right).append("));");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.DECIMAL) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append("(new Decimal(").append(left).append(")).div(").append(right).append(");");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append("(").append(left).append(" / ").append(right).append(")|0;");
 		}
 
@@ -402,13 +444,13 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 
 		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
 
-		if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.DECIMAL) {
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append("(").append(left).append(".toNumber()|0) % (").append(right).append(".toNumber()|0);");
-		} else if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append("(").append(left).append(".toNumber()|0) % ").append(right).append(";");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.DECIMAL) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append(left).append(" % (").append(right).append(".toNumber()|0);");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(" % ").append(right).append(";");
 		}
 
@@ -435,13 +477,13 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 
 		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
 
-		if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.DECIMAL) {
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append(left).append(".mul(").append(right).append(");");
-		} else if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(".mul(new Decimal(").append(right).append("));");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.DECIMAL) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append("(new Decimal(").append(left).append(")).mul(").append(right).append(");");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(" * ").append(right).append(";");
 		}
 
@@ -464,7 +506,7 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 		expression.append(name).append(" = ");
 		expression.append(arg).append("==null ? null : ");
 
-		if (argument.getType() == Type.DECIMAL) {
+		if (Type.equals(argument.getType(), Type.DECIMAL)) {
 			expression.append(arg).append(".neg();\n");
 		} else {
 			expression.append("-").append(arg).append(";\n");
@@ -588,16 +630,16 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 		expression.append(name).append(" = ")
 				.append(left).append("==null || ").append(right).append("==null ? null : ");
 
-		if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.INTEGER) {
+		if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append("Math.pow(").append(left).append(", ").append(right).append(")|0;\n");
 			return null;
 		}
 
-		if (lhs.getType() == Type.INTEGER) {
+		if (Type.equals(lhs.getType(), Type.INTEGER)) {
 			left = "new Decimal(" + left + ")";
 		}
 
-		if (rhs.getType() == Type.INTEGER) {
+		if (Type.equals(rhs.getType(), Type.INTEGER)) {
 			right = "new Decimal(" + right + ")";
 		}
 
@@ -657,13 +699,13 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 
 		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
 
-		if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.DECIMAL) {
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append(left).append(".sub(").append(right).append(");");
-		} else if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(".sub(new Decimal(").append(right).append("));");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.DECIMAL) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append("(new Decimal(").append(left).append(")).sub(").append(right).append(");");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(" - ").append(right).append(";");
 		}
 
@@ -690,13 +732,13 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 
 		expression.append(left).append("==null || ").append(right).append("==null ? null : ");
 
-		if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.DECIMAL) {
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append(left).append(".add(").append(right).append(");");
-		} else if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(".add(new Decimal(").append(right).append("));");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.DECIMAL) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append("(new Decimal(").append(left).append(")).add(").append(right).append(");");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(" + ").append(right).append(";");
 		}
 
@@ -717,6 +759,85 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 	}
 
 	/**
+	 * Assigns a value to a variable or to an index.
+	 */
+	private class ValueAssigner extends DefaultVisitor<Void, VisitingException> {
+
+		/**
+		 * The value to assign.
+		 */
+		private ExpressionNode value;
+
+		/**
+		 * The type of the assignment.
+		 */
+		private Type type;
+
+		public ValueAssigner() {
+			// Don't visit the child nodes.
+			visitChildNodes = false;
+		}
+
+		/**
+		 * Assigns the value to the correct variable or array-index.
+		 * @param node The node that determines where to assign the value to.
+		 * @param value The value to assign.
+		 * @param type The type of the assignment.
+		 * @throws VisitingException
+		 */
+		public void assign(ExpressionNode node, ExpressionNode value, Type type) throws VisitingException {
+			this.value = value;
+			this.type = type;
+
+			// Determine the value to assign.
+			value.accept(JavaScriptTranslator.this);
+
+			appendDefinition(node);
+
+			node.accept(this);
+		}
+
+		@Override
+		public Void visit(ArrayNode node) throws VisitingException {
+			String name = determineVariableName(node);
+			String arrayName = determineVariableName(node.getArray());
+			String indexName = determineVariableName(node.getIndex());
+			String valueName = determineVariableName(value);
+
+			// Get the array.
+			node.getArray().accept(JavaScriptTranslator.this);
+			// Determine the index.
+			node.getIndex().accept(JavaScriptTranslator.this);
+
+			expression.append("if (").append(arrayName).append(" == null || ").append(indexName).append(" == null || ")
+					.append(indexName).append(" >= ").append(arrayName).append(".length || ")
+					.append(indexName).append(" < 0) {\n")
+					.append("\t").append(name).append(" = null;\n")
+					.append("} else {\n")
+					.append("\t").append(name).append(" = ").append(arrayName).append("[").append(indexName)
+					.append("] = ").append(castValue(valueName, value.getType(), node.getType())).append(";\n")
+					.append("}\n");
+
+			return null;
+		}
+
+		@Override
+		public Void visit(VariableNode node) throws VisitingException {
+			String name = determineVariableName(node);
+
+			// Determine the name of the value.
+			String valueName = determineVariableName(value);
+			// Determine the identifier of the String.
+			String identifier = node.getIdentifier();
+			// Assign the value to the variable in the symbol table.
+			appendAssignment(identifier, node.getType(), valueName, value.getType());
+			appendAssignment(name, node.getType(), identifier, node.getType());
+
+			return null;
+		}
+	}
+
+	/**
 	 * Appends an assignment to the expression.
 	 * @param name The name of the variable to assign to.
 	 * @param nodeType The type of the variable to assign to.
@@ -734,11 +855,11 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 	 * @param toType The type to cast to.
 	 */
 	private String castValue(String value, Type fromType, Type toType) {
-		if (fromType == Type.INTEGER && toType == Type.DECIMAL) {
+		if (Type.equals(fromType, Type.INTEGER) && Type.equals(toType, Type.DECIMAL)) {
 			return "new Decimal(" + value + ")";
 		}
 
-		if (fromType == Type.DECIMAL && toType == Type.INTEGER) {
+		if (Type.equals(fromType, Type.DECIMAL) && Type.equals(toType, Type.INTEGER)) {
 			return value + ".toNumber()|0";
 		}
 
@@ -781,13 +902,13 @@ public class JavaScriptTranslator implements NodeVisitor<Void, VisitingException
 		String left = determineVariableName(lhs);
 		String right = determineVariableName(rhs);
 
-		if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.DECIMAL) {
+		if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append(left).append(".cmp(").append(right).append(") ").append(comparator).append(" 0;\n");
-		} else if (lhs.getType() == Type.DECIMAL && rhs.getType() == Type.INTEGER) {
+		} else if (Type.equals(lhs.getType(), Type.DECIMAL) && Type.equals(rhs.getType(), Type.INTEGER)) {
 			expression.append(left).append(".cmp(new Decimal(").append(right).append(")) ").append(comparator).append(" 0;\n");
-		} else if (lhs.getType() == Type.INTEGER && rhs.getType() == Type.DECIMAL) {
+		} else if (Type.equals(lhs.getType(), Type.INTEGER) && Type.equals(rhs.getType(), Type.DECIMAL)) {
 			expression.append("new Decimal(").append(left).append(").cmp(").append(right).append(") ").append(comparator).append(" 0;\n");
-		} else if (lhs.getType() == Type.DATE && rhs.getType() == Type.DATE) {
+		} else if (Type.equals(lhs.getType(), Type.DATE) && Type.equals(rhs.getType(), Type.DATE)) {
 			expression.append(left).append(".valueOf() ").append(comparator).append(" ").append(right).append(".valueOf();\n");
 		} else {
 			expression.append(left).append(" ").append(comparator).append(" ").append(right).append(";\n");
